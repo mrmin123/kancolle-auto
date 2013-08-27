@@ -17,6 +17,10 @@ def shutsugeki():
 
         click("1376837589532.png")
         click("1376837610684.png")
+    if not exists("1376841606981.png"):
+
+        click("1377191208968.png")
+        click("1376837610684.png")
     hover("1376839396372.png")
     if not exists("1376841606981.png"):
         click("1376839396372.png")
@@ -25,6 +29,10 @@ def shutsugeki():
     time.sleep(10)
     if exists("1376837670396.png"):
         click("1376837670396.png")
+        check_and_click("1376837727476.png")
+    time.sleep(10)
+    if exists("1377191277928.png"):
+        click("1377191277928.png")
         check_and_click("1376837727476.png")
     wait("1376839396372.png", 10)
     click("1376839396372.png")
@@ -51,7 +59,14 @@ def hokyu():
     click("1376839272508.png")
     if exists("1376846616135.png"):
         click("1376846616135.png")
+    time.sleep(10)
     click("1376839309140.png")
+    time.sleep(10)
+    click("1376839272508.png")
+    if exists("1376846616135.png"):
+        click("1376846616135.png")
+    time.sleep(10)
+    click("1377191350392.png")
     time.sleep(10)
     click("1376839272508.png")
     if exists("1376846616135.png"):
@@ -63,6 +78,8 @@ def hokyu():
 while True:    
     time.sleep(5)
     check_and_click("1376839396372.png")
+    if kitou():
+        hokyu()
     if kitou():
         hokyu()
     if kitou():
