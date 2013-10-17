@@ -26,7 +26,7 @@ class Ensei:
         return 'ensei id = ' + str(self.id) + ', end time = ' + str(self.end_time())
 
     def __nonzero__(self):
-        return is_end()
+        return self.is_end()
 
 def ensei_factory(ensei_id):
     if ensei_id == 1: return Ensei(1, 'ensei_name_01.png', 'ensei_area_01.png', datetime.timedelta(minutes = 15)) 
