@@ -1,9 +1,15 @@
 import time
 import random
 import ensei as ensei_module
+import sys
+import os
+import datetime
 
-ensei_id_list = [2, 3, 5]
-ensei_fleets = [2, 3, 4]
+# mapping from ensei id to suitable fleet id for the ensei. 
+ensei_id_fleet_map = {2: [4], 
+                      5: [3], 
+                      6: [2]}
+
 def check_and_click(pict):
     if exists(pict):
         click(pict)
@@ -30,7 +36,7 @@ def shutsugeki():
     wait_and_click("shutsugeki.png")
     wait_and_click("ensei.png")
 
-    ensei_list = map(ensei_module.ensei_factory, ensei_id_list)
+    ensei_list = map(ensei_module.ensei_factory, ensei_id_fleet_map.keys())
     random.shuffle(ensei_list)
     success_ensei_list = []
     for ensei in ensei_list:
@@ -40,7 +46,9 @@ def shutsugeki():
         if exists("ensei_enable.png"):
             print "try", ensei
             success_ensei = None
-            for fleet_id in ensei_fleets:
+            print 'suitable fleets:', ensei_id_fleet_map[ensei.id]
+            for fleet_id in ensei_id_fleet_map[ensei.id]:
+                print 'try to use fleet', fleet_id
                 fleet_name = "fleet_%d.png" % fleet_id
                 click(fleet_name)
                 sleep(3)
@@ -119,3 +127,4 @@ while True:
         end_time = min(map(lambda e: e.end_time(), running_ensei_list))
         print "next ensei end time:", end_time
     time.sleep(10)
+
