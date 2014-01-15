@@ -35,6 +35,6 @@ def ensei_factory(ensei_id):
     if ensei_id == 4: return Ensei(4, 'ensei_name_04.png', 'ensei_area_01.png', datetime.timedelta(minutes = 50))
     if ensei_id == 5: return Ensei(5, 'ensei_name_05.png', 'ensei_area_01.png', datetime.timedelta(minutes = 90))
     if ensei_id == 6: return Ensei(6, 'ensei_name_06.png', 'ensei_area_01.png', datetime.timedelta(minutes = 40))
-
+    if ensei_id == 20: return Ensei(20, 'ensei_name_20.png', 'ensei_area_03.png', datetime.timedelta(minutes = 120))
     return ensei_factory(2)
               
