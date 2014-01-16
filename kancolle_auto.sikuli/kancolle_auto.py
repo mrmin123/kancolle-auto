@@ -6,9 +6,9 @@ import os
 import datetime
 
 # mapping from ensei id to suitable fleet id for the ensei. 
-ensei_id_fleet_map = {2: [4], 
-                      5: [3], 
-                      6: [2]}
+ensei_id_fleet_map = {5: [2], 
+                      6: [3], 
+                      20: [4]}
 
 def check_and_click(pict):
     if exists(pict):
@@ -40,6 +40,8 @@ def shutsugeki():
     random.shuffle(ensei_list)
     success_ensei_list = []
     for ensei in ensei_list:
+        click(ensei.area_pict)
+        sleep(2)
         click(ensei.name_pict)
         hover(ensei.area_pict)
         click("decision.png")
