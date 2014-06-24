@@ -2,6 +2,7 @@
 
 import datetime
 
+
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration):
         self.id = ensei_id
