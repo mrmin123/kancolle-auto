@@ -48,6 +48,7 @@ def expedition():
         kc_region.click(expedition.area_pict)
         time.sleep(2)
         kc_region.click(expedition.name_pict)
+        time.sleep(1)
         if not kc_region.exists("decision.png"):
             continue
         kc_region.click("decision.png")
@@ -61,6 +62,7 @@ def expedition():
                     fleet_name = "fleet_%d.png" % fleet_id
                     kc_region.click(fleet_name)
                     time.sleep(2)
+                    
                 kc_region.click("ensei_start.png")
                 time.sleep(5)
                 if not kc_region.exists("ensei_enable.png"):
@@ -83,7 +85,7 @@ def check_expedition():
     if kc_region.exists("ensei_finish.png"):
         reward()
         check_expedition()
-    return True
+        supply()
 
 def reward():
     kc_region.click("ensei_finish.png")
@@ -93,27 +95,23 @@ def reward():
 
 def supply():
     kc_region.hover("senseki.png")
-    wait_and_click("supply.png")
+    wait_and_click("supply.png") or wait_and_click("supply2.png")
     for fleet_id in [2, 3]:
         fleet_name = "fleet_%d.png" % fleet_id
         kc_region.click(fleet_name)
         kc_region.click("supply_all.png")
-        if check_and_click("matomete_hokyu.png"): time.sleep(3)
+        if check_and_click("supply_available.png"): time.sleep(3)
     time.sleep(2)
     kc_region.click("home.png")
-    return
 
 def init():
     check_window()
     go_home()
-    supply()
     while not running_expedition_list:
         main()
         time.sleep(120)
 
 def main():
-    if check_expedition():
-        supply()
     global running_expedition_list
     running_expedition_list += expedition()
 
@@ -126,7 +124,6 @@ def refresh():
 
 init()
 while True:
-    print (running_expedition_list)
     if any(running_expedition_list):
         check_window()
         running_expedition_list = filter(lambda e: not e.is_end, running_expedition_list)
