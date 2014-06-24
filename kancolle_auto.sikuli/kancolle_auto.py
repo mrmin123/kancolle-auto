@@ -95,7 +95,7 @@ def reward():
 
 def supply():
     kc_region.hover("senseki.png")
-    wait_and_click("supply.png") or wait_and_click("supply2.png")
+    if not check_and_click("supply.png"): check_and_click("supply2.png")
     for fleet_id in [2, 3]:
         fleet_name = "fleet_%d.png" % fleet_id
         kc_region.click(fleet_name)
