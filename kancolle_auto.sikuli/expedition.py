@@ -14,9 +14,6 @@ class Ensei:
         #return 'ensei id = ' + str(self.id) + ', end time = ' + str(self.end_time())
         return 'ensei id = %d, end time = %s' % (self.id, self.end_time())
 
-    def __nonzero__(self):
-        return self.is_end()
-
     def start(self):
         self.begin_time = datetime.datetime.now()
         self.ends_time = self.begin_time + self.duration
@@ -25,11 +22,6 @@ class Ensei:
         if hasattr(self, "begin_time"):
             return self.begin_time + self.duration
         return datetime.datetime.max
-
-    def is_end(self):
-        if hasattr(self, "begin_time"):
-            return self.end_time() < datetime.datetime.now()
-        return False
 
 
 def ensei_factory(ensei_id):
