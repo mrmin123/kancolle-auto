@@ -38,7 +38,7 @@ def ensei_factory(ensei_id):
     elif ensei_id == 6:
         return Ensei(6, 'ensei_name_06.png', 'ensei_area_01.png', datetime.timedelta(minutes=40))
     elif ensei_id == 7:
-        return Ensei(7, 'ensei_name_07.png', 'ensei_area_01.png', datetime.timedelta(hours = 1))
+        return Ensei(7, 'ensei_name_07.png', 'ensei_area_01.png', datetime.timedelta(hours=1))
     elif ensei_id == 8:
         return Ensei(8, 'ensei_name_08.png', 'ensei_area_01.png', datetime.timedelta(hours=3))
 
