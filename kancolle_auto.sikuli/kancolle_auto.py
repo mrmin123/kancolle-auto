@@ -34,11 +34,9 @@ def go_home():
 
 
 def check_window():
-    kctv = App("KanColleTool Viewer")
-    kcv = App("提督業も忙しい！")
+    switchApp("KanColleTool Viewer")
+    switchApp("KanColleViewer")
 
-    kctv.focus()
-    kcv.focus()
     wait("senseki.png", 30)
 
 
