@@ -49,34 +49,33 @@ def expedition():
 
 def run_expedition(expedition):
     global running_expedition_list
+
     click(expedition.area_pict)
-    time.sleep(2)
+    time.sleep(1)
     click(expedition.name_pict)
     time.sleep(1)
-    if not exists("decision.png"):
+    if exists("exp_started.png"):
+        print expedition, "is already running. Skipped."
         return
     click("decision.png")
-    if exists("ensei_enable.png"):
-        print "try", expedition
-        success_ensei = None
-        print 'suitable fleets:', ensei_id_fleet_map[expedition.id]
-        fleet_id = ensei_id_fleet_map[expedition.id]
-        print 'try to use fleet', fleet_id
-        if fleet_id != 2:
-            fleet_name = "fleet_%d.png" % fleet_id
-            click(fleet_name)
-            time.sleep(2)
+    time.sleep(1)
+    print "Try", expedition
+    fleet_id = ensei_id_fleet_map[expedition.id]
+    print 'Try to use fleet', fleet_id
+    if fleet_id != 2:
+        fleet_name = "fleet_%d.png" % fleet_id
+        click(fleet_name)
+        time.sleep(1)
+    if not exists("fleet_busy.png"):
         click("ensei_start.png")
-        if exists("exp_started.png"):
-            expedition.start()
-            print expedition, "successfully started"
-            running_expedition_list.append(expedition)
-            time.sleep(4)
-        else:
-            print "no fleets were aveilable for this expedition."
-            click("ensei_area_01.png")
+        wait("exp_started.png")
+        expedition.start()
+        print expedition, "successfully started"
+        running_expedition_list.append(expedition)
+        time.sleep(4)
     else:
-        print expedition, "is already running. skipped."
+        print "No fleets were aveilable for this expedition."
+        click("ensei_area_01.png")
 
 
 def check_expedition():
