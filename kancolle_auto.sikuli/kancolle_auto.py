@@ -31,6 +31,7 @@ def go_home():
 
     check_and_click("home.png")
     kc_window_region.hover("senseki.png")
+    kc_window_region.wait("sortie.png")
     check_expedition()
 
 
