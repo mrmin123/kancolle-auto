@@ -38,7 +38,6 @@ def check_window():
     global kc_window_region
 
     switchApp("KanColleTool Viewer")
-    switchApp("KanColleViewer")
     if not kc_window_region:
         kc_window_region = App.focusedWindow()
 
@@ -71,7 +70,7 @@ def run_expedition(expedition):
         fleet_name = "fleet_%d.png" % fleet_id
         kc_window_region.click(fleet_name)
         time.sleep(1)
-    if not exists("fleet_busy.png"):
+    if not kc_window_region.exists("fleet_busy.png"):
         kc_window_region.click("ensei_start.png")
         kc_window_region.wait("exp_started.png")
         expedition.start()
@@ -128,7 +127,7 @@ while True:
     for item in running_expedition_list:
         now_time = datetime.datetime.now()
         if now_time > item.end_time:
-            print "Restart expedition"
+            print "Expedition #%d ends, restarting" % item.id
             running_expedition_list.remove(item)
             go_home()
             supply(ensei_id_fleet_map[item.id])
