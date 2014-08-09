@@ -87,6 +87,8 @@ def check_expedition():
     if check_and_click("ensei_finish.png"):
         wait_and_click("next.png", 15)
         wait_and_click("next.png")
+        kc_window_region.wait("sortie.png")
+
         check_expedition()
 
 
