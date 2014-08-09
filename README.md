@@ -16,6 +16,6 @@ This tool is developed and successfully tested on Ubuntu and Arch linux. But it 
 Usage
 =====
 
-1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) and go to port (main screen).
+1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) (if you use other viewers or play in browser - just focus necessary window after see yellow Sikuli splash) and go to port (main screen).
 2. Run this script.
   * just doing "$ runScript -r kancolle_auto.sikuli".
