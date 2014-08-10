@@ -39,6 +39,7 @@ def check_window():
     global kc_window_region
 
     switchApp("KanColleTool Viewer")
+    switchApp("KanColleViewer!")
     if not kc_window_region:
         kc_window_region = App.focusedWindow()
 
