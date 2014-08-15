@@ -31,7 +31,7 @@ def go_home():
 
     check_and_click("home.png")
     kc_window_region.hover("senseki.png")
-    kc_window_region.wait("sortie.png")
+    kc_window_region.wait("sortie.png", 10)
     check_expedition()
 
 
@@ -48,8 +48,8 @@ def check_window():
 
 def expedition():
     kc_window_region.hover("senseki.png")
-    wait_and_click("sortie.png")
-    wait_and_click("expedition.png")
+    wait_and_click("sortie.png", 10)
+    wait_and_click("expedition.png", 10)
     kc_window_region.wait("expedition_screen_ready.png", 10)
 
 
@@ -88,7 +88,7 @@ def check_expedition():
     if check_and_click("ensei_finish.png"):
         wait_and_click("next.png", 15)
         wait_and_click("next.png")
-        kc_window_region.wait("sortie.png")
+        kc_window_region.wait("sortie.png", 10)
 
         check_expedition()
 
