@@ -34,6 +34,9 @@ nosetests.xml
 .project
 .pydevproject
 
+# PyCharm
+.idea
+
 Thumbs.db
 .directory
 *$py.class
