@@ -1,12 +1,12 @@
 import time
 import datetime
 
-import expedition as ensei_module
+import expedition as expedition_module
 
 
 # mapping from expedition id to suitable fleet id for the expedition.
-ensei_id_fleet_map = {3: 2,
-                      5: 3}
+expedition_id_fleet_map = {3: 2,
+                           5: 3}
 running_expedition_list = []
 kc_window_region = None
 
@@ -31,7 +31,7 @@ def go_home():
 
     check_and_click("home.png")
     kc_window_region.hover("senseki.png")
-    kc_window_region.wait("sortie.png")
+    kc_window_region.wait("sortie.png", 10)
     check_expedition()
 
 
@@ -42,7 +42,7 @@ def check_window():
     if not kc_window_region:
         kc_window_region = App.focusedWindow()
 
-    wait("senseki.png", 30)
+    kc_window_region.wait("senseki.png", 30)
 
 
 def expedition():
@@ -65,7 +65,7 @@ def run_expedition(expedition):
     kc_window_region.click("decision.png")
     time.sleep(1)
     print "Try", expedition
-    fleet_id = ensei_id_fleet_map[expedition.id]
+    fleet_id = expedition_id_fleet_map[expedition.id]
     print 'Try to use fleet', fleet_id
     if fleet_id != 2:
         fleet_name = "fleet_%d.png" % fleet_id
@@ -94,32 +94,40 @@ def supply(fleet_id=0):
     kc_window_region.hover("senseki.png")
     if not check_and_click("supply.png"):
         check_and_click("supply2.png")
-    wait("supply_not_available.png", 10)
+    kc_window_region.wait("supply_screen.png", 10)
     if fleet_id == 0:
-        for fleet_id in ensei_id_fleet_map.values():
+        for fleet_id in expedition_id_fleet_map.values():
             fleet_name = "fleet_%d.png" % fleet_id
-            kc_window_region.click(fleet_name)
-            wait_and_click("supply_all.png")
-            if check_and_click("supply_available.png"):
+            wait_and_click(fleet_name)
+            time.sleep(1)
+            if kc_window_region.exists(Pattern("supply_all.png").similar(1)):
+                while not kc_window_region.exists("checked.png"):
+                    kc_window_region.click("supply_all.png")
+                    time.sleep(0.1)
+                wait_and_click("supply_available.png")
                 kc_window_region.wait("supply_not_available.png", 10)
                 time.sleep(1)
     else:
         fleet_name = "fleet_%d.png" % fleet_id
         kc_window_region.click(fleet_name)
-        wait_and_click("supply_all.png")
-        if check_and_click("supply_available.png"):
+        time.sleep(1)
+        if kc_window_region.exists(Pattern("supply_all.png").similar(1)):
+            while not kc_window_region.exists("checked.png"):
+                kc_window_region.click("supply_all.png")
+                time.sleep(0.1)
+            wait_and_click("supply_available.png")
             kc_window_region.wait("supply_not_available.png", 10)
             time.sleep(1)
     go_home()
 
 
 def init():
-    ensei_list = map(ensei_module.ensei_factory, ensei_id_fleet_map.keys())
+    expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.keys())
 
     go_home()
     supply()
     expedition()
-    for exp in ensei_list:
+    for exp in expedition_list:
         run_expedition(exp)
 
 
@@ -131,7 +139,7 @@ while True:
             print "Expedition #%d ends, restarting" % item.id
             running_expedition_list.remove(item)
             go_home()
-            supply(ensei_id_fleet_map[item.id])
+            supply(expedition_id_fleet_map[item.id])
             expedition()
             run_expedition(item)
     time.sleep(10)
