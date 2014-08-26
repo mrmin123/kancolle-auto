@@ -11,11 +11,11 @@ You need to install tools listed below.
 * Python 2.x
 * Sikuli (strongly recommended use 1.0.x instead 1.1.x)
 
-This tool is developed and successfully tested on Ubuntu and Arch linux. But it should run on the other environment too.
+This tool is developed and successfully tested on Ubuntu, Archlinux, Gentoo and Windows. But it should run on the other environment too.
 
 Usage
 =====
 
-1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) and go to port (main screen).
+1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) (if you use other viewers or play in browser - just focus necessary window after see yellow Sikuli splash) and go to port (main screen).
 2. Run this script.
   * just doing "$ runScript -r kancolle_auto.sikuli".
