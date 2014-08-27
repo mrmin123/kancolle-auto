@@ -30,8 +30,9 @@ def go_home():
     check_window()
 
     check_and_click("home.png")
-    kc_window_region.hover("senseki.png")
     kc_window_region.wait("sortie.png", 10)
+    kc_window_region.hover("senseki.png")
+    
     check_expedition()
 
 
@@ -86,7 +87,7 @@ def run_expedition(expedition):
 
 def check_expedition():
     if check_and_click("ensei_finish.png"):
-        wait_and_click("next.png", 15)
+        wait_and_click("next.png", 20)
         wait_and_click("next.png")
         kc_window_region.wait("sortie.png", 10)
 
