@@ -30,9 +30,9 @@ def go_home():
     check_window()
 
     check_and_click("home.png")
+    kc_window_region.hover("senseki.png")
     kc_window_region.wait(Pattern("sortie.png").similar(0.80), 10)
     #kc_window_region.wait("sortie.png", 10)
-    kc_window_region.hover("senseki.png")
     
     check_expedition()
 
