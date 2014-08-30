@@ -87,6 +87,7 @@ def run_expedition(expedition):
 
 
 def check_expedition():
+    time.sleep(1)
     if check_and_click("ensei_finish.png"):
         wait_and_click("next.png", 20)
         wait_and_click("next.png")
