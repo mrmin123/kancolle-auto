@@ -87,7 +87,7 @@ def run_expedition(expedition):
 
 
 def check_expedition():
-    if check_and_click(Pattern("ensei_finish.png").similar(0.80)):
+    if check_and_click("ensei_finish.png"):
         wait_and_click("next.png", 20)
         wait_and_click("next.png")
         kc_window_region.wait("sortie.png", 10)
