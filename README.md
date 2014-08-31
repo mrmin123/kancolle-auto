@@ -21,10 +21,15 @@ Usage
 2. Run this script.
 
  for windows first cd to your current sikuli dir
-  *open cmd
-  *type cd %sikuli dir%\folder name\
-  *press enter
-  *type runScript -r %script dir%\kancolle_auto.sikuli
-  *then focus on your kancolle viewer or gui where you play kancolle
-  
-  * just doing "$ runScript -r kancolle_auto.sikuli".
+ 
+ * open cmd
+
+ * type cd %sikuli dir%\folder name\
+
+ * press enter
+
+ * type runScript -r %script dir%\kancolle_auto.sikuli
+
+ * then focus on your kancolle viewer or gui where you play kancolle
+
+ * just doing "$ runScript -r kancolle_auto.sikuli".
