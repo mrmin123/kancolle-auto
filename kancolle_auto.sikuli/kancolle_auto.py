@@ -6,7 +6,8 @@ import expedition as expedition_module
 
 # mapping from expedition id to suitable fleet id for the expedition.
 expedition_id_fleet_map = {3: 2,
-                           5: 3}
+                           5: 3,
+                          21: 4}
 running_expedition_list = []
 kc_window_region = None
 
@@ -31,7 +32,7 @@ def go_home():
 
     check_and_click("home.png")
     kc_window_region.hover("senseki.png")
-    kc_window_region.wait(Pattern("sortie.png").similar(0.80), 10)
+    kc_window_region.wait(Pattern("sortie.png").similar(0.80), 15)
     #kc_window_region.wait("sortie.png", 10)
     
     check_expedition()
@@ -40,6 +41,7 @@ def go_home():
 def check_window():
     global kc_window_region
 
+    switchApp("KanColleTool Viewer")
     switchApp("KanColleTool Viewer")
     switchApp("KanColleViewer!")
     if not kc_window_region:
@@ -76,11 +78,13 @@ def run_expedition(expedition):
         time.sleep(1)
     if not kc_window_region.exists("fleet_busy.png"):
         kc_window_region.click("ensei_start.png")
-        kc_window_region.wait("exp_started.png", 10)
+        kc_window_region.hover("senseki.png")#edit ko
+        kc_window_region.wait("exp_started.png", 15)
         expedition.start()
         print expedition, "successfully started"
         running_expedition_list.append(expedition)
         time.sleep(4)
+        
     else:
         print "No fleets were aveilable for this expedition."
         kc_window_region.click("ensei_area_01.png")
@@ -88,10 +92,11 @@ def run_expedition(expedition):
 
 def check_expedition():
     time.sleep(1)
+    kc_window_region.hover("senseki.png")#edit ko
     if check_and_click("ensei_finish.png"):
         wait_and_click("next.png", 20)
-        wait_and_click("next.png")
-        kc_window_region.wait("sortie.png", 10)
+        wait_and_click("next.png", 10)
+        kc_window_region.wait("sortie.png", 15)
 
         check_expedition()
 
