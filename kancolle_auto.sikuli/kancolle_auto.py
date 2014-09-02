@@ -44,6 +44,7 @@ def check_window():
     switchApp("KanColleTool Viewer")
     switchApp("KanColleTool Viewer")
     switchApp("KanColleViewer!")
+    switchApp("KanColleViewer!")
     if not kc_window_region:
         kc_window_region = App.focusedWindow()
 
@@ -78,7 +79,7 @@ def run_expedition(expedition):
         time.sleep(1)
     if not kc_window_region.exists("fleet_busy.png"):
         kc_window_region.click("ensei_start.png")
-        kc_window_region.hover("senseki.png")#edit ko
+        kc_window_region.hover("senseki.png")#added so mouse wont obstruct with exp_started.png and would not change color
         kc_window_region.wait("exp_started.png", 15)
         expedition.start()
         print expedition, "successfully started"
@@ -92,11 +93,11 @@ def run_expedition(expedition):
 
 def check_expedition():
     time.sleep(1)
-    kc_window_region.hover("senseki.png")#edit ko
-    if check_and_click("ensei_finish.png"):
+    kc_window_region.hover("senseki.png")#added
+    if check_and_click("expedition_finish.png"):
         wait_and_click("next.png", 20)
-        wait_and_click("next.png", 10)
-        kc_window_region.wait("sortie.png", 15)
+        wait_and_click("next.png", 5)
+        kc_window_region.wait("sortie.png", 20)
 
         check_expedition()
 
