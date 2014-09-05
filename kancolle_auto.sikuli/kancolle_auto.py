@@ -5,9 +5,9 @@ import expedition as expedition_module
 
 
 # mapping from expedition id to suitable fleet id for the expedition.
-expedition_id_fleet_map = {3: 2,
-                           5: 3,
-                          21: 4}
+expedition_id_fleet_map = {3: 3,
+                           5: 4,
+                          20: 2}
 running_expedition_list = []
 kc_window_region = None
 
@@ -95,8 +95,8 @@ def check_expedition():
     time.sleep(1)
     kc_window_region.hover("senseki.png")#added
     if check_and_click("expedition_finish.png"):
+        wait_and_click("next.png", 30)
         wait_and_click("next.png", 20)
-        wait_and_click("next.png", 5)
         kc_window_region.wait("sortie.png", 20)
 
         check_expedition()
