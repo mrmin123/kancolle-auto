@@ -17,6 +17,8 @@ This tool is developed and successfully tested on Ubuntu, Archlinux, Gentoo and 
 Usage
 =====
 
+install sikuli select both pack 1 and 2
+
 1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) (if you use other viewers or play in browser - just focus necessary window after see yellow Sikuli splash) and go to port (main screen).
 2. Run this script.
 
