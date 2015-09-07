@@ -27,6 +27,7 @@ expedition_id_fleet_map = {
 running_expedition_list = []
 fleet_returned = [True, True, True]
 kc_window = None
+next_action = ''
 
 def check_and_click(pic):
     if kc_window.exists(pic):
@@ -144,27 +145,27 @@ def run_expedition(expedition):
     sleep(1)
     kc_window.click(expedition.name_pict)
     sleep(1)
+    for fleet, exp in expedition_id_fleet_map.iteritems():
+        if exp == expedition.id:
+            fleet_id = fleet
     # If the expedition can't be selected, it's either running or just returned
     if not kc_window.exists("decision.png"):
+        fleet_returned[fleet_id - 2] = False
         if kc_window.exists("expedition_time_complete.png"):
             # Expedition just returned
             expedition.check_later(0, -1) # set the check_later time to now
             log_warning("Expedition just returned:  %s" % expedition)
-            return
         else:
             # Expedition is already running
             expedition_timer = find("expedition_timer.png").right(80).text()
             expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
             running_expedition_list.append(expedition)
             log_warning("Expedition is already running:  %s" % expedition)
-            return
+        return
     kc_window.hover("senseki.png")
     kc_window.click("decision.png")
     kc_window.hover("senseki.png")
     sleep(1)
-    for fleet, exp in expedition_id_fleet_map.iteritems():
-        if exp == expedition.id:
-            fleet_id = fleet
     log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition.id))
     # Select fleet (no need if fleet is 2 as it's selected by default)
     if fleet_id != 2:
@@ -194,6 +195,15 @@ def run_expedition(expedition):
         expedition.check_later(0, 10)
         kc_window.click("ensei_area_01.png")
 
+def check_soonest():
+    global running_expedition_list, next_action
+    for expedition in running_expedition_list:
+        if next_action == '':
+            next_action = expedition.end_time
+        else:
+            if expedition.end_time < next_action:
+                next_action = expedition.end_time
+
 def init():
     log_success("Starting kancolle_auto")
     # define expedition list
@@ -216,4 +226,6 @@ while True:
     if True in fleet_returned:
         go_expedition()
         run_expedition(expedition)
+    check_soonest()
+    log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
     sleep(10)
