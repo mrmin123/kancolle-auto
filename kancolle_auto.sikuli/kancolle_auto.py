@@ -7,18 +7,22 @@ import expedition as expedition_module #fixed ImportError: No module named exped
 from util import log_msg, log_success, log_warning, log_error
 
 Settings.OcrTextRead = True
+WAITLONG = 60
+
+# START USER VARIABLES
 
 #PROGRAM = "KanColleTool Viewer"
 #PROGRAM = "KanColleViewer!""
 PROGRAM = "Chrome"
-WAITLONG = 60
 
-# mapping from expedition id to suitable fleet id for the expedition.
+# mapping fleet id to expedition id
 expedition_id_fleet_map = {
     2: 2,
     3: 5,
     4: 21
 }
+
+# END USER VARIABLES
 
 running_expedition_list = []
 fleet_returned = [True, True, True]
