@@ -28,6 +28,7 @@ running_expedition_list = []
 fleet_returned = [True, True, True]
 kc_window = None
 next_action = ''
+idle = False
 
 def check_and_click(pic):
     if kc_window.exists(pic):
@@ -45,6 +46,9 @@ def wait_and_click(pic, time=0):
 # Focus on the defined KanColle app
 def focus_window():
     global kc_window
+    # wake up screen if computer's been idle!
+    kc_window.mouseMove(Location(1,1))
+    kc_window.mouseMove(Location(0,0))
     log_msg("Focus on KanColle!")
     switchApp(PROGRAM)
     kc_window = App.focusedWindow()
@@ -88,7 +92,8 @@ def check_expedition():
             fleet_returned[2] = True
             fleet_id = 4
         # Remove the associated expedition from running_expedition_list
-        running_expedition_list.remove(expedition_id_fleet_map[fleet_id])
+        if expedition_id_fleet_map[fleet_id] in running_expedition_list:
+            running_expedition_list.remove(expedition_id_fleet_map[fleet_id])
         log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click("next.png")
         kc_window.wait("sortie.png", WAITLONG)
@@ -221,11 +226,14 @@ while True:
     for expedition in running_expedition_list:
         now_time = datetime.datetime.now()
         if now_time > expedition.end_time:
+            idle = False
             log_msg("Checking for return of expedition %s" % expedition.id)
             go_home()
     if True in fleet_returned:
         go_expedition()
         run_expedition(expedition)
-    check_soonest()
-    log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
+    if idle == False:
+        check_soonest()
+        log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
+        idle = True
     sleep(10)
