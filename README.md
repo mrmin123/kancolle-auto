@@ -1,37 +1,38 @@
 Description
-=============
+===========
 
-Automation tool for [Kantai Collection](http://www.dmm.com/netgame_s/kancolle)
+Automation tool for [Kantai Collection](http://www.dmm.com/netgame_s/kancolle) because seriously, fuck this game.
 
-Dependency
-==========
+Some additional features:
+* Determines how much time is remaining in an expedition that's already been sent out before the script was started
+* Knows which expeditions have come back
+* Improved error (but not perfect) catching
 
-You need to install tools listed below.
+Dependencies
+============
 
-* Python 2.x
-* Sikuli (strongly recommended use 1.0.x instead 1.1.x)
-* java jre(latest)
+You need the following at a minimum.
 
-This tool is developed and successfully tested on Ubuntu, Archlinux, Gentoo and Windows. But it should run on the other environment too.
+* Python 2.7.x
+* Sikuli 1.0.x (not 1.1.x!) with options 2 and 5
+* Java JRE 8
 
-Usage
-=====
+You may need to install separate programs depending on your environment (covered in next section).
 
-install sikuli select both pack 1 and 2
+This tool was developed and tested on Windows and Ubuntu. No guarantee that it will run on other environments!
 
-1. Open KanColle viewer from [KanColle Tools](https://github.com/KanColleTool/KanColleTool) (if you use other viewers or play in browser - just focus necessary window after see yellow Sikuli splash) and go to port (main screen).
-2. Run this script.
+Installation and Usage
+======================
 
- for windows first cd to your current sikuli dir
- 
- * open cmd
+1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
+    * Make sure that you have the `tessdata` table in the `libs` folder of your Sikuli directory. If it's missing, try re-installing Sikuli with options 1 and 5 checked, run the IDE (this should generate the `tessdata` folder), and then move it out of the `libs` folder, then reinstall Sikuli with options 2 and 5 checked
+2. Clone this project somewhere
+3. Modify `kancolle_auto.py` to fit your expedition needs
+4. Open KanColle in your favorite program (default: Chrome) and go to the Home screen
 
- * type cd %sikuli dir%\folder name\
+###Windows
+* Run kancolle_auto from the command prompt: `java -jar <path_to_sikuli>\sikuli-script.jar -r <path_to_kancolle_auto>\kancolle_auto.sikuli`
 
- * press enter
-
- * type runScript -r %script dir%\kancolle_auto.sikuli
-
- * then focus on your kancolle viewer or gui where you play kancolle
-
- * just doing "$ runScript -r kancolle_auto.sikuli".
+###Ubuntu
+* May require additional packages: `apt-get install wmctrl xdotool`
+* Run kancolle_auto from the terminal: `java -jar <path_to_sikuli/sikuli-script.jar -r <path_to_kancolle_auto>/kancolle_auto.sikuli`
