@@ -46,12 +46,12 @@ def wait_and_click(pic, time=0):
 # Focus on the defined KanColle app
 def focus_window():
     global kc_window
-    # wake up screen if computer's been idle!
-    kc_window.mouseMove(Location(1,1))
-    kc_window.mouseMove(Location(0,0))
     log_msg("Focus on KanColle!")
     switchApp(PROGRAM)
     kc_window = App.focusedWindow()
+    # wake up screen if computer's been idle!
+    kc_window.mouseMove(Location(1,1))
+    kc_window.mouseMove(Location(0,0))
     sleep(2)
 
 # Switch to KanColle app and make sure to go home screen
