@@ -154,7 +154,7 @@ def run_expedition(expedition):
         else:
             # Expedition is already running
             expedition_timer = find("expedition_timer.png").right(80).text()
-            expedition.check_later(expedition_timer[0:2], expedition_timer[3:5])
+            expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
             running_expedition_list.append(expedition)
             log_warning("Expedition is already running:  %s" % expedition)
             return
