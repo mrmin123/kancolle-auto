@@ -231,7 +231,9 @@ while True:
             go_home()
     if True in fleet_returned:
         go_expedition()
-        run_expedition(expedition)
+        for fleet_id, fleet_status in enumerate(fleet_returned):
+            if fleet_status == True:
+                run_expedition(expedition_id_fleet_map[fleet_id + 2])
     if idle == False:
         check_soonest()
         log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
