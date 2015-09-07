@@ -165,7 +165,7 @@ def run_expedition(expedition):
     for fleet, exp in expedition_id_fleet_map.iteritems():
         if exp == expedition.id:
             fleet_id = fleet
-    log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition))
+    log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition.id))
     # Select fleet (no need if fleet is 2 as it's selected by default)
     if fleet_id != 2:
         fleet_name = "fleet_%s.png" % fleet_id
