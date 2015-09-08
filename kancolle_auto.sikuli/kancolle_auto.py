@@ -24,6 +24,7 @@ expedition_id_fleet_map = {
 
 # END USER VARIABLES
 
+expedition_list = None
 running_expedition_list = []
 fleet_returned = [True, True, True]
 kc_window = None
@@ -49,9 +50,10 @@ def focus_window():
     log_msg("Focus on KanColle!")
     switchApp(PROGRAM)
     kc_window = App.focusedWindow()
-    # wake up screen if computer's been idle!
-    kc_window.mouseMove(Location(1,1))
-    kc_window.mouseMove(Location(0,0))
+    # Wake up screen if computer's been idle!
+    # Would cause issues when (0,0) to (1,1) - windows focus issue??
+    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+    kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
     sleep(2)
 
 # Switch to KanColle app and make sure to go home screen
@@ -63,7 +65,8 @@ def go_home():
     # Already at main window... refresh it to check for expeditions
     if not check_and_click("home_side.png"):
         check_and_click("supply_main.png")
-        sleep(5)
+        kc_window.hover("senseki_off.png")
+        sleep(2)
         check_and_click("home_side.png")
     kc_window.hover("senseki_off.png")
     kc_window.wait("sortie.png", WAITLONG)
@@ -128,6 +131,8 @@ def resupply():
 def resupply_action():
     global kc_window
     if kc_window.exists(Pattern("supply_all.png").exact()):
+        kc_window.hover("supply_all.png") # because the next click doesn't work sometimes...
+        sleep(1)
         kc_window.click("supply_all.png")
         sleep(1)
         wait_and_click("supply_available.png")
@@ -137,6 +142,7 @@ def resupply_action():
 # Navigate to Expedition menu
 def go_expedition():
     global kc_window
+    log_msg("Navigating to Expedition menu!")
     kc_window.hover("senseki_off.png")
     wait_and_click("sortie.png", WAITLONG)
     wait_and_click("expedition.png", WAITLONG)
@@ -167,10 +173,8 @@ def run_expedition(expedition):
             running_expedition_list.append(expedition)
             log_warning("Expedition is already running:  %s" % expedition)
         return
-    kc_window.hover("senseki.png")
     kc_window.click("decision.png")
-    kc_window.hover("senseki.png")
-    sleep(1)
+    sleep(3)
     log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition.id))
     # Select fleet (no need if fleet is 2 as it's selected by default)
     if fleet_id != 2:
@@ -187,13 +191,13 @@ def run_expedition(expedition):
             run_expedition(expedition)
             return
         kc_window.click("ensei_start.png")
-        kc_window.hover("senseki.png")
+        sleep(3)
         kc_window.wait("exp_started.png", 300)
         expedition.start()
         running_expedition_list.append(expedition)
         fleet_returned[fleet_id - 2] = False
         log_success("Expedition sent!: %s" % expedition)
-        sleep(5)
+        sleep(3)
     else:
         # Fleet's being used for some reason... check back later
         log_error("Fleet not available. Check back later!")
@@ -202,6 +206,7 @@ def run_expedition(expedition):
 
 def check_soonest():
     global running_expedition_list, next_action
+    next_action = '' # reset
     for expedition in running_expedition_list:
         if next_action == '':
             next_action = expedition.end_time
@@ -210,6 +215,7 @@ def check_soonest():
                 next_action = expedition.end_time
 
 def init():
+    global expedition_list
     log_success("Starting kancolle_auto")
     # define expedition list
     expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.values())
@@ -219,21 +225,27 @@ def init():
     for expedition in expedition_list:
         run_expedition(expedition)
 
-
 # initialize kancolle_auto
 init()
+log_msg("Initial checks and commands complete. Starting loop.")
 while True:
     for expedition in running_expedition_list:
         now_time = datetime.datetime.now()
+        # Check for returning fleets based on stored end time of expeditions
         if now_time > expedition.end_time:
             idle = False
             log_msg("Checking for return of expedition %s" % expedition.id)
             go_home()
+    # If there are fleets ready to go, go start their assigned expeditions
     if True in fleet_returned:
         go_expedition()
         for fleet_id, fleet_status in enumerate(fleet_returned):
             if fleet_status == True:
-                run_expedition(expedition_id_fleet_map[fleet_id + 2])
+                for expedition in expedition_list:
+                    if expedition.id == expedition_id_fleet_map[fleet_id + 2]:
+                        run_expedition(expedition)
+    # If fleets have been sent out and idle period is beginning, let the user know
+    # when the next scripted action will occur
     if idle == False:
         check_soonest()
         log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
