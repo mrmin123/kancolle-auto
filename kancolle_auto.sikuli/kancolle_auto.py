@@ -16,17 +16,23 @@ WAITLONG = 60
 PROGRAM = "Google Chrome"
 
 # mapping fleet id to expedition id
+'''
 expedition_id_fleet_map = {
     2: 2,
     3: 5,
     4: 21
+}
+'''
+expedition_id_fleet_map = {
+    2: 3,
+    3: 6
 }
 
 # END USER VARIABLES
 
 expedition_list = None
 running_expedition_list = []
-fleet_returned = [True, True, True]
+fleet_returned = [False, False, False]
 kc_window = None
 next_action = ''
 idle = False
@@ -88,21 +94,19 @@ def go_home():
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_list, fleet_returned
+    global kc_window, expedition_id_fleet_map, expedition_list, fleet_returned
     log_msg("Are there returning expeditions to receive?")
     kc_window.hover("senseki_off.png")
     if check_and_click("expedition_finish.png"):
         wait_and_click("next.png", WAITLONG)
-        # Which fleet came back?
-        if kc_window.exists(Pattern("returned_fleet2.png").exact()):
-            fleet_returned[0] = True
-            fleet_id = 2
-        elif kc_window.exists(Pattern("returned_fleet3.png").exact()):
-            fleet_returned[1] = True
-            fleet_id = 3
-        elif kc_window.exists(Pattern("returned_fleet4.png").exact()):
-            fleet_returned[2] = True
-            fleet_id = 4
+        # Identify which fleet came back
+        if kc_window.exists(Pattern("returned_fleet2.png").exact()): fleet_id = 2
+        elif kc_window.exists(Pattern("returned_fleet3.png").exact()): fleet_id = 3
+        elif kc_window.exists(Pattern("returned_fleet4.png").exact()): fleet_id = 4
+        # If fleet has an assigned expedition, set its return status to True.
+        # Otherwise leave it False, since the user might be using it
+        if fleet_id in expedition_id_fleet_map:
+            fleet_returned[fleet_id - 2] = True
         # Remove the associated expedition from running_expedition_list
         for expedition in running_expedition_list:
             if expedition.id == expedition_id_fleet_map[fleet_id]:
@@ -178,11 +182,13 @@ def run_expedition(expedition):
             log_warning("Expedition just returned:  %s" % expedition)
         else:
             # Expedition is already running
-            expedition_timer = find("expedition_timer.png").right(80).text()
+            expedition_timer_raw = find("expedition_timer.png").right(80).text()
             # In case OCR grabs the wrong characters...
+            expedition_timer = list(expedition_timer_raw)
             expedition_timer[2] = ":"
             expedition_timer[5] = ":"
-            expedition_timer.replace('l', '1').replace('I', '1').replace('O', '0')
+            expedition_timer = "".join(expedition_timer)
+            expedition_timer = expedition_timer.replace('l', '1').replace('I', '1').replace('O', '0')
             # Set expedition's end time as determined via OCR and add it to running list
             expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
             running_expedition_list.append(expedition)
@@ -205,6 +211,8 @@ def run_expedition(expedition):
             go_expedition()
             run_expedition(expedition)
             return
+        kc_window.hover("senseki_off.png")
+        sleep(1)
         kc_window.click("ensei_start.png")
         sleep(3)
         kc_window.wait("exp_started.png", 300)
