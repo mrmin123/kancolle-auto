@@ -13,7 +13,7 @@ WAITLONG = 60
 
 #PROGRAM = "KanColleTool Viewer"
 #PROGRAM = "KanColleViewer!""
-PROGRAM = "Chrome"
+PROGRAM = "Google Chrome"
 
 # mapping fleet id to expedition id
 expedition_id_fleet_map = {
@@ -48,12 +48,15 @@ def wait_and_click(pic, time=0):
 def focus_window():
     global kc_window
     log_msg("Focus on KanColle!")
-    switchApp(PROGRAM)
-    kc_window = App.focusedWindow()
-    # Wake up screen if computer's been idle!
+    myApp = App.focus(PROGRAM)
+    kc_window = myApp.focusedWindow()
+    # Wake screen up in case machine has been idle
     # Would cause issues when (0,0) to (1,1) - windows focus issue??
     kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
     kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
+    while not kc_window.exists(Pattern("home_main.png").exact()):
+        myApp = App.focus(PROGRAM)
+        kc_window = myApp.focusedWindow()
     sleep(2)
 
 # Switch to KanColle app and make sure to go home screen
@@ -95,8 +98,9 @@ def check_expedition():
             fleet_returned[2] = True
             fleet_id = 4
         # Remove the associated expedition from running_expedition_list
-        if expedition_id_fleet_map[fleet_id] in running_expedition_list:
-            running_expedition_list.remove(expedition_id_fleet_map[fleet_id])
+        for expedition in running_expedition_list:
+            if expedition.id == expedition_id_fleet_map[fleet_id]:
+                running_expedition_list.remove(expedition)
         log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click("next.png")
         kc_window.wait("sortie.png", WAITLONG)
