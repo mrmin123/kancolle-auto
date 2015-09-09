@@ -67,10 +67,16 @@ def go_home():
     kc_window.wait("senseki_off.png", WAITLONG)
     # Already at main window... refresh it to check for expeditions
     if not check_and_click("home_side.png"):
-        check_and_click("supply_main.png")
-        kc_window.hover("senseki_off.png")
-        sleep(2)
-        check_and_click("home_side.png")
+        if check_and_click("supply_main.png"):
+            kc_window.hover("senseki_off.png")
+            sleep(2)
+            check_and_click("home_side.png")
+        else:
+            # If the sidebar Home button or home Supply button doesn't exist,
+            # we're probably in profile/library/quests/etc screen. Hit the main
+            # buton until we're out
+            while not kc_window.exists(Pattern("supply_main.png")):
+                check_and_click("home_main.png")
     kc_window.hover("senseki_off.png")
     kc_window.wait("sortie.png", WAITLONG)
     log_success("At home!")
@@ -173,6 +179,11 @@ def run_expedition(expedition):
         else:
             # Expedition is already running
             expedition_timer = find("expedition_timer.png").right(80).text()
+            # In case OCR grabs the wrong characters...
+            expedition_timer[2] = ":"
+            expedition_timer[5] = ":"
+            expedition_timer.replace('l', '1').replace('I', '1').replace('O', '0')
+            # Set expedition's end time as determined via OCR and add it to running list
             expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
             running_expedition_list.append(expedition)
             log_warning("Expedition is already running:  %s" % expedition)
@@ -224,7 +235,6 @@ def init():
     # define expedition list
     expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.values())
     go_home()
-    resupply()
     go_expedition()
     for expedition in expedition_list:
         run_expedition(expedition)
