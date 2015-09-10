@@ -2,7 +2,6 @@
 
 import datetime
 
-
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration):
         self.id = ensei_id
@@ -20,13 +19,6 @@ class Ensei:
     def check_later(self, hours, minutes):
         self.begin_time = datetime.datetime.now()
         self.end_time = self.begin_time + datetime.timedelta(hours=hours, minutes=minutes + 1)
-
-    def ends_time(self):
-        if hasattr(self, "begin_time"):
-            return self.begin_time + self.duration
-        else:
-            return datetime.datetime.now() + self.duration
-
 
 def ensei_factory(ensei_id):
     if ensei_id == 1:
