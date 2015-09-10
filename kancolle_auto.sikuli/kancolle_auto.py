@@ -4,12 +4,8 @@ import os
 import sys
 sys.path.append(os.getcwd())
 import expedition as expedition_module
-<<<<<<< HEAD
 import combat as combat_module
 from util import check_and_click, wait_and_click, log_msg, log_success, log_warning, log_error
-=======
-from util import log_msg, log_success, log_warning, log_error
->>>>>>> origin/master
 
 Settings.OcrTextRead = True
 WAITLONG = 60
