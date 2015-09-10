@@ -17,9 +17,8 @@ PROGRAM = "Google Chrome"
 
 # mapping fleet id to expedition id
 expedition_id_fleet_map = {
-    2: 2,
-    3: 5,
-    4: 21
+    2: 3,
+    3: 6
 }
 
 #combat_fleet_mode = 0 # 2-3 (Orel cruising)
@@ -254,7 +253,6 @@ def init():
     log_success("Starting kancolle_auto")
     # define expedition list
     expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.values())
-    combat_item = combat_module.combat_factory(combat_fleet_mode)
     go_home()
     go_expedition()
     for expedition in expedition_list:
