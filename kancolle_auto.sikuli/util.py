@@ -1,5 +1,19 @@
 from time import strftime
 
+# common Sikuli actions
+def check_and_click(kc_window, pic):
+    if kc_window.exists(pic):
+        kc_window.click(pic)
+        return True
+    return False
+
+def wait_and_click(kc_window, pic, time=0):
+    if time:
+        kc_window.wait(pic, time)
+    else:
+        kc_window.wait(pic)
+    kc_window.click(pic)
+
 # log colors
 class color:
     MSG = '\033[94m'
