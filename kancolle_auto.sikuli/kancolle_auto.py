@@ -4,7 +4,6 @@ import os
 import sys
 sys.path.append(os.getcwd())#get current script working directory inside the .sikuli folder and append as sys path
 import expedition as expedition_module
-import combat as combat_module
 from util import log_msg, log_success, log_warning, log_error
 
 Settings.OcrTextRead = True
@@ -17,16 +16,10 @@ WAITLONG = 60
 PROGRAM = "Google Chrome"
 
 # mapping fleet id to expedition id
-'''
 expedition_id_fleet_map = {
     2: 2,
     3: 5,
     4: 21
-}
-'''
-expedition_id_fleet_map = {
-    2: 3,
-    3: 6
 }
 
 #combat_fleet_mode = 0 # 2-3 (Orel cruising)
