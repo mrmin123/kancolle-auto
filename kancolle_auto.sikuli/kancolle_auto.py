@@ -143,11 +143,13 @@ def resupply():
         if not check_and_click("supply_main.png"):
             check_and_click("supply_side.png")
         kc_window.wait("supply_screen.png", WAITLONG)
-        for fleet_id in expedition_id_fleet_map.keys():
-            if fleet_returned[fleet_id - 1] == True:
-                fleet_name = "fleet_%d.png" % fleet_id
-                wait_and_click(fleet_name)
-                sleep(1)
+        for fleet_id, returned in enumerate(fleet_returned):
+            if returned:
+                # If not resupplying the first fleet, navigate to correct fleet
+                if fleet_id != 0:
+                    fleet_name = "fleet_%d.png" % (fleet_id + 1)
+                    wait_and_click(fleet_name)
+                    sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
     else:
@@ -159,11 +161,13 @@ def resupply():
 def resupply_action():
     global kc_window
     if kc_window.exists(Pattern("supply_all.png").exact()):
-        kc_window.hover("supply_all.png") # because the next click doesn't work sometimes...
-        sleep(1)
-        kc_window.click("supply_all.png")
-        sleep(1)
-        wait_and_click("supply_available.png")
+        # Common point of script failure. Make robust as possible
+        while not kc_window.exists("checked.png"):
+            kc_window.hover("senseki_off.png")
+            kc_window.hover("supply_all.png")
+            kc_window.click("supply_all.png")
+            sleep(1)
+        kc_window.click("supply_available.png")
         kc_window.wait("supply_not_available.png", WAITLONG)
         sleep(1)
 
