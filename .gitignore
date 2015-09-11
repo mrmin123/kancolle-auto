@@ -40,3 +40,7 @@ nosetests.xml
 Thumbs.db
 .directory
 *$py.class
+
+Sublime files
+*.sublime-project
+*.sublime-workspace

@@ -1,4 +1,7 @@
+from sikuli import *
 from time import strftime
+
+Settings.OcrTextRead = True
 
 # common Sikuli actions
 def check_and_click(kc_window, pic):
@@ -13,6 +16,17 @@ def wait_and_click(kc_window, pic, time=0):
     else:
         kc_window.wait(pic)
     kc_window.click(pic)
+
+# custom actions
+def check_timer(kc_window, timer_img, width):
+    timer_raw = find(timer_img).right(width).text()
+    # In case OCR grabs the wrong characters...
+    timer = list(timer_raw)
+    timer[2] = ":"
+    timer[5] = ":"
+    timer = "".join(timer)
+    timer = timer.replace('l', '1').replace('I', '1').replace('O', '0')
+    return timer
 
 # log colors
 class color:

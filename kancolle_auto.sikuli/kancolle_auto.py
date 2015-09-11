@@ -5,7 +5,7 @@ import sys
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import check_and_click, wait_and_click, log_msg, log_success, log_warning, log_error
+from util import check_and_click, wait_and_click, check_timer, log_msg, log_success, log_warning, log_error
 
 Settings.OcrTextRead = True
 WAITLONG = 60
@@ -24,6 +24,9 @@ expedition_id_fleet_map = {
 
 #combat_fleet_mode = 0 # 2-3 (Orel cruising)
 combat_fleet_mode = 1 # 3-2-A (leveling)
+
+# stop at 0 = light damage, 1 = medium damage, 2 = critical damage
+combat_fleet_dmg_limit = 1
 
 # END USER VARIABLES
 
@@ -94,6 +97,7 @@ def check_expedition():
     log_msg("Are there returning expeditions to receive?")
     kc_window.hover("senseki_off.png")
     if check_and_click(kc_window, "expedition_finish.png"):
+        sleep(3)
         wait_and_click(kc_window, "next.png", WAITLONG)
         # Identify which fleet came back
         if kc_window.exists(Pattern("returned_fleet2.png").exact()): fleet_id = 2
@@ -130,7 +134,8 @@ def resupply():
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
                     fleet_name = "fleet_%d.png" % (fleet_id + 1)
-                    wait_and_click(kc_window, fleet_name)
+                    sleep(1)
+                    kc_window.click(fleet_name)
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -148,10 +153,11 @@ def resupply_action():
             kc_window.hover("senseki_off.png")
             kc_window.hover("supply_all.png")
             kc_window.click("supply_all.png")
-            sleep(1)
-        kc_window.click("supply_available.png")
+        wait_and_click(kc_window, "supply_available.png", 10)
         kc_window.wait("supply_not_available.png", WAITLONG)
         sleep(1)
+    else:
+        log_msg("Fleet is already resupplied!")
 
 # Navigate to Expedition menu
 def go_expedition():
@@ -166,10 +172,8 @@ def go_expedition():
 def run_expedition(expedition):
     global kc_window, running_expedition_list, fleet_returned
     log_msg("Let's send an expedition out!")
-    kc_window.click(expedition.area_pict)
-    sleep(1)
-    kc_window.click(expedition.name_pict)
-    sleep(1)
+    wait_and_click(kc_window, expedition.area_pict, 2)
+    wait_and_click(kc_window, expedition.name_pict, 2)
     for fleet, exp in expedition_id_fleet_map.iteritems():
         if exp == expedition.id:
             fleet_id = fleet
@@ -182,27 +186,20 @@ def run_expedition(expedition):
             log_warning("Expedition just returned:  %s" % expedition)
         else:
             # Expedition is already running
-            expedition_timer_raw = find("expedition_timer.png").right(80).text()
-            # In case OCR grabs the wrong characters...
-            expedition_timer = list(expedition_timer_raw)
-            expedition_timer[2] = ":"
-            expedition_timer[5] = ":"
-            expedition_timer = "".join(expedition_timer)
-            expedition_timer = expedition_timer.replace('l', '1').replace('I', '1').replace('O', '0')
+            expedition_timer = check_timer(kc_window, "expedition_timer.png", 80)
             # Set expedition's end time as determined via OCR and add it to
             # running_expedition_list
             expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
             running_expedition_list.append(expedition)
             log_warning("Expedition is already running:  %s" % expedition)
         return
-    kc_window.click("decision.png")
-    sleep(3)
+    wait_and_click(kc_window, "decision.png")
     log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition.id))
     # Select fleet (no need if fleet is 2 as it's selected by default)
     if fleet_id != 2:
         fleet_name = "fleet_%s.png" % fleet_id
-        kc_window.click(fleet_name)
-        sleep(1)
+        wait_and_click(kc_window, fleet_name)
+    sleep(1)
     # Make sure that the fleet is ready to go
     if not kc_window.exists("fleet_busy.png"):
         if (kc_window.exists("supply_alert.png") or kc_window.exists("supply_red_alert.png")):
@@ -213,15 +210,13 @@ def run_expedition(expedition):
             run_expedition(expedition)
             return
         kc_window.hover("senseki_off.png")
-        sleep(1)
-        kc_window.click("ensei_start.png")
-        sleep(3)
-        kc_window.wait("exp_started.png", 300)
+        wait_and_click(kc_window, "ensei_start.png")
+        kc_window.wait("exp_started.png", 30)
         expedition.start()
         running_expedition_list.append(expedition)
         fleet_returned[fleet_id - 1] = False
         log_success("Expedition sent!: %s" % expedition)
-        sleep(3)
+        sleep(1)
     else:
         # Fleet's being used for some reason... check back later
         log_error("Fleet not available. Check back later!")
@@ -239,19 +234,26 @@ def check_soonest():
                 next_action = expedition.end_time
 
 def init():
-    global kc_window, expedition_list
+    global kc_window, expedition_list, fleet_returned, dmg_counts
     log_success("Starting kancolle_auto")
-    # define expedition list
+    # Define expedition list
     expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.values())
+    # Go home, then run expeditions
     go_home()
-    #
-    combat_item = combat_module.combat_factory(kc_window, combat_fleet_mode)
-    combat_item.go_sortie()
-    exit()
-    #
     go_expedition()
     for expedition in expedition_list:
         run_expedition(expedition)
+    # Define combat item
+    combat_item = combat_module.combat_factory(kc_window, combat_fleet_mode, combat_fleet_dmg_limit)
+    # Go home, then sortie
+    go_home()
+    combat_item.go_sortie()
+    fleet_returned[0] = True
+    # Check home, resupply, then repair if needed
+    go_home()
+    resupply()
+    if combat_item.count_dmg_above_limit() > 0:
+        combat_item.go_repair()
 
 # initialize kancolle_auto
 init()
@@ -278,4 +280,4 @@ while True:
         check_soonest()
         log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
         idle = True
-    sleep(10)
+    sleep(30)
