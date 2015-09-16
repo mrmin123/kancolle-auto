@@ -1,7 +1,30 @@
 from sikuli import *
-from time import strftime
+from random import random
+from time import sleep as tsleep, strftime
 
 Settings.OcrTextRead = True
+
+# Custom sleep() function to make the sleep period more variable. Maximum
+# sleep length is 2 * sec
+def sleep(sec):
+    tsleep(sec + (sec * random()))
+
+# Custom function to get some pseudo-random value much like the above sleep()
+# function. Here in case variability is needed in a non-sleep() function. Max
+# value is 2 * integer
+def get_rand(integer):
+    return int(integer + (integer * random()))
+
+# Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
+# to fix values in case OCR grabs the wrong characters.
+def check_timer(kc_window, timer_img, width):
+    timer_raw = find(timer_img).right(width).text()
+    timer = list(timer_raw)
+    timer[2] = ":"
+    timer[5] = ":"
+    timer = "".join(timer)
+    timer = timer.replace('l', '1').replace('I', '1').replace('O', '0')
+    return timer
 
 # common Sikuli actions
 def check_and_click(kc_window, pic):
@@ -16,17 +39,6 @@ def wait_and_click(kc_window, pic, time=0):
     else:
         kc_window.wait(pic)
     kc_window.click(pic)
-
-# custom actions
-def check_timer(kc_window, timer_img, width):
-    timer_raw = find(timer_img).right(width).text()
-    # In case OCR grabs the wrong characters...
-    timer = list(timer_raw)
-    timer[2] = ":"
-    timer[5] = ":"
-    timer = "".join(timer)
-    timer = timer.replace('l', '1').replace('I', '1').replace('O', '0')
-    return timer
 
 # log colors
 class color:
