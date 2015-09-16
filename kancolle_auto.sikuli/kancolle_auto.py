@@ -21,7 +21,7 @@ expedition_id_fleet_map = {
     3: 38
 }
 
-#combat_fleet_mode = 0 # 2-3 (Orel cruising)
+#combat_fleet_mode = 0 # 2-3 (Orel cruising) NOT YET SUPPORTED
 combat_fleet_mode = 1 # 3-2-A (leveling)
 
 # stop at 0 = light damage, 1 = medium damage, 2 = critical damage
