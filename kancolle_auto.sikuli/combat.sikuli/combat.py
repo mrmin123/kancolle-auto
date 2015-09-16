@@ -23,8 +23,8 @@ class Combat:
         if self.kc_window.exists(Pattern("dmg_light.png").similar(0.95)):
             for i in self.kc_window.findAll(Pattern("dmg_light.png").similar(0.95)):
                 self.dmg_counts[0] += 1
-        if self.kc_window.exists(Pattern("dmg_medium.png").similar(0.95)):
-            for i in self.kc_window.findAll(Pattern("dmg_medium.png").similar(0.95)):
+        if self.kc_window.exists(Pattern("dmg_moderate.png").similar(0.95)):
+            for i in self.kc_window.findAll(Pattern("dmg_moderate.png").similar(0.95)):
                 self.dmg_counts[1] += 1
         if self.kc_window.exists(Pattern("dmg_critical.png").similar(0.95)):
             for i in self.kc_window.findAll(Pattern("dmg_critical.png").similar(0.95)):
@@ -94,13 +94,13 @@ class Combat:
                 self.dmg_counts[2] -= 1
                 repair_start = True
             if repair_start == False and self.combat_fleet_dmg_limit >= 1:
-                log_msg("Check for medium-damaged ships.")
-                if check_and_click(self.kc_window, Pattern("repair_dmg_medium.png").similar(0.95)):
+                log_msg("Check for moderately-damaged ships.")
+                if check_and_click(self.kc_window, Pattern("repair_dmg_moderate.png").similar(0.95)):
                     log_success("Starting repair on moderately damaged ship!")
                     self.dmg_counts[1] -= 1
                     repair_start = True
             if repair_start == False and self.combat_fleet_dmg_limit >= 0:
-                log_msg("Check for light-damaged ships.")
+                log_msg("Check for lightly-damaged ships.")
                 if check_and_click(self.kc_window, Pattern("repair_dmg_light.png").similar(0.95)):
                     log_success("Starting repair on lightly damaged ship!")
                     self.dmg_counts[0] -= 1
