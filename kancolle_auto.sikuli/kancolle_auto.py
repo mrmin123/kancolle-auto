@@ -292,6 +292,7 @@ while True:
             go_home()
     # If there are fleets ready to go, go start their assigned expeditions
     if True in fleet_returned:
+        go_home()
         go_expedition()
         for fleet_id, fleet_status in enumerate(fleet_returned):
             if fleet_status == True:
