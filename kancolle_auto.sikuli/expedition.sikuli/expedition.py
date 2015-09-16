@@ -1,5 +1,5 @@
 # Ensei (expedition) task list.
-
+from sikuli import *
 import datetime
 
 class Ensei:
