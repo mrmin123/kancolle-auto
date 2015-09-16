@@ -21,6 +21,8 @@ expedition_id_fleet_map = {
     3: 38
 }
 
+# turn combat on?
+combat = True
 #combat_fleet_mode = 0 # 2-3 (Orel cruising) NOT YET SUPPORTED
 combat_fleet_mode = 1 # 3-2-A (leveling)
 
@@ -247,8 +249,8 @@ def run_expedition(expedition):
         kc_window.click("ensei_area_01.png")
 
 def check_soonest():
-    global running_expedition_list, combat_item, next_action
-    next_action = combat_item.next_sortie_time # reset
+    global running_expedition_list, combat, combat_item, next_action
+    next_action = combat_item.next_sortie_time if combat == True else ''
     for expedition in running_expedition_list:
         if next_action == '':
             next_action = expedition.end_time
@@ -257,7 +259,7 @@ def check_soonest():
                 next_action = expedition.end_time
 
 def init():
-    global kc_window, expedition_list, fleet_returned, dmg_counts, combat_item
+    global kc_window, expedition_list, fleet_returned, combat, dmg_counts, combat_item
     log_success("Starting kancolle_auto")
     # Define expedition list
     expedition_list = map(expedition_module.ensei_factory, expedition_id_fleet_map.values())
@@ -266,18 +268,19 @@ def init():
     go_expedition()
     for expedition in expedition_list:
         run_expedition(expedition)
-    # Define combat item
-    combat_item = combat_module.combat_factory(kc_window, combat_fleet_mode, combat_fleet_dmg_limit)
-    # Go home, then sortie
-    go_home()
-    combat_item.go_sortie()
-    fleet_returned[0] = True
-    # Check home, resupply, then repair if needed
-    go_home()
-    resupply()
-    fleet_returned[0] = False
-    if combat_item.count_dmg_above_limit() > 0:
-        combat_item.go_repair()
+    if combat == True:
+        # Define combat item
+        combat_item = combat_module.combat_factory(kc_window, combat_fleet_mode, combat_fleet_dmg_limit)
+        # Go home, then sortie
+        go_home()
+        combat_item.go_sortie()
+        fleet_returned[0] = True
+        # Check home, resupply, then repair if needed
+        go_home()
+        resupply()
+        fleet_returned[0] = False
+        if combat_item.count_dmg_above_limit() > 0:
+            combat_item.go_repair()
 
 # initialize kancolle_auto
 init()
@@ -300,17 +303,18 @@ while True:
                     if expedition.id == expedition_id_fleet_map[fleet_id + 1]:
                         run_expedition(expedition)
     # If combat timer is up, go sortie
-    if datetime.datetime.now() > combat_item.next_sortie_time:
-        go_home()
-        combat_item.go_sortie()
-        fleet_returned[0] = True
-        go_home()
-        resupply()
-        fleet_returned[0] = False
-        if combat_item.count_dmg_above_limit() > 0:
-            combat_item.go_repair()
-        go_home()
-        idle = False
+    if combat == True:
+        if datetime.datetime.now() > combat_item.next_sortie_time:
+            go_home()
+            combat_item.go_sortie()
+            fleet_returned[0] = True
+            go_home()
+            resupply()
+            fleet_returned[0] = False
+            if combat_item.count_dmg_above_limit() > 0:
+                combat_item.go_repair()
+            go_home()
+            idle = False
     # If fleets have been sent out and idle period is beginning, let the user
     # know when the next scripted action will occur
     if idle == False:
