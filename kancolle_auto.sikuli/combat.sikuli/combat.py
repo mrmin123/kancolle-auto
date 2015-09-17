@@ -65,7 +65,7 @@ class Combat:
             check_and_click(self.kc_window, "combat_nb_retreat.png")
             wait_and_click(self.kc_window, "next.png", 10)
             sleep(4)
-            dmg_counts = self.tally_damages()
+            self.tally_damages()
             wait_and_click(self.kc_window, "next.png", 10)
             sleep(2)
             if not self.kc_window.exists("combat_retreat.png"):
@@ -75,9 +75,10 @@ class Combat:
         else:
             if self.kc_window.exists("combat_nogo_repair.png"):
                 log_warning("Cannot sortie due to ships under repair!")
+                # What to do after this triggers?
             elif self.kc_window.exists("combat_nogo_supply.png"):
                 log_warning("Cannot sortie due to ships needing supply!")
-        return dmg_counts
+        return self.dmg_counts
 
     def go_repair(self):
         log_msg("Navigating to Repair menu!")
