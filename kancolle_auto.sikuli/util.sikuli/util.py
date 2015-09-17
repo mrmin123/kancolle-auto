@@ -9,11 +9,11 @@ Settings.OcrTextRead = True
 def sleep(sec):
     tsleep(sec + (sec * random()))
 
-# Custom function to get some pseudo-random value much like the above sleep()
-# function. Here in case variability is needed in a non-sleep() function. Max
+# Custom function to get some pseudo-random value. Here in case variability is
+# needed in a non-sleep() function. Maximum return is base + flex.
 # value is 2 * integer
-def get_rand(integer):
-    return int(integer + (integer * random()))
+def get_rand(base, flex):
+    return int(base + (flex * random()))
 
 # Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
 # to fix values in case OCR grabs the wrong characters.

@@ -71,7 +71,7 @@ class Combat:
             if not self.kc_window.exists("combat_retreat.png"):
                 wait_and_click(self.kc_window, "next_alt.png", 10)
             wait_and_click(self.kc_window, "combat_retreat.png", 10)
-            self.next_sortie_time_set(0, get_rand(5))
+            self.next_sortie_time_set(0, get_rand(1, 5))
         else:
             if self.kc_window.exists("combat_nogo_repair.png"):
                 log_warning("Cannot sortie due to ships under repair!")
