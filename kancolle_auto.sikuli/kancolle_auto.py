@@ -281,6 +281,7 @@ def init():
         fleet_returned[0] = False
         if combat_item.count_dmg_above_limit() > 0:
             combat_item.go_repair()
+        log_success("Next sortie!: %s" % combat)
 
 # initialize kancolle_auto
 init()
@@ -301,6 +302,7 @@ while True:
             if fleet_status == True:
                 for expedition in expedition_list:
                     if expedition.id == expedition_id_fleet_map[fleet_id + 1]:
+                        idle = False
                         run_expedition(expedition)
     # If combat timer is up, go sortie
     if combat == True:
@@ -313,6 +315,7 @@ while True:
             fleet_returned[0] = False
             if combat_item.count_dmg_above_limit() > 0:
                 combat_item.go_repair()
+            log_success("Next sortie!: %s" % combat)
             go_home()
             idle = False
     # If fleets have been sent out and idle period is beginning, let the user

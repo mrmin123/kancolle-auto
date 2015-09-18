@@ -17,6 +17,7 @@ class Combat:
         self.combat_fleet_dmg_limit = combat_fleet_dmg_limit
         self.dmg_counts = [0, 0, 0]
 
+    # Tally damage state of fleet
     def tally_damages(self):
         log_msg("Checking fleet condition...")
         self.dmg_counts = [0, 0, 0]
@@ -32,6 +33,8 @@ class Combat:
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.dmg_counts[0], self.dmg_counts[1], self.dmg_counts[2]))
         return self.dmg_counts
 
+    # Return number of ships damaged above threshold; relies on tally_damages()
+    # for a reliable count
     def count_dmg_above_limit(self):
         count = 0
         for i, dmg_count in enumerate(self.dmg_counts):
@@ -39,6 +42,7 @@ class Combat:
                 count += dmg_count
         return count
 
+    # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         log_msg("Navigating to Sortie menu!")
         self.kc_window.click("sortie.png")
@@ -71,15 +75,21 @@ class Combat:
             if not self.kc_window.exists("combat_retreat.png"):
                 wait_and_click(self.kc_window, "next_alt.png", 10)
             wait_and_click(self.kc_window, "combat_retreat.png", 10)
-            self.next_sortie_time_set(0, get_rand(1, 5))
+            if self.count_dmg_above_limit() == 0:
+                # If fleet damage is good to go for another deployment, set the
+                # next sortie timer relatively low
+                self.next_sortie_time_set(0, get_rand(1, 3))
         else:
             if self.kc_window.exists("combat_nogo_repair.png"):
                 log_warning("Cannot sortie due to ships under repair!")
-                # What to do after this triggers?
+                self.next_sortie_time_set(0, get_rand(5, 5))
+                # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists("combat_nogo_supply.png"):
                 log_warning("Cannot sortie due to ships needing supply!")
         return self.dmg_counts
 
+    # Navigate to repair menu and repair any ship above damage threshold. Sets
+    # next sortie time accordingly
     def go_repair(self):
         log_msg("Navigating to Repair menu!")
         repair_time_limit = 3
@@ -109,9 +119,14 @@ class Combat:
             if repair_start == True:
                 repair_timer = check_timer(self.kc_window, "repair_timer.png", 80)
                 if int(repair_timer[0:2]) >= repair_time_limit:
+                    # Use bucket if the repair time is longer than desired
+                    log_success("Repair time too long... using bucket!")
                     self.kc_window.click("repair_bucket_switch.png")
                     self.next_sortie_time_set(0, 0)
                 else:
+                    # Try setting next sortie time according to repair timer
+                    log_success("Repair should be done at %s" % (datetime.datetime.now()
+                        + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
                     self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
                 wait_and_click(self.kc_window, "repair_start.png", 10)
                 wait_and_click(self.kc_window, "repair_start_confirm.png", 10)
@@ -119,10 +134,12 @@ class Combat:
             log_warning("Cannot repair; docks are full.")
 
     def __str__(self):
-        return 'Combat (ETA %s)' % (self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+        return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
 
+    # Set next sortie time; if the proposed time is longer than the previously
+    # stored time, replace. Otherwise, keep the older (longer) one
     def next_sortie_time_set(self, hours, minutes):
-        proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes + 1)
+        proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
         if proposed_time > self.next_sortie_time:
             self.next_sortie_time = proposed_time
 
