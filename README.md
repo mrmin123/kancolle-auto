@@ -17,6 +17,8 @@ Some features added on top of the [other](https://github.com/amylase/kancolle-au
 * Variability added to actions to hopefully make the tool more difficult to detect
     * Uses random menu items to refresh Home screen
     * Wait/sleep timers are pseudo-random
+* Console timer indicates when next automated-action will occur - the user can interact with Kancolle during this time (set Quests, do Development/Construction, re-organize fleet, etc)
+    * When script starts up again, it can navigate back to the Home screen and continue its automated actions as long as it doesn't find itself in a Sortie when it comes back
 * Improved error catching and handling
 
 Known Issues
