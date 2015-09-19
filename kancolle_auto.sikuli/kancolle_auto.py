@@ -281,7 +281,7 @@ def init():
         fleet_returned[0] = False
         if combat_item.count_dmg_above_limit() > 0:
             combat_item.go_repair()
-        log_success("Next sortie!: %s" % combat)
+        log_success("Next sortie!: %s" % combat_item)
 
 # initialize kancolle_auto
 init()
@@ -315,7 +315,7 @@ while True:
             fleet_returned[0] = False
             if combat_item.count_dmg_above_limit() > 0:
                 combat_item.go_repair()
-            log_success("Next sortie!: %s" % combat)
+            log_success("Next sortie!: %s" % combat_item)
             go_home()
             idle = False
     # If fleets have been sent out and idle period is beginning, let the user
