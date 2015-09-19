@@ -47,6 +47,7 @@ This tool was developed and tested on Windows and Ubuntu, and on Chrome with the
 Installation and Usage
 ======================
 
+### Windows
 1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
     * Make sure that you have the `tessdata` folder in the `libs` folder of your Sikuli directory. If it's missing, try re-installing Sikuli with options 1 and 5 checked, run the IDE (this should generate the `tessdata` folder), and then move it out of the `libs` folder, then reinstall Sikuli with options 2 and 5 checked
 2. Clone this project somewhere
@@ -54,7 +55,7 @@ Installation and Usage
 4. Open KanColle in your favorite program (default: Chrome) and go to the Home screen
 5. Run kancolle_auto from the command prompt: `java -jar <path_to_sikuli>\sikuli-script.jar -r <path_to_kancolle_auto>\kancolle_auto.sikuli`
 
-###Ubuntu
+### Ubuntu
 1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
     * Make sure that you have the `tessdata` folder in the `/usr/local/share/` directory. I actually have no idea how to generate this in Ubuntu. I had to copy over the folder from my Windows install.
 2. Install additional packages: `apt-get install wmctrl xdotool`
