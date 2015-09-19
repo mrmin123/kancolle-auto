@@ -231,7 +231,7 @@ def run_expedition(expedition):
 
 def check_soonest():
     global running_expedition_list, combat_item, next_action, settings
-    next_action = combat_item.next_sortie_time if combat == True else ''
+    next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
     for expedition in running_expedition_list:
         if next_action == '':
             next_action = expedition.end_time
