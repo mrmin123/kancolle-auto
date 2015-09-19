@@ -20,9 +20,9 @@ def get_rand(base, flex):
 def check_timer(kc_window, timer_img, width):
     timer_raw = find(timer_img).right(width).text()
     timer = list(timer_raw)
-    timer[2] = ":"
-    timer[5] = ":"
-    timer = "".join(timer)
+    timer[2] = ':'
+    timer[5] = ':'
+    timer = ''.join(timer)
     timer = timer.replace('l', '1').replace('I', '1').replace('O', '0').replace('[', '1').replace(']', '1')
     return timer
 

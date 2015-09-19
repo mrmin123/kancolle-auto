@@ -10,7 +10,7 @@ class Ensei:
         self.duration = duration
 
     def __str__(self):
-        return 'Expedition %d (ETA %s)' % (self.id, self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
+        return "Expedition %d (ETA %s)" % (self.id, self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
 
     def start(self):
         self.begin_time = datetime.datetime.now()
