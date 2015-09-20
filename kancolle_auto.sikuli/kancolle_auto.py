@@ -130,9 +130,11 @@ def resupply():
     log_msg("Lets resupply fleets!")
     if (True in fleet_returned):
         kc_window.hover('senseki_off.png')
-        if not check_and_click(kc_window, 'supply_main.png'):
-            check_and_click(kc_window, 'supply_side.png')
-        kc_window.wait('supply_screen.png', WAITLONG)
+        # Check if we're already at resupply screen
+        if not kc_window.exists('supply_screen.png'):
+            if not check_and_click(kc_window, 'supply_main.png'):
+                check_and_click(kc_window, 'supply_side.png')
+            kc_window.wait('supply_screen.png', WAITLONG)
         for fleet_id, returned in enumerate(fleet_returned):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
@@ -211,6 +213,7 @@ def run_expedition(expedition):
         if (kc_window.exists('supply_alert.png') or kc_window.exists('supply_red_alert.png')):
             log_warning("Fleet %s needs resupply!" % fleet_id)
             fleet_returned[fleet_id - 1] = True
+            check_and_click(kc_window, 'supply_side.png')
             resupply()
             go_expedition()
             run_expedition(expedition)
