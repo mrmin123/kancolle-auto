@@ -62,19 +62,19 @@ class Combat:
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Starting sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
-            wait_and_click(self.kc_window, 'compass.png', 10)
-            wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').similar(0.90), 10)
+            wait_and_click(self.kc_window, 'compass.png', 60)
+            wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').similar(0.90), 60)
             while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
                 sleep(15)
             check_and_click(self.kc_window, 'combat_nb_retreat.png')
-            wait_and_click(self.kc_window, 'next.png', 10)
+            wait_and_click(self.kc_window, 'next.png', 30)
             sleep(4)
             self.tally_damages()
-            wait_and_click(self.kc_window, 'next.png', 10)
+            wait_and_click(self.kc_window, 'next.png', 30)
             sleep(2)
             if not self.kc_window.exists('combat_retreat.png'):
-                wait_and_click(self.kc_window, 'next_alt.png', 10)
-            wait_and_click(self.kc_window, 'combat_retreat.png', 10)
+                wait_and_click(self.kc_window, 'next_alt.png', 30)
+            wait_and_click(self.kc_window, 'combat_retreat.png', 30)
             if self.count_damage_above_limit() == 0:
                 # If fleet damage is good to go for another deployment, set the
                 # next sortie timer relatively low
