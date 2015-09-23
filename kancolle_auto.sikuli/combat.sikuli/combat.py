@@ -63,7 +63,7 @@ class Combat:
             log_success("Starting sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
             wait_and_click(self.kc_window, 'compass.png', 60)
-            wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').exact()), 60)
+            wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').exact(), 60)
             while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
                 sleep(15)
             check_and_click(self.kc_window, 'combat_nb_retreat.png')
