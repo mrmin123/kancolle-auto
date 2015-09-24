@@ -107,14 +107,13 @@ def check_expedition():
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
-        # If fleet has an assigned expedition, set its return status to True.
-        # Otherwise leave it False, since the user might be using it
-        if fleet_id in settings['expedition_id_fleet_map']:
-            fleet_returned[fleet_id - 1] = True
-        # Remove the associated expedition from running_expedition_list
         for expedition in running_expedition_list:
             if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
+                # Remove the associated expedition from running_expedition_list
                 running_expedition_list.remove(expedition)
+                # If fleet has an assigned expedition, set its return status to True.
+                # Otherwise leave it False, since the user might be using it
+                fleet_returned[fleet_id - 1] = True
         log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click(kc_window, 'next.png')
         kc_window.wait('sortie.png', WAITLONG)
@@ -294,6 +293,7 @@ def init():
         go_home()
         resupply()
         fleet_returned[0] = False
+        # Repair if needed
         if combat_item.count_damage_above_limit() > 0:
             combat_item.go_repair()
         log_success("Next sortie!: %s" % combat_item)
@@ -322,12 +322,15 @@ while True:
     # If combat timer is up, go sortie
     if settings['combat_enabled'] == True:
         if datetime.datetime.now() > combat_item.next_sortie_time:
+            # Go home, then sortie
             go_home()
             combat_item.go_sortie()
             fleet_returned[0] = True
+            # Check home, resupply, then repair if needed
             go_home()
             resupply()
             fleet_returned[0] = False
+            # Repair if needed
             if combat_item.count_damage_above_limit() > 0:
                 combat_item.go_repair()
             log_success("Next sortie!: %s" % combat_item)
