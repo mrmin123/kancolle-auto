@@ -60,25 +60,35 @@ class Combat:
             log_warning("Ships (%d) in condition below threshold! Sortie cancelled!" % self.count_damage_above_limit())
             return self.damage_counts
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):
-            log_success("Starting sortie!")
+            log_success("Commencing sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
-            wait_and_click(self.kc_window, 'compass.png', 60)
-            wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').exact(), 60)
-            while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
-                sleep(15)
-            check_and_click(self.kc_window, 'combat_nb_retreat.png')
-            wait_and_click(self.kc_window, 'next.png', 30)
-            sleep(4)
-            self.tally_damages()
-            wait_and_click(self.kc_window, 'next.png', 30)
-            sleep(2)
-            if not self.kc_window.exists('combat_retreat.png'):
-                wait_and_click(self.kc_window, 'next_alt.png', 30)
-            wait_and_click(self.kc_window, 'combat_retreat.png', 30)
-            if self.count_damage_above_limit() == 0:
-                # If fleet damage is good to go for another deployment, set the
-                # next sortie timer relatively low
-                self.next_sortie_time_set(0, get_rand(1, 3))
+            sortie_underway = True
+            while sortie_underway == True:
+                # Compass and/or formation selection
+                while not (self.kc_window.exists('compass.png') or self.kc_window.exists('formation_line_ahead.png')):
+                    sleep(5)
+                check_and_click(self.kc_window, 'compass.png')
+                wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').exact(), 30)
+                # Decline night battle and/or click through post-battle screens
+                while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
+                    sleep(15)
+                check_and_click(self.kc_window, 'combat_nb_retreat.png')
+                wait_and_click(self.kc_window, 'next.png', 30)
+                sleep(4)
+                # Tally damages at EXP screen
+                self.tally_damages()
+                wait_and_click(self.kc_window, 'next.png', 30)
+                sleep(2)
+                # Receive ship reward and/or retreat from sortie
+                if not self.kc_window.exists('combat_retreat.png'):
+                    wait_and_click(self.kc_window, 'next_alt.png', 30)
+                wait_and_click(self.kc_window, 'combat_retreat.png', 30)
+                if self.count_damage_above_limit() > 0 or self.damage_counts[2] > 0:
+                    # If fleet is damaged, do not run any more sorties
+                    sortie_underway = False
+                else:
+                    # Otherwise, set a low next sortie time
+                    self.next_sortie_time_set(0, get_rand(1, 3))
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
