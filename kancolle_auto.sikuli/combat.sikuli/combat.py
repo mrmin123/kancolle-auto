@@ -93,42 +93,52 @@ class Combat:
     def go_repair(self):
         log_msg("Navigating to Repair menu!")
         repair_start = False
+        empty_docks = 0
         sleep(1)
         self.kc_window.click('repair_main.png')
         sleep(2)
-        if check_and_click(self.kc_window, 'repair_empty.png'):
-            sleep(2)
-            log_msg("Check for critically damaged ships.")
-            if check_and_click(self.kc_window, Pattern('repair_dmg_critical.png').similar(0.95)):
-                log_success("Starting repair on critically damaged ship!")
-                self.damage_counts[2] -= 1
-                repair_start = True
-            if repair_start == False and self.damage_limit >= 1:
-                log_msg("Check for moderately-damaged ships.")
-                if check_and_click(self.kc_window, Pattern('repair_dmg_moderate.png').similar(0.95)):
-                    log_success("Starting repair on moderately damaged ship!")
-                    self.damage_counts[1] -= 1
+        for i in self.kc_window.findAll('repair_empty.png'):
+            empty_docks += 1
+        if empty_docks != 0:
+            repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
+            while repair_queue > 0:
+                repair_queue -= 1
+                wait_and_click(self.kc_window, 'repair_empty.png', 30)
+                sleep(2)
+                log_msg("Check for critically damaged ships.")
+                if check_and_click(self.kc_window, Pattern('repair_dmg_critical.png').similar(0.95)):
+                    log_success("Starting repair on critically damaged ship!")
+                    self.damage_counts[2] -= 1
                     repair_start = True
-            if repair_start == False and self.damage_limit >= 0:
-                log_msg("Check for lightly-damaged ships.")
-                if check_and_click(self.kc_window, Pattern('repair_dmg_light.png').similar(0.95)):
-                    log_success("Starting repair on lightly damaged ship!")
-                    self.damage_counts[0] -= 1
-                    repair_start = True
-            if repair_start == True:
-                repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
-                if int(repair_timer[0:2]) >= self.repair_time_limit:
-                    # Use bucket if the repair time is longer than desired
-                    log_success("Repair time too long... using bucket!")
-                    self.kc_window.click('repair_bucket_switch.png')
-                    self.next_sortie_time_set(0, 0)
-                else:
-                    # Try setting next sortie time according to repair timer
-                    log_success("Repair should be done at %s" % (datetime.datetime.now()
-                        + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
-                    self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
-                wait_and_click(self.kc_window, 'repair_start.png', 10)
-                wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
+                if repair_start == False and self.damage_limit >= 1:
+                    log_msg("Check for moderately-damaged ships.")
+                    if check_and_click(self.kc_window, Pattern('repair_dmg_moderate.png').similar(0.95)):
+                        log_success("Starting repair on moderately damaged ship!")
+                        self.damage_counts[1] -= 1
+                        repair_start = True
+                if repair_start == False and self.damage_limit >= 0:
+                    log_msg("Check for lightly-damaged ships.")
+                    if check_and_click(self.kc_window, Pattern('repair_dmg_light.png').similar(0.95)):
+                        log_success("Starting repair on lightly damaged ship!")
+                        self.damage_counts[0] -= 1
+                        repair_start = True
+                if repair_start == True:
+                    repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
+                    if int(repair_timer[0:2]) >= self.repair_time_limit:
+                        # Use bucket if the repair time is longer than desired
+                        log_success("Repair time too long... using bucket!")
+                        self.kc_window.click('repair_bucket_switch.png')
+                        self.next_sortie_time_set(0, 0)
+                        if self.count_damage_above_limit() > 0:
+                            repair_queue += 1
+                            sleep(10)
+                    else:
+                        # Try setting next sortie time according to repair timer
+                        log_success("Repair should be done at %s" % (datetime.datetime.now()
+                            + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
+                        self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                    wait_and_click(self.kc_window, 'repair_start.png', 10)
+                    wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
         else:
             log_warning("Cannot repair; docks are full.")
 
