@@ -107,13 +107,15 @@ def check_expedition():
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
-        for expedition in running_expedition_list:
-            if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
-                # Remove the associated expedition from running_expedition_list
-                running_expedition_list.remove(expedition)
-                # If fleet has an assigned expedition, set its return status to True.
-                # Otherwise leave it False, since the user might be using it
-                fleet_returned[fleet_id - 1] = True
+        # Make sure the returned fleet is a defined one by the user
+        if fleet_id in settings['expedition_id_fleet_map']:
+            for expedition in running_expedition_list:
+                if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
+                    # Remove the associated expedition from running_expedition_list
+                    running_expedition_list.remove(expedition)
+                    # If fleet has an assigned expedition, set its return status to True.
+                    # Otherwise leave it False, since the user might be using it
+                    fleet_returned[fleet_id - 1] = True
         log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click(kc_window, 'next.png')
         kc_window.wait('sortie.png', WAITLONG)
