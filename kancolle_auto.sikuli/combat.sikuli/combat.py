@@ -8,13 +8,14 @@ Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
 class Combat:
-    def __init__(self, kc_window, area_pict, subarea_pict, damage_limit, repair_time_limit):
+    def __init__(self, kc_window, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_window = kc_window
-        self.area_pict = area_pict
-        self.subarea_pict = subarea_pict
-        self.damage_limit = damage_limit
-        self.repair_time_limit = repair_time_limit
+        self.area_pict = 'combat_area_%d.png' % settings['combat_area']
+        self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
+        self.nodes = settings['nodes']
+        self.damage_limit = settings['damage_limit']
+        self.repair_time_limit = settings['repair_time_limit']
         self.damage_counts = [0, 0, 0]
 
     # Tally damage state of fleet
@@ -163,10 +164,4 @@ class Combat:
             self.next_sortie_time = proposed_time
 
 def combat_factory(kc_window, settings):
-    combat_area = settings['combat_area']
-    combat_subarea = settings['combat_subarea']
-    damage_limit = settings['damage_limit']
-    repair_time_limit = settings['repair_time_limit']
-    return Combat(kc_window, 'combat_area_%d.png' % combat_area,
-        'combat_panel_%d-%d.png' % (combat_area, combat_subarea), damage_limit,
-        repair_time_limit)
+    return Combat(kc_window, settings)

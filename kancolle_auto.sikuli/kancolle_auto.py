@@ -265,6 +265,7 @@ def get_config():
         settings['combat_enabled'] = True
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
+        settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
     else:
@@ -277,26 +278,15 @@ def init():
     log_success("Starting kancolle_auto")
     # Define expedition list
     expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
+    # Define combat item if combat is enabled
+    if settings['combat_enabled'] == True:
+        combat_item = combat_module.Combat(kc_window, settings)
     # Go home, then run expeditions
     go_home()
     go_expedition()
     for expedition in expedition_list:
         run_expedition(expedition)
-    if settings['combat_enabled'] == True:
-        # Define combat item
-        combat_item = combat_module.combat_factory(kc_window, settings)
-        # Go home, then sortie
-        go_home()
-        combat_item.go_sortie()
-        fleet_returned[0] = True
-        # Check home, resupply, then repair if needed
-        go_home()
-        resupply()
-        fleet_returned[0] = False
-        # Repair if needed
-        if combat_item.count_damage_above_limit() > 0:
-            combat_item.go_repair()
-        log_success("Next sortie!: %s" % combat_item)
+    sortie_action()
 
 # initialize kancolle_auto
 init()
@@ -322,20 +312,8 @@ while True:
     # If combat timer is up, go sortie
     if settings['combat_enabled'] == True:
         if datetime.datetime.now() > combat_item.next_sortie_time:
-            # Go home, then sortie
-            go_home()
-            combat_item.go_sortie()
-            fleet_returned[0] = True
-            # Check home, resupply, then repair if needed
-            go_home()
-            resupply()
-            fleet_returned[0] = False
-            # Repair if needed
-            if combat_item.count_damage_above_limit() > 0:
-                combat_item.go_repair()
-            log_success("Next sortie!: %s" % combat_item)
-            go_home()
             idle = False
+            sortie_action()
     # If fleets have been sent out and idle period is beginning, let the user
     # know when the next scripted action will occur
     if idle == False:
