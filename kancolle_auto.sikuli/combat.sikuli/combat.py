@@ -14,6 +14,8 @@ class Combat:
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
+        self.formations = settings['formations']
+        self.night_battles = settings['night_battles']
         self.damage_limit = settings['damage_limit']
         self.repair_time_limit = settings['repair_time_limit']
         self.damage_counts = [0, 0, 0]
@@ -64,32 +66,58 @@ class Combat:
             log_success("Commencing sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
             sortie_underway = True
-            while sortie_underway == True:
+            nodes_run = 0
+            while sortie_underway:
                 # Compass and/or formation selection
                 while not (self.kc_window.exists('compass.png') or self.kc_window.exists('formation_line_ahead.png')):
                     sleep(5)
                 check_and_click(self.kc_window, 'compass.png')
-                wait_and_click(self.kc_window, Pattern('formation_line_ahead.png').exact(), 30)
-                # Decline night battle and/or click through post-battle screens
+                wait_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact(), 30)
+                # Sleep while checking for end of combat phase
                 while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
                     sleep(15)
-                check_and_click(self.kc_window, 'combat_nb_retreat.png')
+                # If night battle is prompted, proceed depending on user settings
+                if self.kc_window.exists('combat_nb_retreat.png'):
+                    if self.night_battles[nodes_run]:
+                        check_and_click(self.kc_window, 'combat_nb_retreat.png')
+                    else:
+%                       check_and_click(self.kc_window, 'combat_nb_continue.png')
+                        # Sleep through night battle
+                        while not self.kc_window.exists('next.png'):
+                            sleep(15)
                 wait_and_click(self.kc_window, 'next.png', 30)
-                sleep(4)
+                sleep(3)
                 # Tally damages at EXP screen
                 self.tally_damages()
                 wait_and_click(self.kc_window, 'next.png', 30)
-                sleep(2)
+                sleep(3)
                 # Receive ship reward and/or retreat from sortie
                 if not self.kc_window.exists('combat_retreat.png'):
                     wait_and_click(self.kc_window, 'next_alt.png', 30)
-                wait_and_click(self.kc_window, 'combat_retreat.png', 30)
-                if self.count_damage_above_limit() > 0 or self.damage_counts[2] > 0:
-                    # If fleet is damaged, do not run any more sorties
+                # We ran a node, so increase the counter
+                nodes_run += 1
+                # Set next sortie time to soon in case we have no failures or
+                # additional nodes
+                self.next_sortie_time_set(0, get_rand(1, 3))
+                # If required number of nodes have been run, fall back
+                if nodes_run >= self.nodes:
+                    log_msg("Ran the required number of nodes. Falling back!")
+                    wait_and_click(self.kc_window, 'combat_retreat.png', 30)
                     sortie_underway = False
-                else:
-                    # Otherwise, set a low next sortie time
-                    self.next_sortie_time_set(0, get_rand(1, 3))
+                    return self.damage_counts
+                # If fleet is damaged, fall back
+                if self.count_damage_above_limit() > 0 or self.damage_counts[2] > 0:
+                    wait_and_click(self.kc_window, 'combat_retreat.png', 30)
+                    sortie_underway = False
+                    return self.damage_counts
+                # If the sortie ended and we're at Home, end the sortie action
+                sleep(3)
+                if self.kc_window.exists('sortie.png'):
+                    sortie_underway = False
+                    return self.damage_counts
+                # If no reason to retreat, and combat is on-going, proceed to
+                # the next node
+%               wait_and_click(self.kc_window, 'combat_nextnode.png', 30)
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")

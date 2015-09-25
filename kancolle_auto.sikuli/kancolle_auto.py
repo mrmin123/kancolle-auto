@@ -266,6 +266,8 @@ def get_config():
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
+        settings['formations'] = [config.get('Combat', 'Formations')]
+        settings['night_battles'] = [config.get('Combat', 'NightBattles')]
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
     else:
