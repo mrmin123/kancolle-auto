@@ -12,13 +12,13 @@ class Ensei:
     def __str__(self):
         return "Expedition %d (ETA %s)" % (self.id, self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
 
-    def start(self):
-        self.begin_time = datetime.datetime.now()
-        self.end_time = self.begin_time + self.duration
-
     def check_later(self, hours, minutes):
         self.begin_time = datetime.datetime.now()
         self.end_time = self.begin_time + datetime.timedelta(hours=hours, minutes=minutes + 1)
+
+    def start(self):
+        self.begin_time = datetime.datetime.now()
+        self.end_time = self.begin_time + self.duration
 
 def ensei_factory(ensei_id):
     if ensei_id == 1:
