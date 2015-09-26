@@ -285,11 +285,11 @@ def get_config():
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['formations'] = config.get('Combat', 'Formations').split(',')
         if len(settings['formations']) < settings['nodes']:
-            settings['formations'].extend([settings['formations'][0]] * (settings['nodes'] - len(settings['formations'])))
+            settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
         print settings['formations']
         settings['night_battles'] = config.get('Combat', 'NightBattles').split(',')
         if len(settings['night_battles']) < settings['nodes']:
-            settings['night_battles'].extend([settings['night_battles'][0]] * (settings['nodes'] - len(settings['formations'])))
+            settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['formations'])))
         print settings['night_battles']
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
