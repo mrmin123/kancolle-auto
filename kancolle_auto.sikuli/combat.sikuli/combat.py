@@ -11,6 +11,7 @@ class Combat:
     def __init__(self, kc_window, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_window = kc_window
+        print kc_window
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
@@ -191,5 +192,3 @@ class Combat:
         if proposed_time > self.next_sortie_time:
             self.next_sortie_time = proposed_time
 
-def combat_factory(kc_window, settings):
-    return Combat(kc_window, settings)

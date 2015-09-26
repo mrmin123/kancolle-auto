@@ -234,7 +234,7 @@ def run_expedition(expedition):
         go_home()
 
 def sortie_action():
-    global kc_window, combat_item, settings
+    global kc_window, fleet_returned, combat_item, settings
     if settings['combat_enabled'] == True:
         go_home()
         combat_item.go_sortie()
@@ -297,14 +297,15 @@ def init():
     log_success("Starting kancolle_auto")
     # Define expedition list
     expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
-    # Define combat item if combat is enabled
-    if settings['combat_enabled'] == True:
-        combat_item = combat_module.Combat(kc_window, settings)
     # Go home, then run expeditions
     go_home()
     go_expedition()
     for expedition in expedition_list:
         run_expedition(expedition)
+    # Define combat item if combat is enabled
+    if settings['combat_enabled'] == True:
+        combat_item = combat_module.Combat(kc_window, settings)
+    # Run sortie defined in combat item
     sortie_action()
 
 # initialize kancolle_auto
