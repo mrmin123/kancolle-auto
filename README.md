@@ -1,7 +1,7 @@
 Description
 ===========
 
-Automation tool for [Kantai Collection](http://www.dmm.com/netgame_s/kancolle) because seriously, fuck this game.
+[Kantai Collection](http://www.dmm.com/netgame_s/kancolle) (Kancolle) automation tool.
 
 Some features added on top of the [other](https://github.com/amylase/kancolle-auto) [project](https://github.com/Yukariin/kancolle-auto) [forks](https://github.com/kevin01523/kancolle-auto) (some ideas borrowed from [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan)):
 
@@ -11,10 +11,11 @@ Some features added on top of the [other](https://github.com/amylase/kancolle-au
     * Determines how much time is remaining in an expedition that's already been sent out
 * Identifies which expedition fleet has come back
     * Required fleet names to be the default fleet names
-* Automatic 3-2-A grind
+* Automatic sorties
+    * Allows for user to specify the map, number of nodes, formation for each node, and whether or not to engage in night battle for each node
     * Allows for user-specified damage threshold - will not sortie and instead repair any ship at or below this threshold
     * Allows for user-specified repair length threshold - will use bucket if repair timer is above this threshold
-    * Can be turned off by setting `combat` variable to `False`
+    * Automatic sorties be turned off in `config.ini`
 * Variability added to actions to hopefully make the tool more difficult to detect
     * Uses random menu items to refresh Home screen
     * Wait/sleep timers are pseudo-random
@@ -22,20 +23,24 @@ Some features added on top of the [other](https://github.com/amylase/kancolle-au
     * When script starts up again, it can navigate back to the Home screen and continue its automated actions as long as it doesn't find itself in a Sortie when it comes back
 * Improved error catching and handling
 
+Disclaimer/Warning
+==================
+* I make no guarantees that you won't be caught for using this tool! You may be penalized/banned for using this (or any other) automation tool for this game.
+* If allowed, this script will send your ships into battle. I've tried to make it as robust as possible in ensuring that your ships won't be sent to the bottom of the ocean, but there are no guarantees! If this concerns you, disable the combat module in `config.ini`.
+* If allowed, this script will use your buckets, so make sure you can spare them!
+
 Known Issues
 ============
-* If ships are damaged AND need resupply, the script will NOT properly detect the damage state of your fleet. This might result in your critically damaged ships being sortied! Make sure your Fleet 1 is resupplied before running this script!
-    * This is theoretically an easy fix, but I'm too lazy to do it...
-* I tried to make the sleeps and delays as flexible as possible, but if Kancolle takes too long in certain screen transitions (slow internet connection, unresponsive Kancolle servers, etc) the script might crash because it can't find the next expected screen in time
-* Sikuli sometimes can't find/doesn't properly click areas of the screen. I've tried to improve the failure catching and handling for the ones I've encountered, but I probably haven't accounted for everything
-* I'm sure there are other edge and corner cases that I haven't accounted for. Script may crash when these scenarios are hit!
+* Sikuli, the program this script relies on for button/screen recognition and OCR, can mis-identify portions of the screen or mis-click at times. As a result, the script might crash.
+* I tried to make the sleeps and delays as flexible as possible, but if Kancolle takes too long in certain screen transitions (slow internet connection, unresponsive Kancolle servers, etc) the script might crash.
+* Sikuli sometimes can't find/doesn't properly click areas of the screen. I've tried to improve the failure catching and handling for the ones I've encountered, but I probably haven't accounted for everything.
+* I'm sure there are other edge and corner cases that I haven't accounted for. Script may crash when these scenarios are hit.
 
-If the script crashes, just get back to the Home screen and restart it. It should be able to recover gracefully.
+If the script crashes, just get back to the Home screen and restart it. It should be able to recover gracefully. If the same issue crashes the script repeatedly, please open an issue ticket.
 
 Dependencies
 ============
-
-You need the following at a minimum.
+You need the following at a minimum:
 
 * Python 2.7.x
 * Sikuli 1.0.x (not 1.1.x!) with options 2 and 5
