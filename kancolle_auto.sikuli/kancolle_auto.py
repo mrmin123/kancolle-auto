@@ -233,6 +233,21 @@ def run_expedition(expedition):
         expedition.check_later(0, 10)
         go_home()
 
+def sortie_action():
+    global kc_window, combat_item, settings
+    if settings['combat_enabled'] == True:
+        go_home()
+        combat_item.go_sortie()
+        fleet_returned[0] = True
+        # Check home, resupply, then repair if needed
+        go_home()
+        resupply()
+        fleet_returned[0] = False
+        # Repair if needed
+        if combat_item.count_damage_above_limit() > 0:
+            combat_item.go_repair()
+        log_success("Next sortie!: %s" % combat_item)
+
 def check_soonest():
     global running_expedition_list, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''

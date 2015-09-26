@@ -81,7 +81,7 @@ class Combat:
                     if self.night_battles[nodes_run]:
                         check_and_click(self.kc_window, 'combat_nb_retreat.png')
                     else:
-%                       check_and_click(self.kc_window, 'combat_nb_continue.png')
+                        check_and_click(self.kc_window, 'combat_nb_fight.png')
                         # Sleep through night battle
                         while not self.kc_window.exists('next.png'):
                             sleep(15)
@@ -117,7 +117,7 @@ class Combat:
                     return self.damage_counts
                 # If no reason to retreat, and combat is on-going, proceed to
                 # the next node
-%               wait_and_click(self.kc_window, 'combat_nextnode.png', 30)
+                wait_and_click(self.kc_window, 'combat_nextnode.png', 30)
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
