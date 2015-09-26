@@ -146,16 +146,19 @@ class Combat:
             # Now check for formation select, night battle prompt, or
             # post-battle report
             log_msg("Spinning compass!")
+            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             # Restart this loop in case there's another compass coming up
+            sleep(3)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact()):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
+            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+            sleep(3)
             self.loop_post_formation()
 
     def loop_post_formation(self):
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')):
             sleep(5)
