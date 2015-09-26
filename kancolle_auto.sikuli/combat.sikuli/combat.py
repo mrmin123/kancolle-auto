@@ -11,7 +11,6 @@ class Combat:
     def __init__(self, kc_window, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_window = kc_window
-        print kc_window
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
@@ -51,12 +50,17 @@ class Combat:
         log_msg("Navigating to Sortie menu!")
         self.kc_window.click('sortie.png')
         wait_and_click(self.kc_window, 'combat.png')
+        sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
         wait_and_click(self.kc_window, self.subarea_pict)
+        sleep(2)
         wait_and_click(self.kc_window, 'decision.png')
-        self.kc_window.hover('senseki_off.png')
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(2)
         self.tally_damages()
+        if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
+            log_warning("Fleet 1 needs resupply!")
+            return self.damage_counts
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
             return self.damage_counts
@@ -69,32 +73,38 @@ class Combat:
             sortie_underway = True
             nodes_run = 0
             while sortie_underway:
-                # Compass and/or formation selection
-                while not (self.kc_window.exists('compass.png') or self.kc_window.exists('formation_line_ahead.png')):
-                    sleep(5)
-                check_and_click(self.kc_window, 'compass.png')
-                wait_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact(), 30)
-                # Sleep while checking for end of combat phase
-                while not (self.kc_window.exists('combat_nb_retreat.png') or self.kc_window.exists('next.png')):
-                    sleep(15)
-                # If night battle is prompted, proceed depending on user settings
+                # Begin loop that checks for combat, formation select, night
+                # battle prompt, or post-battle report screen
+                self.loop_pre_combat(nodes_run)
+                # If night battle prompt, proceed based on node and user config
                 if self.kc_window.exists('combat_nb_retreat.png'):
-                    if self.night_battles[nodes_run]:
-                        check_and_click(self.kc_window, 'combat_nb_retreat.png')
-                    else:
+                    if self.night_battles[nodes_run] == 'True':
+                        # Commence and sleep through night battle
+                        log_success("Commencing night battle!")
                         check_and_click(self.kc_window, 'combat_nb_fight.png')
-                        # Sleep through night battle
                         while not self.kc_window.exists('next.png'):
                             sleep(15)
+                    else:
+                        # Decline night battle
+                        log_msg("Declining night battle!")
+                        check_and_click(self.kc_window, 'combat_nb_retreat.png')
+                # Click through post-battle report
                 wait_and_click(self.kc_window, 'next.png', 30)
                 sleep(3)
-                # Tally damages at EXP screen
+                # Tally damages at post-battle report screen
                 self.tally_damages()
                 wait_and_click(self.kc_window, 'next.png', 30)
                 sleep(3)
-                # Receive ship reward and/or retreat from sortie
+                # Check to see if we're at combat retreat/continue screen or
+                # ship reward screen
                 if not self.kc_window.exists('combat_retreat.png'):
-                    wait_and_click(self.kc_window, 'next_alt.png', 30)
+                    sleep(3)
+                    if not self.kc_window.exists('sortie.png'):
+                        wait_and_click(self.kc_window, 'next_alt.png', 20)
+                # Check to see if we're back at Home screen
+                if self.kc_window.exists('sortie.png'):
+                    sortie_underway = False
+                    return self.damage_counts
                 # We ran a node, so increase the counter
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or
@@ -108,16 +118,11 @@ class Combat:
                     return self.damage_counts
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit() > 0 or self.damage_counts[2] > 0:
+                    log_warning("Ship(s) in condition at or below threshold! Ceasing sortie!")
                     wait_and_click(self.kc_window, 'combat_retreat.png', 30)
                     sortie_underway = False
                     return self.damage_counts
-                # If the sortie ended and we're at Home, end the sortie action
                 sleep(3)
-                if self.kc_window.exists('sortie.png'):
-                    sortie_underway = False
-                    return self.damage_counts
-                # If no reason to retreat, and combat is on-going, proceed to
-                # the next node
                 wait_and_click(self.kc_window, 'combat_nextnode.png', 30)
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
@@ -127,6 +132,33 @@ class Combat:
             elif self.kc_window.exists('combat_nogo_supply.png'):
                 log_warning("Cannot sortie due to ships needing supply!")
         return self.damage_counts
+
+    def loop_pre_combat(self, nodes_run):
+        # Check for compass, formation select, night battle prompt, or
+        # post-battle report
+        while not (self.kc_window.exists('compass.png')
+            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
+            or self.kc_window.exists('combat_nb_retreat.png')
+            or self.kc_window.exists('next.png')):
+            sleep(5)
+        # If compass, press it
+        if check_and_click(self.kc_window, 'compass.png'):
+            # Now check for formation select, night battle prompt, or
+            # post-battle report
+            log_msg("Spinning compass!")
+            # Restart this loop in case there's another compass coming up
+            self.loop_pre_combat(nodes_run)
+        # If formation select, select formation based on user config
+        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact()):
+            # Now check for night battle prompt or post-battle report
+            log_msg("Selecting fleet formation!")
+            self.loop_post_formation()
+
+    def loop_post_formation(self):
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        while not (self.kc_window.exists('combat_nb_retreat.png')
+            or self.kc_window.exists('next.png')):
+            sleep(5)
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
