@@ -157,7 +157,6 @@ def resupply_action():
     if kc_window.exists(Pattern('supply_all.png').exact()):
         # Common point of script failure. Make robust as possible
         while not kc_window.exists(Pattern('checked.png').exact()):
-            kc_window.hover('supply_all.png')
             kc_window.click('supply_all.png')
             sleep(1)
         wait_and_click(kc_window, 'supply_available.png', 10)
@@ -222,6 +221,7 @@ def run_expedition(expedition):
             run_expedition(expedition)
             return
         kc_window.hover('senseki_off.png')
+        sleep(1)
         wait_and_click(kc_window, 'ensei_start.png')
         kc_window.wait('exp_started.png', 30)
         expedition.start()

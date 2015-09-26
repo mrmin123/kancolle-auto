@@ -1,22 +1,21 @@
 Description
 ===========
 
-[Kantai Collection](http://www.dmm.com/netgame_s/kancolle) (Kancolle) automation tool.
+[Kantai Collection](http://www.dmm.com/netgame_s/kancolle) (Kancolle) expedition+combat automation tool.
 
-Some features added on top of the [other](https://github.com/amylase/kancolle-auto) [project](https://github.com/Yukariin/kancolle-auto) [forks](https://github.com/kevin01523/kancolle-auto) (some ideas borrowed from [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan)):
+Originally a fork of based off [these](https://github.com/amylase/kancolle-auto) [other](https://github.com/Yukariin/kancolle-auto) [projects/forks](https://github.com/kevin01523/kancolle-auto). Additional ideas based off [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan)).
 
-* Separate `config.ini` that contains all user variables for easier configuration
-* More robust handling of expeditions on cold start
-    * Handles already-returned or immediately returning expedition fleets better
-    * Determines how much time is remaining in an expedition that's already been sent out
-* Identifies which expedition fleet has come back
-    * Required fleet names to be the default fleet names
+* Automatic expeditions
+    * Determines how much time is remaining in an expedition that's been sent out before script start
+    * Identifies which expedition fleet has come back
+    * Handles already-returned or immediately returning expeditions on cold start
 * Automatic sorties
     * Allows for user to specify the map, number of nodes, formation for each node, and whether or not to engage in night battle for each node
     * Allows for user-specified damage threshold - will not sortie and instead repair any ship at or below this threshold
     * Allows for user-specified repair length threshold - will use bucket if repair timer is above this threshold
     * Automatic sorties be turned off in `config.ini`
-* Variability added to actions to hopefully make the tool more difficult to detect
+* Separate `config.ini` that contains all user variables for easier configuration
+* Random variations added to certain actions to hopefully make the tool more difficult to detect
     * Uses random menu items to refresh Home screen
     * Wait/sleep timers are pseudo-random
 * Console timer indicates when next automated-action will occur - the user can interact with Kancolle during this time (set Quests, do Development/Construction, re-organize fleet, etc)
@@ -49,6 +48,8 @@ You need the following at a minimum:
 You may need to install separate programs depending on your environment (covered in next section).
 
 This tool was developed and tested on Windows and Ubuntu, and on Chrome with the KC3 plugin. No guarantee that it will run on other environments, but it should work.
+
+The tool also requires that your fleets have the default names.
 
 Installation and Usage
 ======================
