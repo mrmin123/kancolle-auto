@@ -18,6 +18,7 @@ class Combat:
         self.night_battles = settings['night_battles']
         self.damage_limit = settings['damage_limit']
         self.repair_time_limit = settings['repair_time_limit']
+        self.check_fatigue = settings['check_fatigue']
         self.damage_counts = [0, 0, 0]
 
     # Tally damage state of fleet
@@ -30,30 +31,30 @@ class Combat:
             for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
         if self.kc_window.exists(Pattern('dmg_light_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_light_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light_fatigue_med.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
         if self.kc_window.exists(Pattern('dmg_light_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_light_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light_fatigue_high.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
         # Tally moderate damages (in different fatigue states, as well)
         if self.kc_window.exists(Pattern('dmg_moderate.png').similar(dmg_similarity)):
             for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
         if self.kc_window.exists(Pattern('dmg_moderate_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate_fatigue_med.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
         if self.kc_window.exists(Pattern('dmg_moderate_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate_fatigue_high.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
         # Tally critical damages (in different fatigue states, as well)
         if self.kc_window.exists(Pattern('dmg_critical.png').similar(dmg_similarity)):
             for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         if self.kc_window.exists(Pattern('dmg_critical_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical_fatigue_med.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         if self.kc_window.exists(Pattern('dmg_critical_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical_fatigue_high.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
@@ -67,6 +68,14 @@ class Combat:
                 count += dmg_count
         return count
 
+    def fatigue_check(self):
+        if self.kc_window.exists('fatigue_high.png'):
+            return 24
+        elif self.kc_window.exists('fatigue_med.png'):
+            return 12
+        else:
+            return None
+
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         log_msg("Navigating to Sortie menu!")
@@ -79,16 +88,26 @@ class Combat:
         wait_and_click(self.kc_window, 'decision.png')
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(2)
+        # Taly damages
         self.tally_damages()
+        # Check for resupply needs
         if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
             log_warning("Fleet 1 needs resupply!")
             return self.damage_counts
+        # Check fleet damage state
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
             return self.damage_counts
         if self.count_damage_above_limit() > 0:
             log_warning("Ships (%d) in condition below threshold! Sortie cancelled!" % self.count_damage_above_limit())
             return self.damage_counts
+        # Check fleet morale, if necessary
+        if self.check_fatigue:
+            fatigue_timer = self.fatigue_check()
+            if fatigue_timer:
+                log_warning("Fleet has high fatigue! Sortie cancelled!")
+                self.next_sortie_time_set(0, fatigue_timer)
+                return self.damage_counts
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')

@@ -1,49 +1,40 @@
-Description
-===========
+# kancolle-auto
 
-[Kantai Collection](http://www.dmm.com/netgame_s/kancolle) (Kancolle) expedition+combat automation tool.
+## Description
 
-Originally a fork of based off [these](https://github.com/amylase/kancolle-auto) [other](https://github.com/Yukariin/kancolle-auto) [projects/forks](https://github.com/kevin01523/kancolle-auto). Additional ideas based off [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan)).
+[Kantai Collection](http://www.dmm.com/netgame_s/kancolle) (Kancolle) expedition+combat automation tool. Originally a fork of based off [these](https://github.com/amylase/kancolle-auto) [other](https://github.com/Yukariin/kancolle-auto) [projects/forks](https://github.com/kevin01523/kancolle-auto). Additional ideas based off [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan).
 
 * Automatic expeditions
-    * Determines how much time is remaining in an expedition that's been sent out before script start
-    * Identifies which expedition fleet has come back
+    * Determines how much time is remaining for expeditions sent out before script start
+    * Identifies which expedition fleet has come back (see Setup Requirements)
     * Handles already-returned or immediately returning expeditions on cold start
-* Automatic sorties
+* Combat module (automatic sorties and repair)
     * Allows for user to specify the map, number of nodes, formation for each node, and whether or not to engage in night battle for each node
     * Allows for user-specified damage threshold - will not sortie and instead repair any ship at or below this threshold
     * Allows for user-specified repair length threshold - will use bucket if repair timer is above this threshold
-    * Automatic sorties be turned off in `config.ini`
+    * Module can be turned off
 * Separate `config.ini` that contains all user variables for easier configuration
 * Random variations added to certain actions to hopefully make the tool more difficult to detect
     * Uses random menu items to refresh Home screen
     * Wait/sleep timers are pseudo-random
 * Console timer indicates when next automated-action will occur - the user can interact with Kancolle during this time (set Quests, do Development/Construction, re-organize fleet, etc)
-    * When script starts up again, it can navigate back to the Home screen and continue its automated actions as long as it doesn't find itself in a Sortie when it comes back
+    * When script starts up again, it can navigate back to the Home screen and continue its automated actions as long as the game is not mid-Sortie
 * Improved error catching and handling
 
-Setup Requirements
-==================
-* Make sure your fleets have the default names
-* If running the combat module, make sure there are no ships not in fleet 1 that are in light/moderate/critical damage. You risk sinking ships otherwise!!!
+## Setup Requirements
 
-Disclaimer/Warning
-==================
+* Make sure your fleets have the default names for the script to be able to identify which expedition fleet has come back.
+* If the combat module is enabled, make sure there are no ships NOT in fleet 1 that are in light/moderate/critical damage. You risk sinking ships otherwise!!!
+
+## Disclaimer/Warning
+
 * I make no guarantees that you won't be caught for using this tool! You may be penalized/banned for using this (or any other) automation tool for this game.
-* If allowed, this script will send your ships into battle. I've tried to make it as robust as possible in ensuring that your ships won't be sent to the bottom of the ocean, but there are no guarantees! If this concerns you, disable the combat module in `config.ini`.
-* If allowed, this script will use your buckets, so make sure you can spare them!
+* If the combat module is enabled...
+    * ... this script will send your ships into battle. There is always the risk of something going wrong and a ship sinking. I have not had an issue with this after weeks of Orel and 5-2-A, but please disable the combat module if this concerns you.
+    * ... and bucket usage is enabled, this script will use them. Make sure you can spare them.
 
-Known Issues
-============
-* Sikuli, the program this script relies on for button/screen recognition and OCR, can mis-identify portions of the screen or mis-click at times. As a result, the script might crash.
-* I tried to make the sleeps and delays as flexible as possible, but if Kancolle takes too long in certain screen transitions (slow internet connection, unresponsive Kancolle servers, etc) the script might crash.
-* Sikuli sometimes can't find/doesn't properly click areas of the screen. I've tried to improve the failure catching and handling for the ones I've encountered, but I probably haven't accounted for everything.
-* I'm sure there are other edge and corner cases that I haven't accounted for. Script may crash when these scenarios are hit.
+##Dependencies
 
-If the script crashes, just get back to the Home screen and restart it. It should be able to recover gracefully. If the same issue crashes the script repeatedly, please open an issue ticket.
-
-Dependencies
-============
 You need the following at a minimum:
 
 * Python 2.7.x
@@ -52,12 +43,9 @@ You need the following at a minimum:
 
 You may need to install separate programs depending on your environment (covered in next section).
 
-This tool was developed and tested on Windows and Ubuntu, and on Chrome with the KC3 plugin. No guarantee that it will run on other environments, but it should work.
+This tool was developed and tested on Windows and Ubuntu, and on Chrome with the KC3 plugin.
 
-The tool also requires that your fleets have the default names.
-
-Installation and Usage
-======================
+##Installation and Usage
 
 ### Windows
 1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
@@ -75,3 +63,12 @@ Installation and Usage
 4. Modify `config.ini` to fit your needs
 5. Open KanColle in your favorite program (default: Chrome) and go to the Home screen
 6. Run kancolle_auto from the terminal: `java -jar <path_to_sikuli/sikuli-script.jar -r <path_to_kancolle_auto>/kancolle_auto.sikuli`
+
+## Known Issues and Troubleshooting
+
+* Sikuli, the program this script relies on for button/screen recognition and OCR, can mis-identify portions of the screen or mis-click at times. The script might fail as a result.
+* I tried to make the sleeps and delays as flexible as possible, but if Kancolle takes too long in certain screen transitions (slow internet connection, unresponsive Kancolle servers, etc) the script might fail.
+* Sikuli sometimes can't find/doesn't properly click areas of the screen. I've tried to improve the failure catching and handling for the ones I've encountered, but I probably haven't accounted for everything.
+* I'm sure there are other edge and corner cases that I haven't accounted for. Script may fail when these scenarios are hit.
+
+Generally, if the script crashes, get out of the sortie if you're in one, and restart the script; it should recover gracefully. If the script fails at a specific point/scenario consistently, please open a ticket.

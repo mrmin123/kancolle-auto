@@ -293,6 +293,7 @@ def get_config():
         print settings['night_battles']
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
+        settings['check_fatigue'] = config.getint('Combat', 'CheckFatigue')
     else:
         settings['combat_enabled'] = False
     log_success("Config loaded!")
