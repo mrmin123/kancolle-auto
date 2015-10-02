@@ -22,6 +22,11 @@ Originally a fork of based off [these](https://github.com/amylase/kancolle-auto)
     * When script starts up again, it can navigate back to the Home screen and continue its automated actions as long as it doesn't find itself in a Sortie when it comes back
 * Improved error catching and handling
 
+Setup Requirements
+==================
+* Make sure your fleets have the default names
+* If running the combat module, make sure there are no ships not in fleet 1 that are in light/moderate/critical damage. You risk sinking ships otherwise!!!
+
 Disclaimer/Warning
 ==================
 * I make no guarantees that you won't be caught for using this tool! You may be penalized/banned for using this (or any other) automation tool for this game.
