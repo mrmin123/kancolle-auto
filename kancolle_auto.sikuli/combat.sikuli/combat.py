@@ -176,7 +176,7 @@ class Combat:
             empty_docks += 1
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
-            while repair_queue > 0:
+            while empty_docks > 0 and repair_queue > 0:
                 repair_queue -= 1
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
@@ -212,6 +212,7 @@ class Combat:
                         log_success("Repair should be done at %s" % (datetime.datetime.now()
                             + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
                         self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                        empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
         else:
