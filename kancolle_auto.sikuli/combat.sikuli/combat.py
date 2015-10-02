@@ -22,16 +22,38 @@ class Combat:
 
     # Tally damage state of fleet
     def tally_damages(self):
+        dmg_similarity = 0.95
         log_msg("Checking fleet condition...")
         self.damage_counts = [0, 0, 0]
-        if self.kc_window.exists(Pattern('dmg_light.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(0.95)):
+        # Tally light damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_light.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
-        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(0.95)):
+        if self.kc_window.exists(Pattern('dmg_light_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light_medf.png').similar(dmg_similarity)):
+                self.damage_counts[0] += 1
+        if self.kc_window.exists(Pattern('dmg_light_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light_highf.png').similar(dmg_similarity)):
+                self.damage_counts[0] += 1
+        # Tally moderate damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
-        if self.kc_window.exists(Pattern('dmg_critical.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(0.95)):
+        if self.kc_window.exists(Pattern('dmg_moderate_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate_medf.png').similar(dmg_similarity)):
+                self.damage_counts[1] += 1
+        if self.kc_window.exists(Pattern('dmg_moderate_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate_highf.png').similar(dmg_similarity)):
+                self.damage_counts[1] += 1
+        # Tally critical damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_critical.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
+                self.damage_counts[2] += 1
+        if self.kc_window.exists(Pattern('dmg_critical_medf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical_medf.png').similar(dmg_similarity)):
+                self.damage_counts[2] += 1
+        if self.kc_window.exists(Pattern('dmg_critical_highf.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical_highf.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
