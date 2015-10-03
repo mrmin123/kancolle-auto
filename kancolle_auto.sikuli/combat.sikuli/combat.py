@@ -129,6 +129,7 @@ class Combat:
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
                 # Check to see if we're back at Home screen
                 if self.kc_window.exists('sortie.png'):
+                    log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
                 # We ran a node, so increase the counter
