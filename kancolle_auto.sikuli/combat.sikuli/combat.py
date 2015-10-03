@@ -21,40 +21,21 @@ class Combat:
         self.check_fatigue = settings['check_fatigue']
         self.damage_counts = [0, 0, 0]
 
-    # Tally damage state of fleet
     def tally_damages(self):
-        dmg_similarity = 0.95
+        dmg_similarity = 0.75
         log_msg("Checking fleet condition...")
         self.damage_counts = [0, 0, 0]
         # Tally light damages (in different fatigue states, as well)
         if self.kc_window.exists(Pattern('dmg_light.png').similar(dmg_similarity)):
             for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
-        if self.kc_window.exists(Pattern('dmg_light_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_light_fatigue_med.png').similar(dmg_similarity)):
-                self.damage_counts[0] += 1
-        if self.kc_window.exists(Pattern('dmg_light_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_light_fatigue_high.png').similar(dmg_similarity)):
-                self.damage_counts[0] += 1
         # Tally moderate damages (in different fatigue states, as well)
         if self.kc_window.exists(Pattern('dmg_moderate.png').similar(dmg_similarity)):
             for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
-        if self.kc_window.exists(Pattern('dmg_moderate_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate_fatigue_med.png').similar(dmg_similarity)):
-                self.damage_counts[1] += 1
-        if self.kc_window.exists(Pattern('dmg_moderate_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate_fatigue_high.png').similar(dmg_similarity)):
-                self.damage_counts[1] += 1
         # Tally critical damages (in different fatigue states, as well)
         if self.kc_window.exists(Pattern('dmg_critical.png').similar(dmg_similarity)):
             for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
-                self.damage_counts[2] += 1
-        if self.kc_window.exists(Pattern('dmg_critical_medf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical_fatigue_med.png').similar(dmg_similarity)):
-                self.damage_counts[2] += 1
-        if self.kc_window.exists(Pattern('dmg_critical_highf.png').similar(dmg_similarity)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical_fatigue_high.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
@@ -69,11 +50,15 @@ class Combat:
         return count
 
     def fatigue_check(self):
-        if self.kc_window.exists('fatigue_high.png'):
+        log_msg("Checking fleet morale!")
+        if self.kc_window.exists(Pattern('fatigue_high.png').similar(0.95)):
+            log_warning("Ship(s) with high fatigue found!")
             return 24
-        elif self.kc_window.exists('fatigue_med.png'):
+        elif self.kc_window.exists(Pattern('fatigue_med.png').similar(0.95)):
+            log_warning("Ship(s) with medium fatigue found!")
             return 12
         else:
+            log_success("Ships have good morale!")
             return None
 
     # Navigate to Sortie menu and click through sortie!
@@ -105,7 +90,7 @@ class Combat:
         if self.check_fatigue:
             fatigue_timer = self.fatigue_check()
             if fatigue_timer:
-                log_warning("Fleet has high fatigue! Sortie cancelled!")
+                log_warning("Fleet is fatigued! Sortie cancelled!")
                 self.next_sortie_time_set(0, fatigue_timer)
                 return self.damage_counts
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):

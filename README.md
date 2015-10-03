@@ -12,6 +12,7 @@
     * Allows for user to specify the map, number of nodes, formation for each node, and whether or not to engage in night battle for each node
     * Allows for user-specified damage threshold - will not sortie and instead repair any ship at or below this threshold
     * Allows for user-specified repair length threshold - will use bucket if repair timer is above this threshold
+    * Automatic node decisions are NOT supported (although it's entirely possible for the user to choose the desired node even while the script is running)
     * Module can be turned off
 * Separate `config.ini` that contains all user variables for easier configuration
 * Random variations added to certain actions to hopefully make the tool more difficult to detect
@@ -26,12 +27,16 @@
 * Make sure your fleets have the default names for the script to be able to identify which expedition fleet has come back.
 * If the combat module is enabled, make sure there are no ships NOT in fleet 1 that are in light/moderate/critical damage. You risk sinking ships otherwise!!!
 
-## Disclaimer/Warning
+## Disclaimers, Warnings, Caveats...
 
-* I make no guarantees that you won't be caught for using this tool! You may be penalized/banned for using this (or any other) automation tool for this game.
+* kancolle-auto does NOT configure your fleet for you. It is up to the user to ensure that the fleets being deployed are able to complete their expeditions and sorties.
+* You might be caught for using this tool! Automation is against the rules and I make no guarantees that you will not be caught and penalized and/or banned.
 * If the combat module is enabled...
-    * ... this script will send your ships into battle. There is always the risk of something going wrong and a ship sinking. I have not had an issue with this after weeks of Orel and 5-2-A, but please disable the combat module if this concerns you.
+    * ... this script will send your ships into battle. There is always the risk of something going wrong and a ship sinking. Please disable the combat module if this worries you.
     * ... and bucket usage is enabled, this script will use them. Make sure you can spare them.
+* Sikuli DOES take over your mouse so it will be difficult to do anything else while kancolle-auto is running.
+* If you have multiple monitors, make sure your Kancolle window is on the main monitor, as Sikuli has issues with multi-monitor setups.
+
 
 ##Dependencies
 
