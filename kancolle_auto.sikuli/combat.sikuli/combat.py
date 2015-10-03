@@ -102,6 +102,12 @@ class Combat:
                 # Begin loop that checks for combat, formation select, night
                 # battle prompt, or post-battle report screen
                 self.loop_pre_combat(nodes_run)
+                # Ended on resource nodes. Leave sortie.
+                if self.kc_window.exists('next_alt.png'):
+                    log_success("Sortie complete!")
+                    check_and_click(self.kc_window, 'next_alt.png')
+                    sortie_underway = False
+                    return self.damage_counts
                 # If night battle prompt, proceed based on node and user config
                 if self.kc_window.exists('combat_nb_retreat.png'):
                     if self.night_battles[nodes_run] == 'True':
@@ -125,8 +131,12 @@ class Combat:
                 # ship reward screen
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
-                    if not self.kc_window.exists('sortie.png'):
+                    if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('dmg_flagship_next.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
+                        sleep(3)
+                if self.kc_window.exists('dmg_flagship_next.png'):
+                    wait_and_click(self.kc_window, 'dmg_flagship_next.png')
+                    sleep(3)
                 # Check to see if we're back at Home screen
                 if self.kc_window.exists('sortie.png'):
                     log_success("Sortie complete!")
@@ -166,7 +176,8 @@ class Combat:
         while not (self.kc_window.exists('compass.png')
             or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
             or self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')):
+            or self.kc_window.exists('next.png')
+            or self.kc_window.exists('next_alt.png')):
             sleep(5)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
@@ -187,7 +198,8 @@ class Combat:
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')):
+            or self.kc_window.exists('next.png')
+            or self.kc_window.exists('next_alt.png')):
             sleep(5)
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
