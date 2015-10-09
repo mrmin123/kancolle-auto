@@ -156,13 +156,9 @@ def resupply():
 def resupply_action():
     global kc_window
     if kc_window.exists(Pattern('supply_all.png').exact()):
-        # Common point of script failure. Make robust as possible
-        while not kc_window.exists(Pattern('checked.png').exact()):
-            kc_window.click('supply_all.png')
-            sleep(1)
-        wait_and_click(kc_window, 'supply_available.png', 10)
-        kc_window.wait('supply_not_available.png', WAITLONG)
-        sleep(1)
+        # Rework for new supply screen
+        kc_window.click('supply_all.png')
+        sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
 
