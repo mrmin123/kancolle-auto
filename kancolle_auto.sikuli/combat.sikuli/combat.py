@@ -18,20 +18,24 @@ class Combat:
         self.night_battles = settings['night_battles']
         self.damage_limit = settings['damage_limit']
         self.repair_time_limit = settings['repair_time_limit']
+        self.check_fatigue = settings['check_fatigue']
         self.damage_counts = [0, 0, 0]
 
-    # Tally damage state of fleet
     def tally_damages(self):
+        dmg_similarity = 0.75
         log_msg("Checking fleet condition...")
         self.damage_counts = [0, 0, 0]
-        if self.kc_window.exists(Pattern('dmg_light.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(0.95)):
+        # Tally light damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_light.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
                 self.damage_counts[0] += 1
-        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(0.95)):
+        # Tally moderate damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
                 self.damage_counts[1] += 1
-        if self.kc_window.exists(Pattern('dmg_critical.png').similar(0.95)):
-            for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(0.95)):
+        # Tally critical damages (in different fatigue states, as well)
+        if self.kc_window.exists(Pattern('dmg_critical.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
                 self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
@@ -45,6 +49,18 @@ class Combat:
                 count += dmg_count
         return count
 
+    def fatigue_check(self):
+        log_msg("Checking fleet morale!")
+        if self.kc_window.exists(Pattern('fatigue_high.png').similar(0.95)):
+            log_warning("Ship(s) with high fatigue found!")
+            return 24
+        elif self.kc_window.exists(Pattern('fatigue_med.png').similar(0.95)):
+            log_warning("Ship(s) with medium fatigue found!")
+            return 12
+        else:
+            log_success("Ships have good morale!")
+            return None
+
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         log_msg("Navigating to Sortie menu!")
@@ -57,16 +73,26 @@ class Combat:
         wait_and_click(self.kc_window, 'decision.png')
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(2)
+        # Taly damages
         self.tally_damages()
+        # Check for resupply needs
         if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
             log_warning("Fleet 1 needs resupply!")
             return self.damage_counts
+        # Check fleet damage state
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
             return self.damage_counts
         if self.count_damage_above_limit() > 0:
             log_warning("Ships (%d) in condition below threshold! Sortie cancelled!" % self.count_damage_above_limit())
             return self.damage_counts
+        # Check fleet morale, if necessary
+        if self.check_fatigue:
+            fatigue_timer = self.fatigue_check()
+            if fatigue_timer:
+                log_warning("Fleet is fatigued! Sortie cancelled!")
+                self.next_sortie_time_set(0, fatigue_timer)
+                return self.damage_counts
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
@@ -76,6 +102,12 @@ class Combat:
                 # Begin loop that checks for combat, formation select, night
                 # battle prompt, or post-battle report screen
                 self.loop_pre_combat(nodes_run)
+                # Ended on resource nodes. Leave sortie.
+                if self.kc_window.exists('next_alt.png'):
+                    log_success("Sortie complete!")
+                    check_and_click(self.kc_window, 'next_alt.png')
+                    sortie_underway = False
+                    return self.damage_counts
                 # If night battle prompt, proceed based on node and user config
                 if self.kc_window.exists('combat_nb_retreat.png'):
                     if self.night_battles[nodes_run] == 'True':
@@ -99,10 +131,15 @@ class Combat:
                 # ship reward screen
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
-                    if not self.kc_window.exists('sortie.png'):
+                    if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
+                        sleep(3)
+                if self.kc_window.exists('combat_flagship_dmg.png'):
+                    wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
+                    sleep(3)
                 # Check to see if we're back at Home screen
                 if self.kc_window.exists('sortie.png'):
+                    log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
                 # We ran a node, so increase the counter
@@ -139,7 +176,8 @@ class Combat:
         while not (self.kc_window.exists('compass.png')
             or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
             or self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')):
+            or self.kc_window.exists('next.png')
+            or self.kc_window.exists('next_alt.png')):
             sleep(5)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
@@ -160,7 +198,8 @@ class Combat:
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')):
+            or self.kc_window.exists('next.png')
+            or self.kc_window.exists('next_alt.png')):
             sleep(5)
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
@@ -176,8 +215,7 @@ class Combat:
             empty_docks += 1
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
-            while repair_queue > 0:
-                repair_queue -= 1
+            while empty_docks > 0 and repair_queue > 0:
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
@@ -198,6 +236,7 @@ class Combat:
                         self.damage_counts[0] -= 1
                         repair_start = True
                 if repair_start == True:
+                    repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
                     repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
                     if int(repair_timer[0:2]) >= self.repair_time_limit:
                         # Use bucket if the repair time is longer than desired
@@ -205,13 +244,13 @@ class Combat:
                         self.kc_window.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
                         if self.count_damage_above_limit() > 0:
-                            repair_queue += 1
                             sleep(10)
                     else:
                         # Try setting next sortie time according to repair timer
                         log_success("Repair should be done at %s" % (datetime.datetime.now()
                             + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
                         self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                        empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
         else:

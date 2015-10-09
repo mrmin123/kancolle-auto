@@ -108,15 +108,16 @@ def check_expedition():
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
         # Make sure the returned fleet is a defined one by the user
-        if fleet_id in settings['expedition_id_fleet_map']:
-            for expedition in running_expedition_list:
-                if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
-                    # Remove the associated expedition from running_expedition_list
-                    running_expedition_list.remove(expedition)
-                    # If fleet has an assigned expedition, set its return status to True.
-                    # Otherwise leave it False, since the user might be using it
-                    fleet_returned[fleet_id - 1] = True
-        log_success("Yes, fleet %s has returned!" % fleet_id)
+        if settings['expeditions_enabled'] == True:
+            if fleet_id in settings['expedition_id_fleet_map']:
+                for expedition in running_expedition_list:
+                    if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
+                        # Remove the associated expedition from running_expedition_list
+                        running_expedition_list.remove(expedition)
+                        # If fleet has an assigned expedition, set its return status to True.
+                        # Otherwise leave it False, since the user might be using it
+                        fleet_returned[fleet_id - 1] = True
+                log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click(kc_window, 'next.png')
         kc_window.wait('sortie.png', WAITLONG)
         check_expedition()
@@ -251,12 +252,13 @@ def sortie_action():
 def check_soonest():
     global running_expedition_list, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
-    for expedition in running_expedition_list:
-        if next_action == '':
-            next_action = expedition.end_time
-        else:
-            if expedition.end_time < next_action:
+    if settings['expeditions_enabled']:
+        for expedition in running_expedition_list:
+            if next_action == '':
                 next_action = expedition.end_time
+            else:
+                if expedition.end_time < next_action:
+                    next_action = expedition.end_time
 
 def get_config():
     global settings
@@ -271,12 +273,16 @@ def get_config():
     # 'General' section
     settings['program'] = config.get('General', 'Program')
     # 'Expeditions' section
-    if config.get('Expeditions', 'Fleet2'):
-        settings['expedition_id_fleet_map'][2] = config.getint('Expeditions', 'Fleet2')
-    if config.get('Expeditions', 'Fleet3'):
-        settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
-    if config.get('Expeditions', 'Fleet4'):
-        settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
+    if config.getboolean('Expeditions', 'Enabled'):
+        settings['expeditions_enabled'] = True
+        if config.get('Expeditions', 'Fleet2'):
+            settings['expedition_id_fleet_map'][2] = config.getint('Expeditions', 'Fleet2')
+        if config.get('Expeditions', 'Fleet3'):
+            settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
+        if config.get('Expeditions', 'Fleet4'):
+            settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
+    else:
+        settings['expeditions_enabled'] = False
     # 'Combat' section
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
@@ -286,13 +292,12 @@ def get_config():
         settings['formations'] = config.get('Combat', 'Formations').split(',')
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
-        print settings['formations']
         settings['night_battles'] = config.get('Combat', 'NightBattles').split(',')
         if len(settings['night_battles']) < settings['nodes']:
-            settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['formations'])))
-        print settings['night_battles']
+            settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
+        settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
     else:
         settings['combat_enabled'] = False
     log_success("Config loaded!")
@@ -301,13 +306,14 @@ def init():
     global kc_window, expedition_list, fleet_returned, combat_item, settings
     get_config()
     log_success("Starting kancolle_auto")
-    # Define expedition list
-    expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
     # Go home, then run expeditions
     go_home()
-    go_expedition()
-    for expedition in expedition_list:
-        run_expedition(expedition)
+    if settings['expeditions_enabled'] == True:
+        # Define expedition list
+        expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
+        go_expedition()
+        for expedition in expedition_list:
+            run_expedition(expedition)
     # Define combat item if combat is enabled
     if settings['combat_enabled'] == True:
         combat_item = combat_module.Combat(kc_window, settings)
@@ -318,23 +324,24 @@ def init():
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
 while True:
-    # If expedition timers are up, check for their arrival
-    for expedition in running_expedition_list:
-        now_time = datetime.datetime.now()
-        if now_time > expedition.end_time:
-            idle = False
-            log_msg("Checking for return of expedition %s" % expedition.id)
+    if settings['expeditions_enabled'] == True:
+        # If expedition timers are up, check for their arrival
+        for expedition in running_expedition_list:
+            now_time = datetime.datetime.now()
+            if now_time > expedition.end_time:
+                idle = False
+                log_msg("Checking for return of expedition %s" % expedition.id)
+                go_home()
+        # If there are fleets ready to go, go start their assigned expeditions
+        if True in fleet_returned:
             go_home()
-    # If there are fleets ready to go, go start their assigned expeditions
-    if True in fleet_returned:
-        go_home()
-        go_expedition()
-        for fleet_id, fleet_status in enumerate(fleet_returned):
-            if fleet_status == True:
-                for expedition in expedition_list:
-                    if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
-                        idle = False
-                        run_expedition(expedition)
+            go_expedition()
+            for fleet_id, fleet_status in enumerate(fleet_returned):
+                if fleet_status == True:
+                    for expedition in expedition_list:
+                        if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
+                            idle = False
+                            run_expedition(expedition)
     # If combat timer is up, go sortie
     if settings['combat_enabled'] == True:
         if datetime.datetime.now() > combat_item.next_sortie_time:
