@@ -216,7 +216,6 @@ class Combat:
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
             while empty_docks > 0 and repair_queue > 0:
-                repair_queue -= 1
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
@@ -237,6 +236,7 @@ class Combat:
                         self.damage_counts[0] -= 1
                         repair_start = True
                 if repair_start == True:
+                    repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
                     repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
                     if int(repair_timer[0:2]) >= self.repair_time_limit:
                         # Use bucket if the repair time is longer than desired
@@ -244,7 +244,6 @@ class Combat:
                         self.kc_window.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
                         if self.count_damage_above_limit() > 0:
-                            repair_queue += 1
                             sleep(10)
                     else:
                         # Try setting next sortie time according to repair timer
