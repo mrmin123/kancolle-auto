@@ -54,7 +54,7 @@ This tool was developed and tested on Windows and Ubuntu, and on Chrome with the
 
 ### Windows
 1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
-    * Make sure that you have the `tessdata` folder in the `libs` folder of your Sikuli directory. If it's missing, try re-installing Sikuli with options 1 and 5 checked, run the IDE (this should generate the `tessdata` folder), and then move it out of the `libs` folder, then reinstall Sikuli with options 2 and 5 checked
+    * Make sure that you have the `tessdata` folder in the `libs` folder of your Sikuli directory. If it's missing, try deleting the `libs` folder so Sikuli re-generates the folder with the `tessdata` files. If that still doesn't work, try re-installing Sikuli with options 1 and 5 checked, run the IDE (this should generate the `tessdata` folder), and then move it out of the `libs` folder, then reinstall Sikuli with options 2 and 5 checked
 2. Clone this project somewhere
 3. Modify `config.ini` to fit your needs
 4. Open KanColle in your favorite program (default: Chrome) and go to the Home screen
@@ -62,8 +62,8 @@ This tool was developed and tested on Windows and Ubuntu, and on Chrome with the
 
 ### Ubuntu
 1. Install Python, Java JRE 8, and Sikuli (options 2, 5) as needed
-    * Make sure that you have the `tessdata` folder in the `/usr/local/share/` directory. I actually have no idea how to generate this in Ubuntu. I had to copy over the folder from my Windows install.
-2. Install additional packages: `apt-get install wmctrl xdotool`
+2. Install additional packages: `apt-get install wmctrl xdotool tesseract-ocr`
+    * Make sure that you have the `tessdata` folder in the `/usr/local/share/` directory. For example, if tesseract-ocr installed to `/usr/share/`, move it over to the correct directory using the command `sudo cp -rpf /usr/share/tesseract-ocr/tessdata /usr/local/share/tessdata`
 3. Clone this project somewhere
 4. Modify `config.ini` to fit your needs
 5. Open KanColle in your favorite program (default: Chrome) and go to the Home screen
