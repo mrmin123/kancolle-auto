@@ -131,11 +131,11 @@ class Combat:
                 # ship reward screen
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
-                    if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('dmg_flagship_next.png')):
+                    if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
                         sleep(3)
-                if self.kc_window.exists('dmg_flagship_next.png'):
-                    wait_and_click(self.kc_window, 'dmg_flagship_next.png')
+                if self.kc_window.exists('combat_flagship_dmg.png'):
+                    wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
                 # Check to see if we're back at Home screen
                 if self.kc_window.exists('sortie.png'):
