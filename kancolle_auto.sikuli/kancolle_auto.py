@@ -230,7 +230,7 @@ def run_expedition(expedition):
         # Fleet's being used for some reason... check back later
         log_error("Fleet not available. Check back later!")
         expedition.check_later(0, 10)
-        go_home()
+        check_and_click(kc_window, 'ensei_area_01.png')
 
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
@@ -285,10 +285,10 @@ def get_config():
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
-        settings['formations'] = config.get('Combat', 'Formations').split(',')
+        settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
-        settings['night_battles'] = config.get('Combat', 'NightBattles').split(',')
+        settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
