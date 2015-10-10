@@ -277,6 +277,7 @@ def get_config():
             settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
         if config.get('Expeditions', 'Fleet4'):
             settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
+        log_success("Expeditions enabled!")
     else:
         settings['expeditions_enabled'] = False
     # 'Combat' section
@@ -294,6 +295,7 @@ def get_config():
         settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
+        log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
     log_success("Config loaded!")
