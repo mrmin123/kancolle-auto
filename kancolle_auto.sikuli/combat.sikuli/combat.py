@@ -119,7 +119,7 @@ class Combat:
                         log_success("Commencing night battle!")
                         check_and_click(self.kc_window, 'combat_nb_fight.png')
                         while not self.kc_window.exists('next.png'):
-                            sleep(15)
+                            sleep(10)
                     else:
                         # Decline night battle
                         log_msg("Declining night battle!")
@@ -182,7 +182,7 @@ class Combat:
             or self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')):
-            sleep(5)
+            sleep(3)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
             # Now check for formation select, night battle prompt, or
@@ -204,7 +204,7 @@ class Combat:
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')):
-            sleep(5)
+            sleep(3)
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
