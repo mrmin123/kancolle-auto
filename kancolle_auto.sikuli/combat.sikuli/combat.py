@@ -223,13 +223,13 @@ class Combat:
                     log_success("Starting repair on critically damaged ship!")
                     self.damage_counts[2] -= 1
                     repair_start = True
-                if repair_start == False and self.damage_limit >= 1:
+                if repair_start == False and self.damage_limit <= 1:
                     log_msg("Check for moderately-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_moderate.png').similar(0.95)):
                         log_success("Starting repair on moderately damaged ship!")
                         self.damage_counts[1] -= 1
                         repair_start = True
-                if repair_start == False and self.damage_limit >= 0:
+                if repair_start == False and self.damage_limit == 0:
                     log_msg("Check for lightly-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_light.png').similar(0.95)):
                         log_success("Starting repair on lightly damaged ship!")
