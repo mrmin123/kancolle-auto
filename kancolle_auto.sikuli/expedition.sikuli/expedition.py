@@ -67,6 +67,10 @@ def ensei_factory(ensei_id):
         return Ensei(21, 'ensei_name_21.png', 'ensei_area_03.png', datetime.timedelta(hours=2, minutes=19, seconds=25))
     elif ensei_id == 22:
         return Ensei(22, 'ensei_name_22.png', 'ensei_area_03.png', datetime.timedelta(hours=2, minutes=59, seconds=25))
+    elif ensei_id == 23:
+        return Ensei(23, 'ensei_name_23.png', 'ensei_area_03.png', datetime.timedelta(hours=3, minutes=59, seconds=25))
+    elif ensei_id == 24:
+        return Ensei(24, 'ensei_name_24.png', 'ensei_area_03.png', datetime.timedelta(hours=8, minutes=19, seconds=25))
     elif ensei_id == 25:
         return Ensei(25, 'ensei_name_25.png', 'ensei_area_04.png', datetime.timedelta(hours=39, minutes=59, seconds=25))
     elif ensei_id == 26:
@@ -79,6 +83,10 @@ def ensei_factory(ensei_id):
         return Ensei(29, 'ensei_name_29.png', 'ensei_area_04.png', datetime.timedelta(hours=23, minutes=59, seconds=25))
     elif ensei_id == 30:
         return Ensei(30, 'ensei_name_30.png', 'ensei_area_04.png', datetime.timedelta(hours=47, minutes=59, seconds=25))
+    elif ensei_id == 31:
+        return Ensei(31, 'ensei_name_31.png', 'ensei_area_04.png', datetime.timedelta(hours=1, minutes=59, seconds=25))
+    elif ensei_id == 32:
+        return Ensei(32, 'ensei_name_32.png', 'ensei_area_04.png', datetime.timedelta(hours=23, minutes=59, seconds=25))
     elif ensei_id == 35:
         return Ensei(35, 'ensei_name_35.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=59, seconds=25))
     elif ensei_id == 36:
@@ -87,6 +95,10 @@ def ensei_factory(ensei_id):
         return Ensei(37, 'ensei_name_37.png', 'ensei_area_05.png', datetime.timedelta(hours=2, minutes=44, seconds=25))
     elif ensei_id == 38:
         return Ensei(38, 'ensei_name_38.png', 'ensei_area_05.png', datetime.timedelta(hours=2, minutes=54, seconds=25))
+    elif ensei_id == 39:
+        return Ensei(39, 'ensei_name_39.png', 'ensei_area_05.png', datetime.timedelta(hours=29, minutes=59, seconds=25))
+    elif ensei_id == 40:
+        return Ensei(40, 'ensei_name_40.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=49, seconds=25))
     else:
         log_error("%s is an invalid/unsupported expedition! Defaulting to expedition 2!" % ensei_id)
         return ensei_factory(2)
