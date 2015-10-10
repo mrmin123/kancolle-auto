@@ -210,7 +210,6 @@ class Combat:
     # next sortie time accordingly
     def go_repair(self):
         log_msg("Navigating to Repair menu!")
-        repair_start = False
         empty_docks = 0
         sleep(1)
         self.kc_window.click('repair_main.png')
@@ -224,6 +223,7 @@ class Combat:
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
             while empty_docks > 0 and repair_queue > 0:
+                repair_start = False
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
@@ -261,6 +261,7 @@ class Combat:
                         empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
+                    sleep(2)
 
     def __str__(self):
         return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
