@@ -11,6 +11,8 @@ class Combat:
     def __init__(self, kc_window, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_window = kc_window
+        self.area_num = settings['combat_area']
+        self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
@@ -68,6 +70,8 @@ class Combat:
         wait_and_click(self.kc_window, 'combat.png')
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
+        if self.subarea_num > 4:
+            wait_and_click(self.kc_window, 'combat_panel_eo.png')
         wait_and_click(self.kc_window, self.subarea_pict)
         sleep(2)
         wait_and_click(self.kc_window, 'decision.png')
@@ -211,8 +215,12 @@ class Combat:
         sleep(1)
         self.kc_window.click('repair_main.png')
         sleep(2)
-        for i in self.kc_window.findAll('repair_empty.png'):
-            empty_docks += 1
+        if self.kc_window.exists('repair_empty.png'):
+            for i in self.kc_window.findAll('repair_empty.png'):
+                empty_docks += 1
+        else:
+            self.next_sortie_time_set(0, 20)
+            log_warning("Cannot repair; docks are full. Checking back in 20 minutes!")
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
             while empty_docks > 0 and repair_queue > 0:
@@ -253,8 +261,6 @@ class Combat:
                         empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
-        else:
-            log_warning("Cannot repair; docks are full.")
 
     def __str__(self):
         return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
