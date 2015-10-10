@@ -230,7 +230,7 @@ def run_expedition(expedition):
         # Fleet's being used for some reason... check back later
         log_error("Fleet not available. Check back later!")
         expedition.check_later(0, 10)
-        go_home()
+        check_and_click(kc_window, 'ensei_area_01.png')
 
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
