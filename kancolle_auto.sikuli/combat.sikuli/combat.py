@@ -119,7 +119,7 @@ class Combat:
                         log_success("Commencing night battle!")
                         check_and_click(self.kc_window, 'combat_nb_fight.png')
                         while not self.kc_window.exists('next.png'):
-                            sleep(15)
+                            sleep(10)
                     else:
                         # Decline night battle
                         log_msg("Declining night battle!")
@@ -132,12 +132,14 @@ class Combat:
                 wait_and_click(self.kc_window, 'next.png', 30)
                 sleep(3)
                 # Check to see if we're at combat retreat/continue screen or
-                # ship reward screen
+                # item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
                     if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
                         sleep(3)
+                        if check_and_click(self.kc_window, 'next_alt.png'):
+                            sleep(3)
                 if self.kc_window.exists('combat_flagship_dmg.png'):
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
@@ -182,7 +184,7 @@ class Combat:
             or self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')):
-            sleep(5)
+            sleep(3)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
             # Now check for formation select, night battle prompt, or
@@ -204,13 +206,12 @@ class Combat:
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')):
-            sleep(5)
+            sleep(3)
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
     def go_repair(self):
         log_msg("Navigating to Repair menu!")
-        repair_start = False
         empty_docks = 0
         sleep(1)
         self.kc_window.click('repair_main.png')
@@ -224,6 +225,7 @@ class Combat:
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
             while empty_docks > 0 and repair_queue > 0:
+                repair_start = False
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
@@ -261,6 +263,7 @@ class Combat:
                         empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
+                    sleep(2)
 
     def __str__(self):
         return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
