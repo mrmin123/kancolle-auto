@@ -21,6 +21,7 @@ class Combat:
         self.damage_limit = settings['damage_limit']
         self.repair_time_limit = settings['repair_time_limit']
         self.check_fatigue = settings['check_fatigue']
+        self.port_check = settings['port_check']
         self.damage_counts = [0, 0, 0]
 
     def tally_damages(self):
@@ -70,10 +71,18 @@ class Combat:
         wait_and_click(self.kc_window, 'combat.png')
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
+        # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
             wait_and_click(self.kc_window, 'combat_panel_eo.png')
+            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         wait_and_click(self.kc_window, self.subarea_pict)
         sleep(2)
+        # Check if port is filled, if necessary
+        if self.port_check:
+            if self.kc_window.exists('combat_start_warning_shipsfull.png'):
+                log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
+                return self.damage_countss
         wait_and_click(self.kc_window, 'decision.png')
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(2)
