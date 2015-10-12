@@ -77,17 +77,17 @@ class Combat:
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         wait_and_click(self.kc_window, self.subarea_pict)
         sleep(2)
-        wait_and_click(self.kc_window, 'decision.png')
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-        sleep(2)
-        # Taly damages
-        self.tally_damages()
         # Check if port is filled, if necessary
         if self.port_check:
             if self.kc_window.exists('combat_start_warning_shipsfull.png'):
                 log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15)
-                return self.damage_counts
+                return self.damage_countss
+        wait_and_click(self.kc_window, 'decision.png')
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        sleep(2)
+        # Taly damages
+        self.tally_damages()
         # Check for resupply needs
         if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
             log_warning("Fleet 1 needs resupply!")
