@@ -296,6 +296,7 @@ def get_config():
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
+        settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
