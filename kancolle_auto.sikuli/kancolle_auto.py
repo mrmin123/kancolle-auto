@@ -239,7 +239,7 @@ def sortie_action():
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
     go_home()
-    if combat_item.count_damage_above_limit() > 0:
+    if combat_item.count_damage_above_limit('repair') > 0:
         combat_item.go_repair()
     resupply()
     fleet_returned[0] = False
@@ -292,7 +292,8 @@ def get_config():
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
-        settings['damage_limit'] = config.getint('Combat', 'DamageLimit')
+        settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
+        settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         log_success("Combat enabled!")

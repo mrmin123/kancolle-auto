@@ -18,7 +18,8 @@ class Combat:
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
-        self.damage_limit = settings['damage_limit']
+        self.retreat_limit = settings['retreat_limit']
+        self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
         self.check_fatigue = settings['check_fatigue']
         self.damage_counts = [0, 0, 0]
@@ -44,10 +45,14 @@ class Combat:
 
     # Return number of ships damaged above threshold; relies on tally_damages()
     # for a reliable count
-    def count_damage_above_limit(self):
+    def count_damage_above_limit(self, limit_type):
+        if limit_type == 'retreat':
+            limit = self.retreat_limit
+        elif limit_type == 'repair':
+            limit = self.repair_limit
         count = 0
         for i, dmg_count in enumerate(self.damage_counts):
-            if i >= self.damage_limit:
+            if i >= limit:
                 count += dmg_count
         return count
 
@@ -87,8 +92,8 @@ class Combat:
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
             return self.damage_counts
-        if self.count_damage_above_limit() > 0:
-            log_warning("Ships (%d) in condition below threshold! Sortie cancelled!" % self.count_damage_above_limit())
+        if self.count_damage_above_limit('repair') > 0:
+            log_warning("Ships (%d) in condition below repair threshold! Sortie cancelled!" % self.count_damage_above_limit('repair'))
             return self.damage_counts
         # Check fleet morale, if necessary
         if self.check_fatigue:
@@ -160,8 +165,8 @@ class Combat:
                     sortie_underway = False
                     return self.damage_counts
                 # If fleet is damaged, fall back
-                if self.count_damage_above_limit() > 0 or self.damage_counts[2] > 0:
-                    log_warning("Ship(s) in condition at or below threshold! Ceasing sortie!")
+                if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
+                    log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
                     wait_and_click(self.kc_window, 'combat_retreat.png', 30)
                     sortie_underway = False
                     return self.damage_counts
@@ -223,7 +228,7 @@ class Combat:
             self.next_sortie_time_set(0, 20)
             log_warning("Cannot repair; docks are full. Checking back in 20 minutes!")
         if empty_docks != 0:
-            repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
+            repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
                 repair_start = False
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
@@ -233,27 +238,27 @@ class Combat:
                     log_success("Starting repair on critically damaged ship!")
                     self.damage_counts[2] -= 1
                     repair_start = True
-                if repair_start == False and self.damage_limit <= 1:
+                if repair_start == False and self.repair_limit <= 1:
                     log_msg("Check for moderately-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_moderate.png').similar(0.95)):
                         log_success("Starting repair on moderately damaged ship!")
                         self.damage_counts[1] -= 1
                         repair_start = True
-                if repair_start == False and self.damage_limit == 0:
+                if repair_start == False and self.repair_limit == 0:
                     log_msg("Check for lightly-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_light.png').similar(0.95)):
                         log_success("Starting repair on lightly damaged ship!")
                         self.damage_counts[0] -= 1
                         repair_start = True
                 if repair_start == True:
-                    repair_queue = empty_docks if self.count_damage_above_limit() > empty_docks else self.count_damage_above_limit()
+                    repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
                     repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
                     if int(repair_timer[0:2]) >= self.repair_time_limit:
                         # Use bucket if the repair time is longer than desired
                         log_success("Repair time too long... using bucket!")
                         self.kc_window.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
-                        if self.count_damage_above_limit() > 0:
+                        if self.count_damage_above_limit('repair') > 0:
                             sleep(10)
                     else:
                         # Try setting next sortie time according to repair timer
