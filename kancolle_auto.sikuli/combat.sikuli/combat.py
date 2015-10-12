@@ -21,6 +21,7 @@ class Combat:
         self.damage_limit = settings['damage_limit']
         self.repair_time_limit = settings['repair_time_limit']
         self.check_fatigue = settings['check_fatigue']
+        self.port_check = settings['port_check']
         self.damage_counts = [0, 0, 0]
 
     def tally_damages(self):
