@@ -70,8 +70,10 @@ class Combat:
         wait_and_click(self.kc_window, 'combat.png')
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
+        # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
             wait_and_click(self.kc_window, 'combat_panel_eo.png')
+            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         wait_and_click(self.kc_window, self.subarea_pict)
         sleep(2)
         wait_and_click(self.kc_window, 'decision.png')
