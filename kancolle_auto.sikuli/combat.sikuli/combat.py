@@ -86,6 +86,7 @@ class Combat:
         if self.port_check:
             if self.kc_window.exists('combat_start_warning_shipsfull.png'):
                 log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
                 return self.damage_counts
         # Check for resupply needs
         if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
