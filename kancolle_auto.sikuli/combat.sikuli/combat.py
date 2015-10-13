@@ -87,7 +87,7 @@ class Combat:
             if self.kc_window.exists('combat_start_warning_shipsfull.png'):
                 log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15)
-                return self.damage_countss
+                return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(2)
