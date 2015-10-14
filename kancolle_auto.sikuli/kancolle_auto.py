@@ -32,9 +32,14 @@ def focus_window():
     # Would cause issues when (0,0) to (1,1) - windows focus issue??
     kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
     kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
-    while not kc_window.exists(Pattern('home_main.png').exact()):
+    loop_count = 0
+    while not kc_window.exists(Pattern('home_main.png').exact()) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
+        loop_count += 1
+    if loop_count == 10:
+        log_error("Could not find Kancolle homepage after 10 attempts. Exiting script.")
+        exit()
     sleep(2)
 
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
@@ -232,6 +237,7 @@ def run_expedition(expedition):
         expedition.check_later(0, 10)
         check_and_click(kc_window, 'ensei_area_01.png')
 
+# Navigate to and conduct sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
     go_home()
@@ -245,6 +251,8 @@ def sortie_action():
     fleet_returned[0] = False
     log_success("Next sortie!: %s" % combat_item)
 
+# Determine when the next automated action will be, whether it's a sortie or
+# expedition action
 def check_soonest():
     global running_expedition_list, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
@@ -256,6 +264,7 @@ def check_soonest():
                 if expedition.end_time < next_action:
                     next_action = expedition.end_time
 
+# Load the config.ini file
 def get_config():
     global settings
     log_msg("Reading config file")
@@ -264,10 +273,10 @@ def get_config():
     os.chdir('..')
     config = ConfigParser.ConfigParser()
     config.read('config.ini')
-
     # Set user settings
     # 'General' section
     settings['program'] = config.get('General', 'Program')
+    settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     # 'Expeditions' section
     if config.getboolean('Expeditions', 'Enabled'):
         settings['expeditions_enabled'] = True
@@ -302,55 +311,83 @@ def get_config():
         settings['combat_enabled'] = False
     log_success("Config loaded!")
 
+# Refresh kancolle. Only supports catbomb situations and browers at the moment
+def refresh_kancolle(e):
+    global kc_window, settings
+    if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+        if settings['recovery_method'] == 'Browser':
+            # Recovery steps if using a webbrowser with no other plugins
+            # Assumes that 'Ctrl + R' is a valid keyboard shortcut for refreshing
+            type('r', KeyModifier.CTRL)
+        elif settings['recovery_method'] == 'KC3':
+            # Recovery steps if using KC3 in Chrome
+            type('r', KeyModifier.CTRL)
+            sleep(1)
+            type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
+            sleep(1)
+            kc_window.click('recovery_kc3_startanyway.png')
+        # The Game Start button is there and active, so click it to restart
+        wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
+    else:
+        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
+        print e
+        raise
+
 def init():
     global kc_window, expedition_list, fleet_returned, combat_item, settings
     get_config()
     log_success("Starting kancolle_auto")
-    # Go home, then run expeditions
-    go_home()
-    if settings['expeditions_enabled'] == True:
-        # Define expedition list
-        expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
-        go_expedition()
-        for expedition in expedition_list:
-            run_expedition(expedition)
-    # Define combat item if combat is enabled
-    if settings['combat_enabled'] == True:
-        combat_item = combat_module.Combat(kc_window, settings)
-        # Run sortie defined in combat item
-        sortie_action()
+    try:
+        # Go home, then run expeditions
+        go_home()
+        if settings['expeditions_enabled'] == True:
+            # Define expedition list
+            expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
+            go_expedition()
+            for expedition in expedition_list:
+                run_expedition(expedition)
+        # Define combat item if combat is enabled
+        if settings['combat_enabled'] == True:
+            combat_item = combat_module.Combat(kc_window, settings)
+            # Run sortie defined in combat item
+            sortie_action()
+    except FindFailed, e:
+        refresh_kancolle(e)
 
 # initialize kancolle_auto
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
 while True:
-    if settings['expeditions_enabled'] == True:
-        # If expedition timers are up, check for their arrival
-        for expedition in running_expedition_list:
-            now_time = datetime.datetime.now()
-            if now_time > expedition.end_time:
-                idle = False
-                log_msg("Checking for return of expedition %s" % expedition.id)
+    try:
+        if settings['expeditions_enabled'] == True:
+            # If expedition timers are up, check for their arrival
+            for expedition in running_expedition_list:
+                now_time = datetime.datetime.now()
+                if now_time > expedition.end_time:
+                    idle = False
+                    log_msg("Checking for return of expedition %s" % expedition.id)
+                    go_home()
+            # If there are fleets ready to go, go start their assigned expeditions
+            if True in fleet_returned:
                 go_home()
-        # If there are fleets ready to go, go start their assigned expeditions
-        if True in fleet_returned:
-            go_home()
-            go_expedition()
-            for fleet_id, fleet_status in enumerate(fleet_returned):
-                if fleet_status == True:
-                    for expedition in expedition_list:
-                        if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
-                            idle = False
-                            run_expedition(expedition)
-    # If combat timer is up, go sortie
-    if settings['combat_enabled'] == True:
-        if datetime.datetime.now() > combat_item.next_sortie_time:
-            idle = False
-            sortie_action()
-    # If fleets have been sent out and idle period is beginning, let the user
-    # know when the next scripted action will occur
-    if idle == False:
-        check_soonest()
-        log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
-        idle = True
-    sleep(20)
+                go_expedition()
+                for fleet_id, fleet_status in enumerate(fleet_returned):
+                    if fleet_status == True:
+                        for expedition in expedition_list:
+                            if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
+                                idle = False
+                                run_expedition(expedition)
+        # If combat timer is up, go sortie
+        if settings['combat_enabled'] == True:
+            if datetime.datetime.now() > combat_item.next_sortie_time:
+                idle = False
+                sortie_action()
+        # If fleets have been sent out and idle period is beginning, let the user
+        # know when the next scripted action will occur
+        if idle == False:
+            check_soonest()
+            log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
+            idle = True
+        sleep(20)
+    except FindFailed, e:
+        refresh_kancolle(e)
