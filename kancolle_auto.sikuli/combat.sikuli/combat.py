@@ -151,7 +151,7 @@ class Combat:
                     sleep(3)
                     if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
-                        sleep(3)
+                        sleep(5)
                         if check_and_click(self.kc_window, 'next_alt.png'):
                             sleep(3)
                 if self.kc_window.exists('combat_flagship_dmg.png'):
