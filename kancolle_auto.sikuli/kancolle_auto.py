@@ -314,7 +314,7 @@ def get_config():
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment
 def refresh_kancolle(e):
-    global kc_window, settings
+    global kc_window, last_refresh, settings
     if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
         if last_refresh != '':
             if last_refresh + datetime.timedelta(minutes=20) > datetime.datetime.now():
