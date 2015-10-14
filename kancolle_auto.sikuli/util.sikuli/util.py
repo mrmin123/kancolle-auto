@@ -23,7 +23,12 @@ def check_timer(kc_window, timer_img, width):
     timer[2] = ':'
     timer[5] = ':'
     timer = ''.join(timer)
-    timer = timer.replace('l', '1').replace('I', '1').replace('O', '0').replace('[', '1').replace(']', '1').replace('|', '1')
+    timer = (
+        timer.replace('l', '1').replace('I', '1').replace('[', '1').replace(']', '1')
+        .replace('|', '1').replace('!', '1').replace('O', '0').replace('o', '0')
+        .replace('D', '0').replace('Q', '0').replace('@'. '0').replace('S', '5')
+        .replace('s', '5').replace('$', '5').replace('B', '8')
+    )
     return timer
 
 # common Sikuli actions
