@@ -21,6 +21,7 @@ combat_item = None
 kc_window = None
 next_action = ''
 idle = False
+last_refresh = ''
 
 # Focus on the defined KanColle app
 def focus_window():
@@ -315,6 +316,11 @@ def get_config():
 def refresh_kancolle(e):
     global kc_window, settings
     if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+        if last_refresh != '':
+            if last_refresh + datetime.timedelta(minutes=20) > datetime.datetime.now():
+                log_error("Last catbomb and refresh was a very short time ago! Exiting script to not spam!")
+                print e
+                raise
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
             # Assumes that 'Ctrl + R' is a valid keyboard shortcut for refreshing
@@ -328,6 +334,7 @@ def refresh_kancolle(e):
             kc_window.click('recovery_kc3_startanyway.png')
         # The Game Start button is there and active, so click it to restart
         wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
+        last_refresh = datetime.datetime.now()
     else:
         log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
         print e
