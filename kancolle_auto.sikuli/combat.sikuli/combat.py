@@ -197,7 +197,8 @@ class Combat:
             or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
             or self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')):
+            or self.kc_window.exists('next_alt.png')
+            or self.kc_window.exists('catbomb.png')):
             sleep(3)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
@@ -215,12 +216,19 @@ class Combat:
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             sleep(3)
             self.loop_post_formation()
+        # Check for catbomb
+        if self.kc_window.exists('catbomb.png'):
+            raise FindFailed('Catbombed during sortie :(')
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')):
+            or self.kc_window.exists('next_alt.png')
+            or self.kc_window.exists('catbomb.png')):
             sleep(3)
+        # Check for catbomb
+        if self.kc_window.exists('catbomb.png'):
+            raise FindFailed('Catbombed during sortie :(')
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
