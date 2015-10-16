@@ -333,14 +333,13 @@ def refresh_kancolle(e):
             sleep(1)
             kc_window.click('recovery_kc3_startanyway.png')
         elif settings['recovery_method'] == 'EO':
-            # Recovery steps if using Electronic observer https://github.com/RyuuKitsune/ElectronicObserver
+            # Recovery steps if using Electronic Observer
             type(Key.F5)
             sleep(1)
-            type(Key.TAB)# In case Exit Confirmation is checked in EO Settings
+            type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
             sleep(1)
-            type(Key.SPACE) 
+            type(Key.SPACE)
             sleep(1)
-            #kc_window.click('recovery_kc3_startanyway.png')
         # The Game Start button is there and active, so click it to restart
         wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
         last_refresh = datetime.datetime.now()
