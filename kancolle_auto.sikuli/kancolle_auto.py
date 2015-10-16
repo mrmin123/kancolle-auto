@@ -33,11 +33,17 @@ def focus_window():
     # Would cause issues when (0,0) to (1,1) - windows focus issue??
     kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
     kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
+    # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
-    while not kc_window.exists(Pattern('home_main.png').exact()) and loop_count < 10:
+    while not (kc_window.exists(Pattern('home_main.png').exact())
+        or kc_window.exists('catbomb.png')) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
         loop_count += 1
+    # Check for catbomb
+    if kc_window.exists('catbomb.png'):
+        raise FindFailed('Catbombed :(')
+    # Check loop count
     if loop_count == 10:
         log_error("Could not find Kancolle homepage after 10 attempts. Exiting script.")
         exit()
