@@ -332,6 +332,14 @@ def refresh_kancolle(e):
             type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
             sleep(1)
             kc_window.click('recovery_kc3_startanyway.png')
+        elif settings['recovery_method'] == 'EO':
+            # Recovery steps if using Electronic Observer
+            type(Key.F5)
+            sleep(1)
+            type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
+            sleep(1)
+            type(Key.SPACE)
+            sleep(1)
         # The Game Start button is there and active, so click it to restart
         wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
         last_refresh = datetime.datetime.now()

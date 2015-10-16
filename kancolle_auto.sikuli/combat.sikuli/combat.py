@@ -269,6 +269,7 @@ class Combat:
                         repair_start = True
                 if repair_start == True:
                     repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
+                    sleep(2)
                     repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
                     if int(repair_timer[0:2]) >= self.repair_time_limit:
                         # Use bucket if the repair time is longer than desired
