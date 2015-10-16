@@ -24,7 +24,7 @@
 
 ## Setup Requirements
 
-* Make sure your fleets have the default names for the script to be able to identify which expedition fleet has come back.
+* Make sure your fleets have the default names (第1艦隊, 第2艦隊, 第3艦隊, 第4艦隊) for the script to be able to identify which expedition fleet has come back.
 * If the combat module is enabled, make sure there are no ships NOT in fleet 1 that are in light/moderate/critical damage. You risk sinking ships otherwise!!!
 
 ## Disclaimers, Warnings, Caveats...
