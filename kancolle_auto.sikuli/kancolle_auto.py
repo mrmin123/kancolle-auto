@@ -329,15 +329,31 @@ def refresh_kancolle(e):
                 raise
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
-            # Assumes that 'Ctrl + R' is a valid keyboard shortcut for refreshing
-            type('r', KeyModifier.CTRL)
+            # Assumes that 'F5' is a valid keyboard shortcut for refreshing
+            type(Key.F5)
         elif settings['recovery_method'] == 'KC3':
             # Recovery steps if using KC3 in Chrome
-            type('r', KeyModifier.CTRL)
+            type(Key.F5)
             sleep(1)
             type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
             sleep(1)
             kc_window.click('recovery_kc3_startanyway.png')
+        elif settings['recovery_method'] == 'KCV':
+            # Recovery steps if using KanColleViewer
+            type(Key.F5)
+        elif settings['recovery_method'] == 'KCT':
+            # Recovery steps if using KanColleTool
+            type(Key.ALT)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.ENTER)
         elif settings['recovery_method'] == 'EO':
             # Recovery steps if using Electronic Observer
             type(Key.F5)
@@ -345,7 +361,6 @@ def refresh_kancolle(e):
             type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
             sleep(1)
             type(Key.SPACE)
-            sleep(1)
         # The Game Start button is there and active, so click it to restart
         wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
         last_refresh = datetime.datetime.now()
