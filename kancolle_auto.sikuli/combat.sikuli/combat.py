@@ -194,7 +194,7 @@ class Combat:
         # Check for compass, formation select, night battle prompt, or
         # post-battle report
         while not (self.kc_window.exists('compass.png')
-            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
+            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.9))
             or self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')
@@ -210,7 +210,7 @@ class Combat:
             sleep(3)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
-        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact()):
+        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.9)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
@@ -297,4 +297,3 @@ class Combat:
         proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
         if proposed_time > self.next_sortie_time:
             self.next_sortie_time = proposed_time
-
