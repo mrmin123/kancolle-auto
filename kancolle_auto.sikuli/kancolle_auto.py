@@ -35,7 +35,7 @@ def focus_window():
     kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
     # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
-    while not (kc_window.exists('menu_main_sortie.png')
+    while not (kc_window.exists(Pattern('menu_main_home.png').exact())
         or kc_window.exists('catbomb.png')) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
