@@ -194,10 +194,11 @@ class Combat:
         # Check for compass, formation select, night battle prompt, or
         # post-battle report
         while not (self.kc_window.exists('compass.png')
-            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).exact())
+            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95))
             or self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')):
+            or self.kc_window.exists('next_alt.png')
+            or self.kc_window.exists('catbomb.png')):
             sleep(3)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
@@ -209,18 +210,25 @@ class Combat:
             sleep(3)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
-        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).exact()):
+        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             sleep(3)
             self.loop_post_formation()
+        # Check for catbomb
+        if self.kc_window.exists('catbomb.png'):
+            raise FindFailed('Catbombed during sortie :(')
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')):
+            or self.kc_window.exists('next_alt.png')
+            or self.kc_window.exists('catbomb.png')):
             sleep(3)
+        # Check for catbomb
+        if self.kc_window.exists('catbomb.png'):
+            raise FindFailed('Catbombed during sortie :(')
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
@@ -261,6 +269,7 @@ class Combat:
                         repair_start = True
                 if repair_start == True:
                     repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
+                    sleep(2)
                     repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
                     if int(repair_timer[0:2]) >= self.repair_time_limit:
                         # Use bucket if the repair time is longer than desired
@@ -288,4 +297,3 @@ class Combat:
         proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
         if proposed_time > self.next_sortie_time:
             self.next_sortie_time = proposed_time
-
