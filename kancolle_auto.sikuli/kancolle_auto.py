@@ -2,8 +2,8 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (sleep, get_rand, check_and_click, wait_and_click, check_timer,
-    log_msg, log_success, log_warning, log_error)
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+    check_timer, log_msg, log_success, log_warning, log_error)
 
 # Sikuli settings
 Settings.OcrTextRead = True
@@ -72,7 +72,7 @@ def go_home():
             # the Home page just in case we haven't been at Home for a while
             log_success("Refreshing Home!")
             # Click a random menu item
-            kc_window.click(random.choice(random_menu))
+            rclick(kc_window, random.choice(random_menu))
             sleep(3)
             # A little bit of code reuse here...
             if not check_and_click(kc_window, 'home_side.png'):
@@ -155,7 +155,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     sleep(1)
-                    kc_window.click(fleet_name)
+                    rclick(kc_window, fleet_name)
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -169,7 +169,7 @@ def resupply_action():
     global kc_window
     if kc_window.exists(Pattern('supply_all.png').exact()):
         # Rework for new supply screen
-        kc_window.click('supply_all.png')
+        rclick(kc_window, 'supply_all.png')
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")

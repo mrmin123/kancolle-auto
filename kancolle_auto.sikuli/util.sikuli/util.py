@@ -1,19 +1,20 @@
 from sikuli import *
-from random import random
+from random import uniform
 from time import sleep as tsleep, strftime
+from re import match
 
 Settings.OcrTextRead = True
 
 # Custom sleep() function to make the sleep period more variable. Maximum
 # sleep length is 2 * sec
 def sleep(sec):
-    tsleep(sec + (sec * random()))
+    tsleep(uniform(sec, sec * 2))
 
 # Custom function to get some pseudo-random value. Here in case variability is
 # needed in a non-sleep() function. Maximum return is base + flex.
 # value is 2 * integer
 def get_rand(base, flex):
-    return int(base + (flex * random()))
+    return int(uniform(base, base + flex))
 
 # Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
 # to fix values in case OCR grabs the wrong characters.
@@ -31,10 +32,28 @@ def check_timer(kc_window, timer_img, width):
     )
     return timer
 
+# Random Click action. Offsets the mouse into a random point within the
+# matching image/pattern before clicking.
+def rclick(kc_window, pic):
+    # This slows down the click actions, but it looks for the pattern and
+    # finds the size of the image from the resulting Pattern object.
+    m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
+    if m:
+        # If a match is found and the x,y sizes can be ascertained, generate
+        # the random offsets. Otherwise, just click the damn middle.
+        x_width = int(m.group(1)) / 2
+        y_height = int(m.group(2)) / 2
+        if isinstance(pic, str):
+            pic = Pattern(pic).targetOffset(int(uniform(-x_width, x_width)), int(uniform(-y_height, y_height)))
+        elif isinstance(pic, Pattern):
+            pic = pic.targetOffset(int(uniform(-x_width, x_width)), int(uniform(-y_height, y_height)))
+    kc_window.click(pic)
+
 # common Sikuli actions
 def check_and_click(kc_window, pic):
     if kc_window.exists(pic):
-        kc_window.click(pic)
+        rclick(kc_window, pic)
+        #kc_window.click(pic)
         return True
     return False
 
@@ -43,7 +62,8 @@ def wait_and_click(kc_window, pic, time=0):
         kc_window.wait(pic, time)
     else:
         kc_window.wait(pic)
-    kc_window.click(pic)
+    rclick(kc_window, pic)
+    #kc_window.click(pic)
 
 # log colors
 class color:

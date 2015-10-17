@@ -1,8 +1,8 @@
 # Combat list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, check_and_click, wait_and_click, check_timer,
-    log_msg, log_success, log_warning, log_error)
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+    check_timer, log_msg, log_success, log_warning, log_error)
 
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
