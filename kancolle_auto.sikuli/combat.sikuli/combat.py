@@ -236,7 +236,7 @@ class Combat:
         log_msg("Navigating to Repair menu!")
         empty_docks = 0
         sleep(1)
-        self.kc_window.click('repair_main.png')
+        self.kc_window.click('menu_main_repair.png')
         sleep(2)
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
