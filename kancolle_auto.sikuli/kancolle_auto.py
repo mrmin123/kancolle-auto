@@ -53,12 +53,11 @@ def focus_window():
 # returning expeditions
 def go_home():
     global kc_window
-    random_menu = ['menu_main_sortie.png', 'menu_main_development.png', 'menu_main_equip.png',
-        'menu_main_fleetcomp.png', 'menu_main_repair.png', 'menu_main_supply.png',
-        'menu_main_home.png', 'menu_main_quests.png']
+    random_menu = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_supply.png',
+        'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png',
+        'menu_top_profile.png', 'menu_top_quests.png']
     # Focus on KanColle
     focus_window()
-    kc_window.wait('menu_top_profile.png', WAITLONG)
     # Check if we're already at home screen
     if kc_window.exists('menu_main_sortie.png'):
         # We are, so check for expeditions
