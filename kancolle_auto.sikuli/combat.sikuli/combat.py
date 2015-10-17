@@ -72,7 +72,7 @@ class Combat:
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         log_msg("Navigating to Sortie menu!")
-        self.kc_window.click('sortie.png')
+        self.kc_window.click('menu_main_sortie.png')
         wait_and_click(self.kc_window, 'combat.png')
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
@@ -149,7 +149,7 @@ class Combat:
                 # item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
-                    if not (self.kc_window.exists('sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
+                    if not (self.kc_window.exists('menu_main_sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
                         wait_and_click(self.kc_window, 'next_alt.png', 20)
                         sleep(5)
                         if check_and_click(self.kc_window, 'next_alt.png'):
@@ -158,7 +158,7 @@ class Combat:
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
                 # Check to see if we're back at Home screen
-                if self.kc_window.exists('sortie.png'):
+                if self.kc_window.exists('menu_main_sortie.png'):
                     log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
