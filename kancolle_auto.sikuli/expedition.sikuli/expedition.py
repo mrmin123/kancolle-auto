@@ -1,8 +1,8 @@
 # Ensei (expedition) task list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, check_and_click, wait_and_click, check_timer,
-    log_msg, log_success, log_warning, log_error)
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+    check_timer, log_msg, log_success, log_warning, log_error)
 
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration):

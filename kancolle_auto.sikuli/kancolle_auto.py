@@ -2,8 +2,8 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (sleep, get_rand, check_and_click, wait_and_click, check_timer,
-    log_msg, log_success, log_warning, log_error)
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+    check_timer, log_msg, log_success, log_warning, log_error)
 
 # Sikuli settings
 Settings.OcrTextRead = True
@@ -35,7 +35,7 @@ def focus_window():
     kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
     # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
-    while not (kc_window.exists(Pattern('home_main.png').exact())
+    while not (kc_window.exists(Pattern('menu_main_home.png').exact())
         or kc_window.exists('catbomb.png')) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
@@ -53,13 +53,13 @@ def focus_window():
 # returning expeditions
 def go_home():
     global kc_window
-    random_menu = ['supply_main.png', 'repair_main.png', 'sortie.png',
-        'senseki_off.png', 'quests_main.png']
+    random_menu = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_supply.png',
+        'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png',
+        'menu_top_profile.png', 'menu_top_quests.png']
     # Focus on KanColle
     focus_window()
-    kc_window.wait('senseki_off.png', WAITLONG)
     # Check if we're already at home screen
-    if kc_window.exists('sortie.png'):
+    if kc_window.exists('menu_main_sortie.png'):
         # We are, so check for expeditions
         log_success("At Home!")
         if check_expedition():
@@ -72,16 +72,16 @@ def go_home():
             # the Home page just in case we haven't been at Home for a while
             log_success("Refreshing Home!")
             # Click a random menu item
-            kc_window.click(random.choice(random_menu))
+            rclick(kc_window, random.choice(random_menu))
             sleep(3)
             # A little bit of code reuse here...
-            if not check_and_click(kc_window, 'home_side.png'):
+            if not check_and_click(kc_window, 'menu_side_home.png'):
                 # If the side Home button doesn't exist, we're probably in a
                 # top-menu item...
-                while not kc_window.exists('sortie.png'):
+                while not kc_window.exists('menu_main_sortie.png'):
                     # ... so hit the return button that exists in the top-menu item
                     # pages until we get home
-                    wait_and_click(kc_window, 'top_menu_return.png', 10)
+                    wait_and_click(kc_window, 'menu_top_home.png', 10)
                     sleep(2)
             log_success("At Home!")
             # Check for completed expeditions. Resupply them if there are.
@@ -90,17 +90,17 @@ def go_home():
     else:
         # We're not, so check for expeditions by getting to the Home screen
         log_msg("Going Home!")
-        if not check_and_click(kc_window, 'home_side.png'):
+        if not check_and_click(kc_window, 'menu_side_home.png'):
             # If the side Home button doesn't exist, we're probably in a
             # top-menu item...
-            while not kc_window.exists('sortie.png'):
+            while not kc_window.exists('menu_main_sortie.png'):
                 # ... so hit the return button that exists in the top-menu item
                 # pages until we get home
-                wait_and_click(kc_window, 'top_menu_return.png', 10)
+                wait_and_click(kc_window, 'menu_top_home.png', 10)
                 sleep(2)
         # Back at home
-        kc_window.hover('senseki_off.png')
-        kc_window.wait('sortie.png', WAITLONG)
+        kc_window.hover('menu_top_profile.png')
+        kc_window.wait('menu_main_sortie.png', WAITLONG)
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -111,7 +111,7 @@ def go_home():
 def check_expedition():
     global kc_window, expedition_list, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
-    kc_window.hover('senseki_off.png')
+    kc_window.hover('menu_top_profile.png')
     if check_and_click(kc_window, 'expedition_finish.png'):
         sleep(3)
         wait_and_click(kc_window, 'next.png', WAITLONG)
@@ -131,7 +131,7 @@ def check_expedition():
                         fleet_returned[fleet_id - 1] = True
                 log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click(kc_window, 'next.png')
-        kc_window.wait('sortie.png', WAITLONG)
+        kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
         return True
     else:
@@ -143,11 +143,11 @@ def resupply():
     global fleet_returned
     log_msg("Lets resupply fleets!")
     if (True in fleet_returned):
-        kc_window.hover('senseki_off.png')
+        kc_window.hover('menu_top_profile.png')
         # Check if we're already at resupply screen
         if not kc_window.exists('supply_screen.png'):
-            if not check_and_click(kc_window, 'supply_main.png'):
-                check_and_click(kc_window, 'supply_side.png')
+            if not check_and_click(kc_window, 'menu_main_supply.png'):
+                check_and_click(kc_window, 'menu_side_supply.png')
             kc_window.wait('supply_screen.png', WAITLONG)
         for fleet_id, returned in enumerate(fleet_returned):
             if returned:
@@ -155,7 +155,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     sleep(1)
-                    kc_window.click(fleet_name)
+                    rclick(kc_window, fleet_name)
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -169,7 +169,7 @@ def resupply_action():
     global kc_window
     if kc_window.exists(Pattern('supply_all.png').exact()):
         # Rework for new supply screen
-        kc_window.click('supply_all.png')
+        rclick(kc_window, 'supply_all.png')
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
@@ -178,8 +178,8 @@ def resupply_action():
 def go_expedition():
     global kc_window
     log_msg("Navigating to Expedition menu!")
-    kc_window.hover('senseki_off.png')
-    wait_and_click(kc_window, 'sortie.png', WAITLONG)
+    kc_window.hover('menu_top_profile.png')
+    wait_and_click(kc_window, 'menu_main_sortie.png', WAITLONG)
     wait_and_click(kc_window, 'expedition.png', WAITLONG)
     kc_window.wait('expedition_screen_ready.png', WAITLONG)
 
@@ -224,12 +224,12 @@ def run_expedition(expedition):
         if (kc_window.exists('supply_alert.png') or kc_window.exists('supply_red_alert.png')):
             log_warning("Fleet %s needs resupply!" % fleet_id)
             fleet_returned[fleet_id - 1] = True
-            check_and_click(kc_window, 'supply_side.png')
+            check_and_click(kc_window, 'menu_side_supply.png')
             resupply()
             go_expedition()
             run_expedition(expedition)
             return
-        kc_window.hover('senseki_off.png')
+        kc_window.hover('menu_top_profile.png')
         sleep(1)
         wait_and_click(kc_window, 'ensei_start.png')
         kc_window.wait('exp_started.png', 30)
