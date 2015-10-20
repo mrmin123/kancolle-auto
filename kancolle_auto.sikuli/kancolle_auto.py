@@ -408,7 +408,7 @@ while True:
                 go_home()
                 go_expedition()
                 for fleet_id, fleet_status in enumerate(fleet_returned):
-                    if fleet_status == True:
+                    if fleet_status == True and fleet_id != 0:
                         for expedition in expedition_list:
                             if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
                                 idle = False
