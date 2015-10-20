@@ -342,8 +342,7 @@ def refresh_kancolle(e):
             # Recovery steps if using KanColleViewer
             type(Key.F5)
         elif settings['recovery_method'] == 'KCT':
-            # Recovery steps if using KanColleTool; requires cookie hack to be
-            # enabled as it refreshes via 'Get API Link' option
+            # Recovery steps if using KanColleTool; refreshes via 'Get API Link' option
             type(Key.ALT)
             sleep(1)
             type(Key.DOWN)
