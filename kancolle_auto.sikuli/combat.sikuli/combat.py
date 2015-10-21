@@ -59,10 +59,10 @@ class Combat:
 
     def fatigue_check(self):
         log_msg("Checking fleet morale!")
-        if self.kc_window.exists(Pattern('fatigue_high.png').similar(0.95)):
+        if self.kc_window.exists(Pattern('fatigue_high.png').similar(0.98)):
             log_warning("Ship(s) with high fatigue found!")
             return 24
-        elif self.kc_window.exists(Pattern('fatigue_med.png').similar(0.95)):
+        elif self.kc_window.exists(Pattern('fatigue_med.png').similar(0.98)):
             log_warning("Ship(s) with medium fatigue found!")
             return 12
         else:
