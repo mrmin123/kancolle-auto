@@ -207,7 +207,7 @@ class Combat:
             log_msg("Spinning compass!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             # Restart this loop in case there's another compass coming up
-            sleep(3)
+            sleep(5)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
