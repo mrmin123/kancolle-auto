@@ -1,7 +1,7 @@
 # Ensei (expedition) task list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 class Ensei:

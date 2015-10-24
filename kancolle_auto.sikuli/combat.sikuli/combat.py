@@ -1,7 +1,7 @@
 # Combat list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 Settings.OcrTextRead = True
@@ -72,8 +72,7 @@ class Combat:
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         log_msg("Navigating to Sortie menu!")
-        self.kc_window.click('menu_main_sortie.png')
-        wait_and_click(self.kc_window, 'combat.png')
+        rnavigation(kc_window, 'combat')
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
         # If an EO is specified, press the red EO arrow on the right
@@ -94,7 +93,7 @@ class Combat:
         # Taly damages
         self.tally_damages()
         # Check for resupply needs
-        if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
+        if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
             log_warning("Fleet 1 needs resupply!")
             return self.damage_counts
         # Check fleet damage state
@@ -186,8 +185,8 @@ class Combat:
                 log_warning("Cannot sortie due to ships under repair!")
                 self.next_sortie_time_set(0, get_rand(5, 5))
                 # Expand on this so it goes to repair menu and recheck?
-            elif self.kc_window.exists('combat_nogo_supply.png'):
-                log_warning("Cannot sortie due to ships needing supply!")
+            elif self.kc_window.exists('combat_nogo_resupply.png'):
+                log_warning("Cannot sortie due to ships needing resupply!")
         return self.damage_counts
 
     def loop_pre_combat(self, nodes_run):
@@ -236,7 +235,7 @@ class Combat:
         log_msg("Navigating to Repair menu!")
         empty_docks = 0
         sleep(1)
-        self.kc_window.click('menu_main_repair.png')
+        rnavigation(kc_window, 'repair')
         sleep(2)
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
