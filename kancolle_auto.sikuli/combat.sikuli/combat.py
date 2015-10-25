@@ -71,8 +71,7 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
-        log_msg("Navigating to Sortie menu!")
-        rnavigation(kc_window, 'combat')
+        rnavigation(kc_window, 'combat', 2)
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
         # If an EO is specified, press the red EO arrow on the right
@@ -232,9 +231,7 @@ class Combat:
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
     def go_repair(self):
-        log_msg("Navigating to Repair menu!")
         empty_docks = 0
-        sleep(1)
         rnavigation(kc_window, 'repair')
         sleep(2)
         if self.kc_window.exists('repair_empty.png'):

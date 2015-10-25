@@ -140,7 +140,7 @@ def resupply_action():
 # Navigate to Expedition menu
 def go_expedition():
     global kc_window
-    rnavigation(kc_window, 'expedition')
+    rnavigation(kc_window, 'expedition', 2)
     kc_window.wait('expedition_screen_ready.png', WAITLONG)
 
 # Run expedition

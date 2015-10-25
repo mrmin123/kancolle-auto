@@ -50,7 +50,7 @@ def rclick(kc_window, pic):
     kc_window.click(pic)
 
 # Random navigation actions.
-def rnavigation(kc_window, destination):
+def rnavigation(kc_window, destination, max=3):
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
         'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
@@ -60,7 +60,7 @@ def rnavigation(kc_window, destination):
         'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
     menu_sortie_top_options = ['sortie_top_combat.png', 'sortie_top_expedition.png', 'sortie_top_pvp.png']
-    menu_loop_count = randint(0, 3)
+    menu_loop_count = randint(0, max)
     # Figure out where we are
     current_location = ''
     if kc_window.exists('menu_main_sortie.png'):
@@ -79,7 +79,7 @@ def rnavigation(kc_window, destination):
             pass
         elif destination == 'refresh_home':
             # Refresh home
-            log_msg("Refreshing home!")
+            log_msg("Refreshing home with %d or less sidesteps!" % (menu_loop_count))
             rchoice = rnavigation_chooser(menu_top_options + menu_main_options, [])
             rclick(kc_window, rchoice)
             sleep(2)
@@ -91,17 +91,17 @@ def rnavigation(kc_window, destination):
             elif rchoice.startswith('menu_main'):
                 if menu_loop_count == 0:
                     rclick(kc_window, 'menu_side_home.png')
-                rchoice = rnavigation_chooser(menu_side_options, ['menu_side' + rchoice[10:]])
-                while menu_loop_count > 0:
-                    rchoice = rnavigation_chooser(menu_side_options, [rchoice])
-                    rclick(kc_window, rchoice)
-                    sleep(2)
-                    menu_loop_count -= 1
-                    if menu_loop_count == 0:
-                        rclick(kc_window, 'menu_side_home.png')
+                else:
+                    rchoice = rnavigation_chooser(menu_side_options, ['menu_side' + rchoice[10:]])
+                    while menu_loop_count > 0:
+                        rchoice = rnavigation_chooser(menu_side_options, [rchoice])
+                        rclick(kc_window, rchoice)
+                        sleep(2)
+                        menu_loop_count -= 1
+                    rclick(kc_window, 'menu_side_home.png')
         elif destination in ['combat', 'expedition']:
             # Go to combat and expedition menu
-            log_msg("Navigating to " + destination + " menu!")
+            log_msg("Navigating to %s menu with %d sidesteps!" % (destination, menu_loop_count))
             rclick(kc_window, 'menu_main_sortie.png')
             sleep(2)
             if menu_loop_count == 0:
@@ -109,6 +109,7 @@ def rnavigation(kc_window, destination):
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
                 rclick(kc_window, rchoice)
+                menu_loop_count -= 1
                 while menu_loop_count > 0:
                     if rchoice.startswith('sortie_top'):
                         rchoice = rnavigation_chooser(menu_sortie_top_options, [rchoice, 'sortie_top_' + destination + '.png'])
@@ -117,64 +118,65 @@ def rnavigation(kc_window, destination):
                     rclick(kc_window, rchoice)
                     sleep(2)
                     menu_loop_count -= 1
-                    if menu_loop_count == 0:
-                        rclick(kc_window, 'sortie_top_' + destination + '.png')
+                rclick(kc_window, 'sortie_top_' + destination + '.png')
         else:
             # Go to and side menu sub screen
-            log_msg("Navigating to " + destination + " screen!")
+            log_msg("Navigating to %s screen with %d sidesteps!" % (destination, menu_loop_count))
             if menu_loop_count == 0:
                 rclick(kc_window, 'menu_main_' + destination + '.png')
             else:
                 rchoice = rnavigation_chooser(menu_main_options, ['menu_main_' + destination + '.png'])
                 rclick(kc_window, rchoice)
+                menu_loop_count -= 1
                 while menu_loop_count > 0:
                     if rchoice.startswith('menu_main_'):
                         rchoice = rnavigation_chooser(menu_side_options, ['menu_side' + rchoice[10:], 'sortie_top_' + destination + '.png'])
                     else:
                         rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'sortie_top_' + destination + '.png'])
                     rclick(kc_window, rchoice)
-                    sleep(32)
+                    sleep(2)
                     menu_loop_count -= 1
-                    if menu_loop_count == 0:
-                        rclick(kc_window, 'menu_side_' + destination + '.png')
+                rclick(kc_window, 'menu_side_' + destination + '.png')
         sleep(2)
     if current_location == 'sidemenu':
         # Starting from a main menu item screen
         if destination == 'home' or destination == 'refresh_home':
             # Go or refresh home
-            log_msg("Going home!")
+            log_msg("Going home with %d or less sidesteps!" % (menu_loop_count))
             if menu_loop_count == 0:
                 rclick(kc_window, 'menu_side_home.png')
-            rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [])
-            while menu_loop_count > 0:
-                rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [rchoice])
-                rclick(kc_window, rchoice)
-                sleep(2)
-                menu_loop_count -= 1
-                if rchoice.startswith('menu_top'):
-                    # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
-                    while not kc_window.exists('menu_main_sortie.png'):
-                        wait_and_click(kc_window, 'menu_top_home.png', 10)
-                        sleep(2)
-                    # This takes us back to home immediately, so no more random menus
-                    menu_loop_count = 0
-                else:
-                    # Still at side menu item, so continue as normal
-                    if menu_loop_count == 0:
-                        # Unless that was the last random menu item; then go home
-                        rclick(kc_window, 'menu_side_home.png')
+            else:
+                rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [])
+                while menu_loop_count > 0:
+                    rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [rchoice])
+                    rclick(kc_window, rchoice)
+                    sleep(2)
+                    menu_loop_count -= 1
+                    if rchoice.startswith('menu_top'):
+                        # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
+                        while not kc_window.exists('menu_main_sortie.png'):
+                            wait_and_click(kc_window, 'menu_top_home.png', 10)
+                            sleep(2)
+                        # This takes us back to home immediately, so no more random menus
+                        menu_loop_count = 0
+                    else:
+                        # Still at side menu item, so continue as normal
+                        if menu_loop_count == 0:
+                            # Unless that was the last random menu item; then go home
+                            rclick(kc_window, 'menu_side_home.png')
         else:
             # Go to another main menu item screen
-            log_msg("Navigating to " + destination + " screen!")
+            log_msg("Navigating to %s screen with %d sidesteps!" % (destination, menu_loop_count))
             if menu_loop_count == 0:
                 rclick(kc_window, 'menu_side_' + destination + '.png')
             else:
-                rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'menu_side_' + destination + '.png'])
-                rclick(kc_window, rchoice)
-                sleep(2)
-                menu_loop_count -= 1
-                if menu_loop_count == 0:
-                    rclick(kc_window, 'menu_side_' + destination + '.png')
+                rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + destination + '.png'])
+                while menu_loop_count > 0:
+                    rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'menu_side_' + destination + '.png'])
+                    rclick(kc_window, rchoice)
+                    menu_loop_count -= 1
+                    sleep(2)
+                rclick(kc_window, 'menu_side_' + destination + '.png')
         sleep(2)
     if current_location == 'topmenu':
         # Starting from top menu item. Theoretically, the script should never
