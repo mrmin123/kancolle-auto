@@ -12,4 +12,4 @@
 * Random variations to hopefully make the tool more difficult to detect
 * Helpful timers and other messages in console (when using sikuli-script)
 
-**For a more in-depth list of features, as well as installation/usage directions, please refer to the [kancolle-auto wiki](https://github.com/mrmin123/kancolle-auto/wiki).**
+**For a more in-depth list of features, as well as installation/usage directions, please refer to the [kancolle-auto wiki](http://github.com/mrmin123/kancolle-auto/wiki). Please also check the [Changelog](http://github.com/mrmin123/kancolle-auto/wiki/Changelog) frequently to make sure you have the latest updates.**
