@@ -72,7 +72,6 @@ class Combat:
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         rnavigation(kc_window, 'combat', 2)
-        sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
         # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
@@ -233,7 +232,6 @@ class Combat:
     def go_repair(self):
         empty_docks = 0
         rnavigation(kc_window, 'repair')
-        sleep(2)
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1

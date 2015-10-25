@@ -83,17 +83,15 @@ def check_expedition():
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
-        # Make sure the returned fleet is a defined one by the user
+        log_success("Yes, fleet %s has returned!" % fleet_id)
+        fleet_returned[fleet_id - 1] = True
+        # Check if the returned fleet is one defined by the user
         if settings['expeditions_enabled'] == True:
             if fleet_id in settings['expedition_id_fleet_map']:
                 for expedition in running_expedition_list:
                     if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
                         # Remove the associated expedition from running_expedition_list
                         running_expedition_list.remove(expedition)
-                        # If fleet has an assigned expedition, set its return status to True.
-                        # Otherwise leave it False, since the user might be using it
-                        fleet_returned[fleet_id - 1] = True
-                log_success("Yes, fleet %s has returned!" % fleet_id)
         wait_and_click(kc_window, 'next.png')
         kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
@@ -330,15 +328,16 @@ def init():
     get_config()
     log_success("Starting kancolle_auto")
     try:
-        # Go home, then run expeditions
+        # Go home
         go_home()
+        # Define expedition list if expeditions module is enabled
         if settings['expeditions_enabled'] == True:
-            # Define expedition list
             expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
+            # Run expeditions defined in expedition list
             go_expedition()
             for expedition in expedition_list:
                 run_expedition(expedition)
-        # Define combat item if combat is enabled
+        # Define combat item if combat module is enabled
         if settings['combat_enabled'] == True:
             combat_item = combat_module.Combat(kc_window, settings)
             # Run sortie defined in combat item
