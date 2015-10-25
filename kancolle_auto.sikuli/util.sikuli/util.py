@@ -84,6 +84,7 @@ def rnavigation(kc_window, destination, max=3):
             rchoice = rnavigation_chooser(menu_top_options + menu_main_options, [])
             wait_and_click(kc_window, rchoice)
             sleep(2)
+            menu_loop_count -= 1
             if rchoice.startswith('menu_top'):
                 # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
                 while not kc_window.exists('menu_main_sortie.png'):
@@ -93,7 +94,7 @@ def rnavigation(kc_window, destination, max=3):
                 if menu_loop_count == 0:
                     wait_and_click(kc_window, 'menu_side_home.png')
                 else:
-                    rchoice = rnavigation_chooser(menu_side_options, ['menu_side' + rchoice[10:]])
+                    rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + rchoice[10:]])
                     while menu_loop_count > 0:
                         rchoice = rnavigation_chooser(menu_side_options, [rchoice])
                         wait_and_click(kc_window, rchoice)
@@ -132,8 +133,8 @@ def rnavigation(kc_window, destination, max=3):
                 wait_and_click(kc_window, rchoice)
                 menu_loop_count -= 1
                 while menu_loop_count > 0:
-                    if rchoice.startswith('menu_main_'):
-                        rchoice = rnavigation_chooser(menu_side_options, ['menu_side' + rchoice[10:], 'sortie_top_' + destination + '.png'])
+                    if rchoice.startswith('menu_main'):
+                        rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + rchoice[10:], 'sortie_top_' + destination + '.png'])
                     else:
                         rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'sortie_top_' + destination + '.png'])
                     wait_and_click(kc_window, rchoice)

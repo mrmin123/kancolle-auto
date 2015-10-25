@@ -71,7 +71,7 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
-        rnavigation(kc_window, 'combat', 2)
+        rnavigation(self.kc_window, 'combat', 2)
         wait_and_click(self.kc_window, self.area_pict)
         # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
@@ -196,7 +196,7 @@ class Combat:
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
-            sleep(3)
+            sleep(2)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
             # Now check for formation select, night battle prompt, or
@@ -204,14 +204,14 @@ class Combat:
             log_msg("Spinning compass!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             # Restart this loop in case there's another compass coming up
-            sleep(5)
+            sleep(6)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-            sleep(3)
+            sleep(10)
             self.loop_post_formation()
         # Check for catbomb
         if self.kc_window.exists('catbomb.png'):
@@ -222,7 +222,7 @@ class Combat:
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
-            sleep(3)
+            sleep(2)
         # Check for catbomb
         if self.kc_window.exists('catbomb.png'):
             raise FindFailed('Catbombed during sortie :(')
@@ -231,7 +231,7 @@ class Combat:
     # next sortie time accordingly
     def go_repair(self):
         empty_docks = 0
-        rnavigation(kc_window, 'repair')
+        rnavigation(self.kc_window, 'repair')
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1
