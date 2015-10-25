@@ -72,7 +72,6 @@ class Expedition:
             check_and_click(self.kc_window, 'ensei_area_01.png')
             return False
 
-
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration, fleet_id):
         self.id = ensei_id

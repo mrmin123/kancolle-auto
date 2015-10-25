@@ -28,7 +28,7 @@ def check_timer(kc_window, timer_img, width):
         timer.replace('l', '1').replace('I', '1').replace('[', '1').replace(']', '1')
         .replace('|', '1').replace('!', '1').replace('O', '0').replace('o', '0')
         .replace('D', '0').replace('Q', '0').replace('@', '0').replace('S', '5')
-        .replace('s', '5').replace('$', '5').replace('B', '8')
+        .replace('s', '5').replace('$', '5').replace('B', '8').replace(' ', '')
     )
     return timer
 
