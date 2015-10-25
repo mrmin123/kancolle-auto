@@ -50,7 +50,7 @@ def focus_window():
 
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
 # returning expeditions
-def go_home():
+def go_home(refresh=False):
     global kc_window
     # Focus on KanColle
     focus_window()
@@ -63,7 +63,10 @@ def go_home():
         log_msg("Checking for returning expeditions!")
         resupply()
     else:
-        rnavigation(kc_window, 'refresh_home')
+        if refresh:
+            rnavigation(kc_window, 'refresh_home')
+        else:
+            rnavigation(kc_window, 'home')
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -146,14 +149,13 @@ def expedition_action(fleet_id):
             fleet_returned[expedition.fleet_id - 1] = True
             check_and_click(kc_window, 'menu_side_resupply.png')
             resupply()
-            go_home()
             expedition_item.go_expedition()
         fleet_returned[expedition.fleet_id - 1] = False
 
 # Navigate to and conduct sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
-    go_home()
+    go_home(True)
     combat_item.go_sortie()
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
@@ -277,7 +279,7 @@ def init():
     log_success("Starting kancolle_auto")
     try:
         # Go home
-        go_home()
+        go_home(True)
         # Define expedition list if expeditions module is enabled
         if settings['expeditions_enabled'] == True:
             expedition_item = expedition_module.Expedition(kc_window, settings)
@@ -303,7 +305,7 @@ while True:
                 if now_time > expedition.end_time:
                     idle = False
                     log_msg("Checking for return of expedition %s" % expedition.id)
-                    go_home()
+                    go_home(True)
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
                 go_home()
