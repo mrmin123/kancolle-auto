@@ -24,9 +24,10 @@ class Expedition:
     def run_expedition(self, expedition):
         # Run expedition
         log_msg("Let's send an expedition out!")
-        wait_and_click(self.kc_window, expedition.area_pict, 10)
-        sleep(2)
-        wait_and_click(self.kc_window, expedition.name_pict, 10)
+        sleep(1)
+        while not check_and_click(self.kc_window, expedition.name_pict):
+            wait_and_click(self.kc_window, expedition.area_pict, 10)
+            sleep(2)
         # If the expedition can't be selected, it's either running or just returned
         if not self.kc_window.exists('decision.png'):
             if self.kc_window.exists('expedition_time_complete.png'):
