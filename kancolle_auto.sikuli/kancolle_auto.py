@@ -2,7 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 # Sikuli settings
@@ -14,9 +14,8 @@ WAITLONG = 60
 settings = {
     'expedition_id_fleet_map': {}
 }
-expedition_list = None
-running_expedition_list = []
 fleet_returned = [False, False, False, False]
+expedition_item = None
 combat_item = None
 kc_window = None
 next_action = ''
@@ -51,56 +50,23 @@ def focus_window():
 
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
 # returning expeditions
-def go_home():
+def go_home(refresh=False):
     global kc_window
-    random_menu = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_supply.png',
-        'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png',
-        'menu_top_profile.png', 'menu_top_quests.png']
     # Focus on KanColle
     focus_window()
     # Check if we're already at home screen
-    if kc_window.exists('menu_main_sortie.png'):
+    if kc_window.exists('menu_main_sortie.png') and check_expedition():
         # We are, so check for expeditions
         log_success("At Home!")
-        if check_expedition():
-            # If there are returning expeditions, there's no need to refresh
-            # the Home screen. Go straight to resupplying fleets
-            log_msg("Checking for returning expeditions!")
-            resupply()
-        else:
-            # We're already at home, but no expedition flags found. Refresh
-            # the Home page just in case we haven't been at Home for a while
-            log_success("Refreshing Home!")
-            # Click a random menu item
-            rclick(kc_window, random.choice(random_menu))
-            sleep(3)
-            # A little bit of code reuse here...
-            if not check_and_click(kc_window, 'menu_side_home.png'):
-                # If the side Home button doesn't exist, we're probably in a
-                # top-menu item...
-                while not kc_window.exists('menu_main_sortie.png'):
-                    # ... so hit the return button that exists in the top-menu item
-                    # pages until we get home
-                    wait_and_click(kc_window, 'menu_top_home.png', 10)
-                    sleep(2)
-            log_success("At Home!")
-            # Check for completed expeditions. Resupply them if there are.
-            if check_expedition():
-                resupply()
+        # If there are returning expeditions, there's no need to refresh
+        # the Home screen. Go straight to resupplying fleets
+        log_msg("Checking for returning expeditions!")
+        resupply()
     else:
-        # We're not, so check for expeditions by getting to the Home screen
-        log_msg("Going Home!")
-        if not check_and_click(kc_window, 'menu_side_home.png'):
-            # If the side Home button doesn't exist, we're probably in a
-            # top-menu item...
-            while not kc_window.exists('menu_main_sortie.png'):
-                # ... so hit the return button that exists in the top-menu item
-                # pages until we get home
-                wait_and_click(kc_window, 'menu_top_home.png', 10)
-                sleep(2)
-        # Back at home
-        kc_window.hover('menu_top_profile.png')
-        kc_window.wait('menu_main_sortie.png', WAITLONG)
+        if refresh:
+            rnavigation(kc_window, 'refresh_home')
+        else:
+            rnavigation(kc_window, 'home')
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -109,9 +75,8 @@ def go_home():
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_list, fleet_returned, settings
+    global kc_window, expedition_item, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
-    kc_window.hover('menu_top_profile.png')
     if check_and_click(kc_window, 'expedition_finish.png'):
         sleep(3)
         wait_and_click(kc_window, 'next.png', WAITLONG)
@@ -119,17 +84,15 @@ def check_expedition():
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
-        # Make sure the returned fleet is a defined one by the user
-        if settings['expeditions_enabled'] == True:
-            if fleet_id in settings['expedition_id_fleet_map']:
-                for expedition in running_expedition_list:
-                    if expedition.id == settings['expedition_id_fleet_map'][fleet_id]:
+        log_success("Yes, fleet %s has returned!" % fleet_id)
+        fleet_returned[fleet_id - 1] = True
+        # Check if the returned fleet is one defined by the user
+        if settings['expeditions_enabled'] == True and expedition_item is not None:
+            if fleet_id in expedition_item.expedition_id_fleet_map:
+                for expedition in expedition_item.running_expedition_list:
+                    if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
-                        running_expedition_list.remove(expedition)
-                        # If fleet has an assigned expedition, set its return status to True.
-                        # Otherwise leave it False, since the user might be using it
-                        fleet_returned[fleet_id - 1] = True
-                log_success("Yes, fleet %s has returned!" % fleet_id)
+                        expedition_item.running_expedition_list.remove(expedition)
         wait_and_click(kc_window, 'next.png')
         kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
@@ -142,13 +105,11 @@ def check_expedition():
 def resupply():
     global fleet_returned
     log_msg("Lets resupply fleets!")
-    if (True in fleet_returned):
-        kc_window.hover('menu_top_profile.png')
+    if True in fleet_returned:
         # Check if we're already at resupply screen
-        if not kc_window.exists('supply_screen.png'):
-            if not check_and_click(kc_window, 'menu_main_supply.png'):
-                check_and_click(kc_window, 'menu_side_supply.png')
-            kc_window.wait('supply_screen.png', WAITLONG)
+        if not kc_window.exists('resupply_screen.png'):
+            rnavigation(kc_window, 'resupply')
+            kc_window.wait('resupply_screen.png', WAITLONG)
         for fleet_id, returned in enumerate(fleet_returned):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
@@ -167,87 +128,34 @@ def resupply():
 # Actions involved in resupplying a fleet
 def resupply_action():
     global kc_window
-    if kc_window.exists(Pattern('supply_all.png').exact()):
-        # Rework for new supply screen
-        rclick(kc_window, 'supply_all.png')
+    if kc_window.exists(Pattern('resupply_all.png').exact()):
+        # Rework for new resupply screen
+        rclick(kc_window, 'resupply_all.png')
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
 
-# Navigate to Expedition menu
-def go_expedition():
-    global kc_window
-    log_msg("Navigating to Expedition menu!")
-    kc_window.hover('menu_top_profile.png')
-    wait_and_click(kc_window, 'menu_main_sortie.png', WAITLONG)
-    wait_and_click(kc_window, 'expedition.png', WAITLONG)
-    kc_window.wait('expedition_screen_ready.png', WAITLONG)
-
-# Run expedition
-def run_expedition(expedition):
-    global kc_window, running_expedition_list, fleet_returned, settings
-    log_msg("Let's send an expedition out!")
-    sleep(2)
-    wait_and_click(kc_window, expedition.area_pict, 10)
-    sleep(2)
-    wait_and_click(kc_window, expedition.name_pict, 10)
-    for fleet, exp in settings['expedition_id_fleet_map'].iteritems():
-        if exp == expedition.id:
-            fleet_id = fleet
-    # If the expedition can't be selected, it's either running or just returned
-    if not kc_window.exists('decision.png'):
-        fleet_returned[fleet_id - 1] = False
-        if kc_window.exists('expedition_time_complete.png'):
-            # Expedition just returned
-            expedition.check_later(0, -1) # set the check_later time to now
-            log_warning("Expedition just returned:  %s" % expedition)
+# Navigate to and send expeditions
+def expedition_action(fleet_id):
+    global kc_window, fleet_returned, expedition_item, settings
+    expedition_item.go_expedition()
+    for expedition in expedition_item.expedition_list:
+        if fleet_id == 'all':
+            pass
         else:
-            # Expedition is already running
-            expedition_timer = check_timer(kc_window, 'expedition_timer.png', 80)
-            # Set expedition's end time as determined via OCR and add it to
-            # running_expedition_list
-            expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))
-            running_expedition_list.append(expedition)
-            log_warning("Expedition is already running: %s" % expedition)
-        return
-    wait_and_click(kc_window, 'decision.png')
-    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
-    log_msg("Trying to send out fleet %s for expedition %s" % (fleet_id, expedition.id))
-    # Select fleet (no need if fleet is 2 as it's selected by default)
-    if fleet_id != 2:
-        fleet_name = 'fleet_%s.png' % fleet_id
-        wait_and_click(kc_window, fleet_name)
-    sleep(1)
-    # Make sure that the fleet is ready to go
-    if not kc_window.exists('fleet_busy.png'):
-        log_msg("Checking expedition fleet status!")
-        if (kc_window.exists('supply_alert.png') or kc_window.exists('supply_red_alert.png')):
-            log_warning("Fleet %s needs resupply!" % fleet_id)
-            fleet_returned[fleet_id - 1] = True
-            check_and_click(kc_window, 'menu_side_supply.png')
+            if fleet_id != expedition.fleet_id:
+                continue
+        while expedition_item.run_expedition(expedition):
+            fleet_returned[expedition.fleet_id - 1] = True
+            check_and_click(kc_window, 'menu_side_resupply.png')
             resupply()
-            go_expedition()
-            run_expedition(expedition)
-            return
-        kc_window.hover('menu_top_profile.png')
-        sleep(1)
-        wait_and_click(kc_window, 'ensei_start.png')
-        kc_window.wait('exp_started.png', 30)
-        expedition.start()
-        running_expedition_list.append(expedition)
-        fleet_returned[fleet_id - 1] = False
-        log_success("Expedition sent!: %s" % expedition)
-        sleep(1)
-    else:
-        # Fleet's being used for some reason... check back later
-        log_error("Fleet not available. Check back later!")
-        expedition.check_later(0, 10)
-        check_and_click(kc_window, 'ensei_area_01.png')
+            expedition_item.go_expedition()
+        fleet_returned[expedition.fleet_id - 1] = False
 
 # Navigate to and conduct sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
-    go_home()
+    go_home(True)
     combat_item.go_sortie()
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
@@ -261,10 +169,10 @@ def sortie_action():
 # Determine when the next automated action will be, whether it's a sortie or
 # expedition action
 def check_soonest():
-    global running_expedition_list, combat_item, next_action, settings
+    global expedition_item, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
     if settings['expeditions_enabled']:
-        for expedition in running_expedition_list:
+        for expedition in expedition_item.running_expedition_list:
             if next_action == '':
                 next_action = expedition.end_time
             else:
@@ -366,19 +274,18 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, expedition_list, fleet_returned, combat_item, settings
+    global kc_window, fleet_returned, expedition_item, combat_item, settings
     get_config()
     log_success("Starting kancolle_auto")
     try:
-        # Go home, then run expeditions
-        go_home()
+        # Go home
+        go_home(True)
+        # Define expedition list if expeditions module is enabled
         if settings['expeditions_enabled'] == True:
-            # Define expedition list
-            expedition_list = map(expedition_module.ensei_factory, settings['expedition_id_fleet_map'].values())
-            go_expedition()
-            for expedition in expedition_list:
-                run_expedition(expedition)
-        # Define combat item if combat is enabled
+            expedition_item = expedition_module.Expedition(kc_window, settings)
+            # Run expeditions defined in expedition item
+            expedition_action('all')
+        # Define combat item if combat module is enabled
         if settings['combat_enabled'] == True:
             combat_item = combat_module.Combat(kc_window, settings)
             # Run sortie defined in combat item
@@ -393,22 +300,18 @@ while True:
     try:
         if settings['expeditions_enabled'] == True:
             # If expedition timers are up, check for their arrival
-            for expedition in running_expedition_list:
+            for expedition in expedition_item.running_expedition_list:
                 now_time = datetime.datetime.now()
                 if now_time > expedition.end_time:
                     idle = False
                     log_msg("Checking for return of expedition %s" % expedition.id)
-                    go_home()
+                    go_home(True)
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
                 go_home()
-                go_expedition()
                 for fleet_id, fleet_status in enumerate(fleet_returned):
                     if fleet_status == True and fleet_id != 0:
-                        for expedition in expedition_list:
-                            if expedition.id == settings['expedition_id_fleet_map'][fleet_id + 1]:
-                                idle = False
-                                run_expedition(expedition)
+                        expedition_action(fleet_id + 1)
         # If combat timer is up, go sortie
         if settings['combat_enabled'] == True:
             if datetime.datetime.now() > combat_item.next_sortie_time:

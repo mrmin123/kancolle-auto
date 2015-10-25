@@ -1,7 +1,7 @@
 # Combat list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click,
+from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 Settings.OcrTextRead = True
@@ -71,10 +71,7 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
-        log_msg("Navigating to Sortie menu!")
-        self.kc_window.click('menu_main_sortie.png')
-        wait_and_click(self.kc_window, 'combat.png')
-        sleep(2)
+        rnavigation(self.kc_window, 'combat', 2)
         wait_and_click(self.kc_window, self.area_pict)
         # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
@@ -94,7 +91,7 @@ class Combat:
         # Taly damages
         self.tally_damages()
         # Check for resupply needs
-        if (self.kc_window.exists('supply_alert.png') or self.kc_window.exists('supply_red_alert.png')):
+        if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
             log_warning("Fleet 1 needs resupply!")
             return self.damage_counts
         # Check fleet damage state
@@ -186,8 +183,8 @@ class Combat:
                 log_warning("Cannot sortie due to ships under repair!")
                 self.next_sortie_time_set(0, get_rand(5, 5))
                 # Expand on this so it goes to repair menu and recheck?
-            elif self.kc_window.exists('combat_nogo_supply.png'):
-                log_warning("Cannot sortie due to ships needing supply!")
+            elif self.kc_window.exists('combat_nogo_resupply.png'):
+                log_warning("Cannot sortie due to ships needing resupply!")
         return self.damage_counts
 
     def loop_pre_combat(self, nodes_run):
@@ -199,7 +196,7 @@ class Combat:
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
-            sleep(3)
+            sleep(2)
         # If compass, press it
         if check_and_click(self.kc_window, 'compass.png'):
             # Now check for formation select, night battle prompt, or
@@ -207,14 +204,14 @@ class Combat:
             log_msg("Spinning compass!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
             # Restart this loop in case there's another compass coming up
-            sleep(5)
+            sleep(6)
             self.loop_pre_combat(nodes_run)
         # If formation select, select formation based on user config
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
             self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-            sleep(3)
+            sleep(10)
             self.loop_post_formation()
         # Check for catbomb
         if self.kc_window.exists('catbomb.png'):
@@ -225,7 +222,7 @@ class Combat:
             or self.kc_window.exists('next.png')
             or self.kc_window.exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
-            sleep(3)
+            sleep(2)
         # Check for catbomb
         if self.kc_window.exists('catbomb.png'):
             raise FindFailed('Catbombed during sortie :(')
@@ -233,11 +230,8 @@ class Combat:
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
     def go_repair(self):
-        log_msg("Navigating to Repair menu!")
         empty_docks = 0
-        sleep(1)
-        self.kc_window.click('menu_main_repair.png')
-        sleep(2)
+        rnavigation(self.kc_window, 'repair')
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1
