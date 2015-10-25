@@ -19,18 +19,27 @@ def get_rand(base, flex):
 # Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
 # to fix values in case OCR grabs the wrong characters.
 def check_timer(kc_window, timer_img, width):
-    timer_raw = find(timer_img).right(width).text()
-    timer = list(timer_raw)
-    timer[2] = ':'
-    timer[5] = ':'
-    timer = ''.join(timer)
-    timer = (
-        timer.replace('l', '1').replace('I', '1').replace('[', '1').replace(']', '1')
-        .replace('|', '1').replace('!', '1').replace('O', '0').replace('o', '0')
-        .replace('D', '0').replace('Q', '0').replace('@', '0').replace('S', '5')
-        .replace('s', '5').replace('$', '5').replace('B', '8').replace(' ', '')
-    )
-    return timer
+    ocr_matching = True
+    while ocr_matching:
+        timer_raw = find(timer_img).right(width).text()
+        timer = list(timer_raw)
+        timer[2] = ':'
+        timer[5] = ':'
+        timer = ''.join(timer)
+        timer = (
+            timer.replace('l', '1').replace('I', '1').replace('[', '1').replace(']', '1')
+            .replace('|', '1').replace('!', '1').replace('O', '0').replace('o', '0')
+            .replace('D', '0').replace('Q', '0').replace('@', '0').replace('S', '5')
+            .replace('s', '5').replace('$', '5').replace('B', '8').replace(' ', '')
+        )
+        m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
+        if m:
+            ocr_matching = False
+            log_msg("Got valid timer (%s)!" % timer)
+            return timer
+        else:
+            log_warning("Got invalid timer (%s)... trying again!" % timer)
+
 
 # Random Click action. Offsets the mouse into a random point within the
 # matching image/pattern before clicking.
