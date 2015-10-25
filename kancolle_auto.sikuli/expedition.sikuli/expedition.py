@@ -19,11 +19,11 @@ class Expedition:
         # Navigate to Expedition menu
         rnavigation(self.kc_window, 'expedition', 2)
         self.kc_window.wait('expedition_screen_ready.png', 60)
+        sleep(2)
 
     def run_expedition(self, expedition):
         # Run expedition
         log_msg("Let's send an expedition out!")
-        sleep(2)
         wait_and_click(self.kc_window, expedition.area_pict, 10)
         sleep(2)
         wait_and_click(self.kc_window, expedition.name_pict, 10)
@@ -44,26 +44,24 @@ class Expedition:
             return False
         wait_and_click(self.kc_window, 'decision.png')
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        sleep(1)
         log_msg("Trying to send out fleet %s for expedition %s" % (expedition.fleet_id, expedition.id))
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:
             fleet_name = 'fleet_%s.png' % expedition.fleet_id
             wait_and_click(self.kc_window, fleet_name)
-        sleep(1)
+            sleep(1)
         # Make sure that the fleet is ready to go
         if not self.kc_window.exists('fleet_busy.png'):
             log_msg("Checking expedition fleet status!")
-            if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
+            if self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png'):
                 log_warning("Fleet %s needs resupply!" % expedition.fleet_id)
                 return True
-            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-            sleep(1)
             wait_and_click(self.kc_window, 'ensei_start.png')
-            self.kc_window.wait('exp_started.png', 30)
             expedition.start()
             self.running_expedition_list.append(expedition)
             log_success("Expedition sent!: %s" % expedition)
-            sleep(1)
+            sleep(3)
             return False
         else:
             # Fleet's being used for some reason... check back later

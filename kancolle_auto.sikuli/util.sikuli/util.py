@@ -190,6 +190,7 @@ def rnavigation(kc_window, destination, max=3):
             while not kc_window.exists('menu_main_sortie.png'):
                 wait_and_click(kc_window, 'menu_top_home.png', 10)
                 sleep(2)
+    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
 
 # Helper function for random navigator for choosing random items from an array
 def rnavigation_chooser(options, exclude):

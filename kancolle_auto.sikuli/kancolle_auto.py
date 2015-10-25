@@ -84,7 +84,7 @@ def check_expedition():
         log_success("Yes, fleet %s has returned!" % fleet_id)
         fleet_returned[fleet_id - 1] = True
         # Check if the returned fleet is one defined by the user
-        if settings['expeditions_enabled'] == True:
+        if settings['expeditions_enabled'] == True and expedition_item is not None:
             if fleet_id in expedition_item.expedition_id_fleet_map:
                 for expedition in expedition_item.running_expedition_list:
                     if fleet_id == expedition.fleet_id:
@@ -133,10 +133,15 @@ def resupply_action():
         log_msg("Fleet is already resupplied!")
 
 # Navigate to and send expeditions
-def expedition_action(expedition_list):
+def expedition_action(fleet_id):
     global kc_window, fleet_returned, expedition_item, settings
     expedition_item.go_expedition()
-    for expedition in expedition_list:
+    for expedition in expedition_item.expedition_list:
+        if fleet_id == 'all':
+            pass
+        else:
+            if fleet_id != expedition.fleet_id:
+                continue
         while expedition_item.run_expedition(expedition):
             fleet_returned[expedition.fleet_id - 1] = True
             check_and_click(kc_window, 'menu_side_resupply.png')
@@ -277,7 +282,7 @@ def init():
         if settings['expeditions_enabled'] == True:
             expedition_item = expedition_module.Expedition(kc_window, settings)
             # Run expeditions defined in expedition item
-            expedition_action(expedition_item.expedition_list)
+            expedition_action('all')
         # Define combat item if combat module is enabled
         if settings['combat_enabled'] == True:
             combat_item = combat_module.Combat(kc_window, settings)
@@ -304,7 +309,7 @@ while True:
                 go_home()
                 for fleet_id, fleet_status in enumerate(fleet_returned):
                     if fleet_status == True and fleet_id != 0:
-                        expedition_action(expedition_item.running_expedition_list)
+                        expedition_action(fleet_id + 1)
         # If combat timer is up, go sortie
         if settings['combat_enabled'] == True:
             if datetime.datetime.now() > combat_item.next_sortie_time:
