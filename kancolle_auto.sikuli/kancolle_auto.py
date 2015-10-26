@@ -79,7 +79,7 @@ def check_expedition():
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(kc_window, 'expedition_finish.png'):
         sleep(3)
-        wait_and_click(kc_window, 'next.png', WAITLONG)
+        wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
         # Identify which fleet came back
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
@@ -93,7 +93,7 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
-        wait_and_click(kc_window, 'next.png')
+        wait_and_click(kc_window, 'next.png', [-700, 30, -400, 30])
         kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
         return True

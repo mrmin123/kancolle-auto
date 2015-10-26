@@ -59,19 +59,21 @@ def check_timer(kc_window, timer_img, width):
 
 # Random Click action. Offsets the mouse into a random point within the
 # matching image/pattern before clicking.
-def rclick(kc_window, pic):
+def rclick(kc_window, pic, expand=[]):
     # This slows down the click actions, but it looks for the pattern and
     # finds the size of the image from the resulting Pattern object.
     m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
     if m:
         # If a match is found and the x,y sizes can be ascertained, generate
         # the random offsets. Otherwise, just click the damn middle.
-        x_width = int(m.group(1)) / 2
-        y_height = int(m.group(2)) / 2
+        if len(expand) == 0:
+            x_width = int(m.group(1)) / 2
+            y_height = int(m.group(2)) / 2
+            expand.extend([-x_width, x_width, -y_height, y_height])
         if isinstance(pic, str):
-            pic = Pattern(pic).targetOffset(int(uniform(-x_width, x_width)), int(uniform(-y_height, y_height)))
+            pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[3], expand[4])))
         elif isinstance(pic, Pattern):
-            pic = pic.targetOffset(int(uniform(-x_width, x_width)), int(uniform(-y_height, y_height)))
+            pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[3], expand[4])))
     kc_window.click(pic)
 
 # Random navigation actions.
@@ -234,18 +236,18 @@ def rnavigation_chooser(options, exclude):
     return choice([i for i in options if i not in exclude])
 
 # common Sikuli actions
-def check_and_click(kc_window, pic):
+def check_and_click(kc_window, pic, expand=[]):
     if kc_window.exists(pic):
-        rclick(kc_window, pic)
+        rclick(kc_window, pic, expand)
         return True
     return False
 
-def wait_and_click(kc_window, pic, time=5):
+def wait_and_click(kc_window, pic, time=5, expand=[]):
     if time:
         kc_window.wait(pic, time)
     else:
         kc_window.wait(pic)
-    rclick(kc_window, pic)
+    rclick(kc_window, pic, expand)
 
 # log colors
 class color:
