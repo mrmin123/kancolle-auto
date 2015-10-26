@@ -2,7 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
+from util import (get_util_config, sleep, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 # Sikuli settings
@@ -79,7 +79,7 @@ def check_expedition():
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(kc_window, 'expedition_finish.png'):
         sleep(3)
-        wait_and_click(kc_window, 'next.png', WAITLONG)
+        wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
         # Identify which fleet came back
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
@@ -93,7 +93,7 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
-        wait_and_click(kc_window, 'next.png')
+        wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
         kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
         return True
@@ -275,6 +275,7 @@ def refresh_kancolle(e):
 def init():
     global kc_window, fleet_returned, expedition_item, combat_item, settings
     get_config()
+    get_util_config()
     log_success("Starting kancolle_auto")
     try:
         # Go home

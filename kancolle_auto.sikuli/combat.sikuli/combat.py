@@ -1,7 +1,8 @@
 # Combat list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
+from random import randint
+from util import (sleep, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 Settings.OcrTextRead = True
@@ -86,8 +87,8 @@ class Combat:
                 self.next_sortie_time_set(0, 15)
                 return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
+        sleep(1)
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-        sleep(2)
         # Taly damages
         self.tally_damages()
         # Check for resupply needs
@@ -120,7 +121,7 @@ class Combat:
                 # Ended on resource nodes. Leave sortie.
                 if self.kc_window.exists('next_alt.png'):
                     log_success("Sortie complete!")
-                    check_and_click(self.kc_window, 'next_alt.png')
+                    check_and_click(self.kc_window, 'next_alt.png', [-700, 30, -400, 30])
                     sortie_underway = False
                     return self.damage_counts
                 # If night battle prompt, proceed based on node and user config
@@ -136,20 +137,20 @@ class Combat:
                         log_msg("Declining night battle!")
                         check_and_click(self.kc_window, 'combat_nb_retreat.png')
                 # Click through post-battle report
-                wait_and_click(self.kc_window, 'next.png', 30)
+                wait_and_click(self.kc_window, 'next.png', 30, [-700, 30, -400, 30])
                 sleep(3)
                 # Tally damages at post-battle report screen
                 self.tally_damages()
-                wait_and_click(self.kc_window, 'next.png', 30)
+                wait_and_click(self.kc_window, 'next.png', 30, [-700, 30, -400, 30])
                 sleep(3)
                 # Check to see if we're at combat retreat/continue screen or
                 # item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
                     if not (self.kc_window.exists('menu_main_sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
-                        wait_and_click(self.kc_window, 'next_alt.png', 20)
+                        wait_and_click(self.kc_window, 'next_alt.png', 20, [-700, 30, -400, 30])
                         sleep(5)
-                        if check_and_click(self.kc_window, 'next_alt.png'):
+                        if check_and_click(self.kc_window, 'next_alt.png', [-700, 30, -400, 30]):
                             sleep(3)
                 if self.kc_window.exists('combat_flagship_dmg.png'):
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
@@ -163,7 +164,7 @@ class Combat:
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or
                 # additional nodes
-                self.next_sortie_time_set(0, get_rand(1, 3))
+                self.next_sortie_time_set(0, randint(1, 4))
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
                     log_msg("Ran the required number of nodes. Falling back!")
@@ -181,7 +182,7 @@ class Combat:
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
-                self.next_sortie_time_set(0, get_rand(5, 5))
+                self.next_sortie_time_set(0, randint(5, 10))
                 # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
@@ -198,7 +199,7 @@ class Combat:
             or self.kc_window.exists('catbomb.png')):
             sleep(2)
         # If compass, press it
-        if check_and_click(self.kc_window, 'compass.png'):
+        if check_and_click(self.kc_window, 'compass.png', [-300, 400, -200, 200]):
             # Now check for formation select, night battle prompt, or
             # post-battle report
             log_msg("Spinning compass!")
