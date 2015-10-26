@@ -26,7 +26,6 @@ def get_util_config():
 # The lower and upper bounds can be adjusted by the SleepModifier setting.
 def sleep(base, flex=-1):
     global util_settings
-    print util_settings
     if flex == -1:
         tsleep(uniform(base + util_settings['sleep_mod'], base * 2 + util_settings['sleep_mod']))
     else:
@@ -60,20 +59,21 @@ def check_timer(kc_window, timer_img, width):
 # Random Click action. Offsets the mouse into a random point within the
 # matching image/pattern before clicking.
 def rclick(kc_window, pic, expand=[]):
-    # This slows down the click actions, but it looks for the pattern and
-    # finds the size of the image from the resulting Pattern object.
-    m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
-    if m:
-        # If a match is found and the x,y sizes can be ascertained, generate
-        # the random offsets. Otherwise, just click the damn middle.
-        if len(expand) == 0:
+    if len(expand) == 0:
+        # This slows down the click actions, but it looks for the pattern and
+        # finds the size of the image from the resulting Pattern object.
+        m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
+        if m:
+            # If a match is found and the x,y sizes can be ascertained, generate
+            # the random offsets. Otherwise, just click the damn middle.
             x_width = int(m.group(1)) / 2
             y_height = int(m.group(2)) / 2
             expand.extend([-x_width, x_width, -y_height, y_height])
+    if len(expand) == 4:
         if isinstance(pic, str):
-            pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[3], expand[4])))
+            pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
         elif isinstance(pic, Pattern):
-            pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[3], expand[4])))
+            pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
     kc_window.click(pic)
 
 # Random navigation actions.
