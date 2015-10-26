@@ -138,7 +138,6 @@ def resupply_action():
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
     global kc_window, fleet_returned, expedition_item, settings
-    expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -284,6 +283,7 @@ def init():
         if settings['expeditions_enabled'] == True:
             expedition_item = expedition_module.Expedition(kc_window, settings)
             # Run expeditions defined in expedition item
+            expedition_item.go_expedition()
             expedition_action('all')
         # Define combat item if combat module is enabled
         if settings['combat_enabled'] == True:
@@ -309,6 +309,7 @@ while True:
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
                 go_home()
+                expedition_item.go_expedition()
                 for fleet_id, fleet_status in enumerate(fleet_returned):
                     if fleet_status == True and fleet_id != 0:
                         expedition_action(fleet_id + 1)
