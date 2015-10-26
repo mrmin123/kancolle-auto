@@ -2,7 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
+from util import (get_util_config, sleep, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 # Sikuli settings
@@ -275,6 +275,7 @@ def refresh_kancolle(e):
 def init():
     global kc_window, fleet_returned, expedition_item, combat_item, settings
     get_config()
+    get_util_config()
     log_success("Starting kancolle_auto")
     try:
         # Go home

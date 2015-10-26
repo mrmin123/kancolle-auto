@@ -1,7 +1,8 @@
 # Combat list.
 from sikuli import *
 import datetime
-from util import (sleep, get_rand, rclick, check_and_click, wait_and_click, rnavigation,
+from random import randint
+from util import (sleep, rclick, check_and_click, wait_and_click, rnavigation,
     check_timer, log_msg, log_success, log_warning, log_error)
 
 Settings.OcrTextRead = True
@@ -163,7 +164,7 @@ class Combat:
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or
                 # additional nodes
-                self.next_sortie_time_set(0, get_rand(1, 3))
+                self.next_sortie_time_set(0, randint(1, 4))
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
                     log_msg("Ran the required number of nodes. Falling back!")
@@ -181,7 +182,7 @@ class Combat:
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
-                self.next_sortie_time_set(0, get_rand(5, 5))
+                self.next_sortie_time_set(0, randint(5, 10))
                 # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
