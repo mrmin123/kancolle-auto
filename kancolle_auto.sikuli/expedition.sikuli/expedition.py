@@ -44,8 +44,8 @@ class Expedition:
                 log_warning("Expedition is already running: %s" % expedition)
             return False
         wait_and_click(self.kc_window, 'decision.png')
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         sleep(1)
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         log_msg("Trying to send out fleet %s for expedition %s" % (expedition.fleet_id, expedition.id))
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:

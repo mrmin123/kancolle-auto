@@ -87,8 +87,8 @@ class Combat:
                 self.next_sortie_time_set(0, 15)
                 return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
+        sleep(1)
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
-        sleep(2)
         # Taly damages
         self.tally_damages()
         # Check for resupply needs

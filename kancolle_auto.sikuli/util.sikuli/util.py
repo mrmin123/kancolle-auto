@@ -68,7 +68,7 @@ def rclick(kc_window, pic, expand=[]):
             # the random offsets. Otherwise, just click the damn middle.
             x_width = int(m.group(1)) / 2
             y_height = int(m.group(2)) / 2
-            expand.extend([-x_width, x_width, -y_height, y_height])
+            expand = [-x_width, x_width, -y_height, y_height]
     if len(expand) == 4:
         if isinstance(pic, str):
             pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
