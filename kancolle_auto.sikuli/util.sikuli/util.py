@@ -59,6 +59,7 @@ def check_timer(kc_window, timer_img, width):
 # Random Click action. Offsets the mouse into a random point within the
 # matching image/pattern before clicking.
 def rclick(kc_window, pic, expand=[]):
+    reset_mouse = False
     if len(expand) == 0:
         # This slows down the click actions, but it looks for the pattern and
         # finds the size of the image from the resulting Pattern object.
@@ -69,12 +70,16 @@ def rclick(kc_window, pic, expand=[]):
             x_width = int(m.group(1)) / 2
             y_height = int(m.group(2)) / 2
             expand = [-x_width, x_width, -y_height, y_height]
+    else:
+        reset_mouse = True
     if len(expand) == 4:
         if isinstance(pic, str):
             pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
         elif isinstance(pic, Pattern):
             pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
     kc_window.click(pic)
+    if reset_mouse:
+        kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
 
 # Random navigation actions.
 def rnavigation(kc_window, destination, max=0):
