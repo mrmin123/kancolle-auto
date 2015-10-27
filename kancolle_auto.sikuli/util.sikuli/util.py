@@ -27,9 +27,9 @@ def get_util_config():
 def sleep(base, flex=-1):
     global util_settings
     if flex == -1:
-        tsleep(uniform(base + util_settings['sleep_mod'], base * 2 + util_settings['sleep_mod']))
+        tsleep(uniform(base, base * 2) + util_settings['sleep_mod'])
     else:
-        tsleep(uniform(base + util_settings['sleep_mod'], flex + util_settings['sleep_mod']))
+        tsleep(uniform(base, flex) + util_settings['sleep_mod'])
 
 # Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
 # to fix values in case OCR grabs the wrong characters.
@@ -42,10 +42,11 @@ def check_timer(kc_window, timer_img, width):
         timer[5] = ':'
         timer = ''.join(timer)
         timer = (
-            timer.replace('l', '1').replace('I', '1').replace('[', '1').replace(']', '1')
-            .replace('|', '1').replace('!', '1').replace('O', '0').replace('o', '0')
-            .replace('D', '0').replace('Q', '0').replace('@', '0').replace('S', '5')
-            .replace('s', '5').replace('$', '5').replace('B', '8').replace(' ', '')
+            timer.replace('O', '0').replace('o', '0').replace('D', '0')
+            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+            .replace('B', '8').replace(' ', '')
         )
         m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
         if m:

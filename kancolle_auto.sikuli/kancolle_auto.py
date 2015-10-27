@@ -77,7 +77,7 @@ def go_home(refresh=False):
 def check_expedition():
     global kc_window, expedition_item, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
-    if check_and_click(kc_window, 'expedition_finish.png'):
+    if check_and_click(kc_window, 'expedition_finish.png', [-400, 250, 0, 400]):
         sleep(3)
         wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
         # Identify which fleet came back
