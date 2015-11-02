@@ -85,10 +85,10 @@ def check_expedition():
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
         log_success("Yes, fleet %s has returned!" % fleet_id)
-        fleet_returned[fleet_id - 1] = True
         # Check if the returned fleet is one defined by the user
         if settings['expeditions_enabled'] == True and expedition_item is not None:
             if fleet_id in expedition_item.expedition_id_fleet_map:
+                fleet_returned[fleet_id - 1] = True
                 for expedition in expedition_item.running_expedition_list:
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
