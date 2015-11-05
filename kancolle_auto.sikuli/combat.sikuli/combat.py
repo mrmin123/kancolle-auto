@@ -265,20 +265,29 @@ class Combat:
                 if repair_start == True:
                     repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
                     sleep(2)
-                    repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
-                    if int(repair_timer[0:2]) >= self.repair_time_limit:
-                        # Use bucket if the repair time is longer than desired
-                        log_success("Repair time too long... using bucket!")
+                    if self.repair_time_limit == 0:
+                        # If set to use buckets for all repairs, no need to check timer
+                        log_success("Using bucket for all repairs!")
                         self.kc_window.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
                         if self.count_damage_above_limit('repair') > 0:
                             sleep(10)
                     else:
-                        # Try setting next sortie time according to repair timer
-                        log_success("Repair should be done at %s" % (datetime.datetime.now()
-                            + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
-                        self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
-                        empty_docks -= 1
+                        # Otherwise, act accordingly to timer and repair timer limit
+                        repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
+                        if int(repair_timer[0:2]) >= self.repair_time_limit:
+                            # Use bucket if the repair time is longer than desired
+                            log_success("Repair time too long... using bucket!")
+                            self.kc_window.click('repair_bucket_switch.png')
+                            self.next_sortie_time_set(0, 0)
+                            if self.count_damage_above_limit('repair') > 0:
+                                sleep(10)
+                        else:
+                            # Try setting next sortie time according to repair timer
+                            log_success("Repair should be done at %s" % (datetime.datetime.now()
+                                + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
+                            self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                            empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
                     sleep(2)
