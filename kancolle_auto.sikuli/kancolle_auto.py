@@ -200,7 +200,7 @@ def get_config():
             settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
         if config.get('Expeditions', 'Fleet4'):
             settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
-        log_success("Expeditions enabled!")
+        log_success("Expeditions (%s) enabled!" % (', '.join('fleet %s: %s' % (key, settings['expedition_id_fleet_map'][key]) for key in sorted(settings['expedition_id_fleet_map'].keys()))))
     else:
         settings['expeditions_enabled'] = False
     # 'Combat' section
