@@ -46,7 +46,7 @@ def check_timer(kc_window, timer_img, width):
             .replace('B', '8').replace(':', '8').replace(' ', '')
         )
         if len(timer) == 8:
-            timer = list(timer_raw)
+            timer = list(timer)
             timer[2] = ':'
             timer[5] = ':'
             timer = ''.join(timer)
