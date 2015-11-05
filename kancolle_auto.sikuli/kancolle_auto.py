@@ -85,10 +85,10 @@ def check_expedition():
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
         elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
         log_success("Yes, fleet %s has returned!" % fleet_id)
-        fleet_returned[fleet_id - 1] = True
         # Check if the returned fleet is one defined by the user
         if settings['expeditions_enabled'] == True and expedition_item is not None:
             if fleet_id in expedition_item.expedition_id_fleet_map:
+                fleet_returned[fleet_id - 1] = True
                 for expedition in expedition_item.running_expedition_list:
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
@@ -200,7 +200,7 @@ def get_config():
             settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
         if config.get('Expeditions', 'Fleet4'):
             settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
-        log_success("Expeditions enabled!")
+        log_success("Expeditions (%s) enabled!" % (', '.join('fleet %s: %s' % (key, settings['expedition_id_fleet_map'][key]) for key in sorted(settings['expedition_id_fleet_map'].keys()))))
     else:
         settings['expeditions_enabled'] = False
     # 'Combat' section
@@ -244,7 +244,7 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
             sleep(1)
-            kc_window.click('recovery_kc3_startanyway.png')
+            wait_and_click(kc_window, 'recovery_kc3_startanyway.png', 20)
         elif settings['recovery_method'] == 'KCV':
             # Recovery steps if using KanColleViewer
             type(Key.F5)
