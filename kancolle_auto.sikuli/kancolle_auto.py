@@ -154,7 +154,7 @@ def expedition_action(fleet_id):
 # Navigate to and conduct sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
-    go_home(True)
+    go_home()
     combat_item.go_sortie()
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
@@ -282,6 +282,7 @@ def init():
         go_home(True)
         # Define expedition list if expeditions module is enabled
         if settings['expeditions_enabled'] == True:
+            # Resupply fleets if they returned on startup
             if True in fleet_returned:
                 resupply()
                 go_home()
@@ -319,6 +320,9 @@ while True:
                         expedition_action(fleet_id + 1)
         # If combat timer is up, go sortie
         if settings['combat_enabled'] == True:
+            if combat_item.count_damage_above_limit('repair') > 0 and len(combat_item.repair_timers) > 0:
+                if datetime.datetime.now() > combat_item.repair_timers[0]:
+                    combat_item.go_repair()
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()
