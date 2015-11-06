@@ -282,6 +282,9 @@ def init():
         go_home(True)
         # Define expedition list if expeditions module is enabled
         if settings['expeditions_enabled'] == True:
+            if True in fleet_returned:
+                resupply()
+                go_home()
             expedition_item = expedition_module.Expedition(kc_window, settings)
             # Run expeditions defined in expedition item
             expedition_item.go_expedition()
