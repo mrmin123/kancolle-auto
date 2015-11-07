@@ -23,7 +23,7 @@ def get_util_config():
 
 def sleep(base, flex=-1):
     """
-    Custom random-variable sleep() function. Sleep length set by this function
+    Function for setting a random sleep time. Sleep length set by this function
     can vary from base to base * 2, or base to base + flex if flex is provided.
 
     base - positive int
@@ -39,10 +39,10 @@ def check_timer(kc_window, timer_ref, dir, width):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
     Attempts to fix erroneous OCR reads and repeats readings until a valid
-    timer value is returned.
+    timer value is returned. Returns timer string in ##:##:## format.
 
     kc_window - Sikuli window
-    timer_ref - reference image or reference Match object (returned by findAll, for example)
+    timer_ref - image name (str) or reference Match object (returned by findAll, for example)
     dir - 'l' or 'r'; direction to search for text
     width - positive int; width (in pixels) of area where the timer text should be
     """
@@ -58,36 +58,43 @@ def check_timer(kc_window, timer_ref, dir, width):
                 timer = timer_ref.right(width).text().encode('utf-8')
             elif dir == 'l':
                 timer = timer_ref.left(width).text().encode('utf-8')
-        ocr_matching, timer = ocr_check(timer)
-    return timer
-
-def ocr_check(timer):
-    """OCR character checking"""
-    timer = (
-        timer.replace('O', '0').replace('o', '0').replace('D', '0')
-        .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-        .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-        .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-        .replace('B', '8').replace(':', '8').replace(' ', '')
-    )
-    if len(timer) == 8:
-        timer = list(timer)
-        timer[2] = ':'
-        timer[5] = ':'
-        timer = ''.join(timer)
-        m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
-        if m:
-            ocr_matching = False
-            log_msg("Got valid timer (%s)!" % timer)
-            return (False, timer)
-    else:
+        # Replace characters
+        timer = (
+            timer.replace('O', '0').replace('o', '0').replace('D', '0')
+            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+            .replace('B', '8').replace(':', '8').replace(' ', '')
+        )
+        if len(timer) == 8:
+            # Length checks out...
+            timer = list(timer)
+            timer[2] = ':'
+            timer[5] = ':'
+            timer = ''.join(timer)
+            m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
+            if m:
+                # OCR reading checks out; return timer reading
+                ocr_matching = False
+                log_msg("Got valid timer (%s)!" % timer)
+                return timer
+        # If we got this far, the timer reading is invalid. Try again!
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
-        return (True, timer)
 
-# Random Click action. Offsets the mouse into a random point within the
-# matching image/pattern before clicking.
 def rclick(kc_window, pic, expand=[]):
+    """
+    Function for randomizing click location. If expand is not provided the
+    click location will be within the image/Pattern's area. If expand is provided,
+    the click location will be in the area expanded relative to the center of
+    the image/Pattern.
+
+    kc_window - Sikuli window
+    pic - image name (str) or Pattern object to match/click
+    expand - list containing custom click boundaries in [left, right, top, bottom]
+        directions. Values should all be (int)s, and relative to the center of
+        the matched Pattern. Defaults to [] to default to Pattern area.
+    """
     reset_mouse = False
     if len(expand) == 0:
         # This slows down the click actions, but it looks for the pattern and
@@ -110,8 +117,16 @@ def rclick(kc_window, pic, expand=[]):
     if reset_mouse:
         kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
 
-# Random navigation actions.
 def rnavigation(kc_window, destination, max=0):
+    """
+    Random navigation function. Randomly wanders through menu items a number
+    of times before reaching its destination.
+
+    kc_window - Sikuli window
+    destination - 'home', 'refresh_home', 'fleetcomp', 'resupply', 'equip',
+        'repair', 'development'; valid final destinations
+    max - custom # of side-steps. Defaults to 0 to default to Paranoia setting
+    """
     global util_settings
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
@@ -263,28 +278,55 @@ def rnavigation(kc_window, destination, max=0):
             while not kc_window.exists('menu_main_sortie.png'):
                 wait_and_click(kc_window, 'menu_top_home.png', 10)
                 sleep(2)
+    # Always reset mouse after reaching destination
     kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
 
-# Helper function for random navigator for choosing random items from an array
 def rnavigation_chooser(options, exclude):
+    """
+    Helper function for rnavigation() to help choose random menu item, while
+    excluding certain options such as the destination and the just-selected
+    item. Returns a random item from the list of options, excluding any items
+    in exclude.
+
+    options - list of available images to click
+    exclude - list of images that should not be clicked
+    """
     return choice([i for i in options if i not in exclude])
 
-# common Sikuli actions
 def check_and_click(kc_window, pic, expand=[]):
+    """
+    Common sikuli action to click a pattern if it exists.
+
+    kc_window - Sikuli window
+    pic - image name (str) or Pattern object; thing to match
+    expand - expand parameter to pass to rclick (see rclick's expand parameter
+        for more details). Defaults to [].
+    """
     if kc_window.exists(pic):
         rclick(kc_window, pic, expand)
         return True
     return False
 
 def wait_and_click(kc_window, pic, time=5, expand=[]):
+    """
+    Common sikuli action to wait for a pattern until it exists, then click it.
+
+    kc_window - Sikuli window
+    pic - image name (str) or Pattern object; thing to match
+    time - seconds (int); max time to wait for pic to show up. Defaults to 5.
+    expand - expand parameter to pass to rclick (see rclick's expand parameter
+        for more details). Defaults to [].
+    """
     if time:
         kc_window.wait(pic, time)
     else:
         kc_window.wait(pic)
     rclick(kc_window, pic, expand)
 
-# log colors
 class color:
+    """
+    Log colors
+    """
     MSG = '\033[94m'
     SUCCESS = '\033[92m'
     WARNING = '\033[93m'
