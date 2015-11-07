@@ -154,7 +154,7 @@ def expedition_action(fleet_id):
 # Navigate to and conduct sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
-    go_home()
+    go_home(True)
     combat_item.go_sortie()
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
@@ -318,11 +318,13 @@ while True:
                 for fleet_id, fleet_status in enumerate(fleet_returned):
                     if fleet_status == True and fleet_id != 0:
                         expedition_action(fleet_id + 1)
-        # If combat timer is up, go sortie
+        # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled'] == True:
+            # If there are ships that still need repair, go take care of them
             if combat_item.count_damage_above_limit('repair') > 0 and len(combat_item.repair_timers) > 0:
                 if datetime.datetime.now() > combat_item.repair_timers[0]:
                     combat_item.go_repair()
+            # If the fleet is ready, go sortie
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()

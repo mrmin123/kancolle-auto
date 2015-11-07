@@ -237,20 +237,18 @@ class Combat:
         rnavigation(self.kc_window, 'repair')
         self.kc_window.wait('repair_screen_check.png')
         # Are there any pre-existing repairs happening?
-        if self.kc_window.exists('repair_timer_alt.png'):
-            for i in self.kc_window.findAll('repair_timer_alt.png'):
-                timer = check_timer(self.kc_window, i, 'l', 100)
-                print timer
+        if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
+            for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
+                repair_timer = check_timer(self.kc_window, i, 'l', 100)
+                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
                 self.repair_timers.append(timer)
             self.repair_timers.sort()
-        print self.repair_timers
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1
         else:
             self.next_sortie_time_set()
-            log_warning("Cannot repair; docks are full. Checking back later!")
-        print empty_docks
+            log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:

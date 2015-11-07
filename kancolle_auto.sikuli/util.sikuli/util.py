@@ -8,6 +8,7 @@ Settings.OcrTextRead = True
 util_settings = {}
 
 def get_util_config():
+    """Load the settings related to the util module"""
     global util_settings
     log_msg("Reading config file")
     # Change paths and read config.ini
@@ -20,20 +21,31 @@ def get_util_config():
     util_settings['paranoia'] = 0 if config.getint('General', 'Paranoia') < 0 else config.getint('General', 'Paranoia')
     util_settings['sleep_mod'] = 0 if config.getint('General', 'SleepModifier') < 0 else config.getint('General', 'SleepModifier')
 
-# Custom sleep() function to make the sleep period more variable. Takes base (minimum)
-# sleep length and flex sleep length, for a max sleep length of base + flex. If
-# the flex sleep length is not defined, the max sleep length is base * 2.
-# The lower and upper bounds can be adjusted by the SleepModifier setting.
 def sleep(base, flex=-1):
+    """
+    Custom random-variable sleep() function. Sleep length set by this function
+    can vary from base to base * 2, or base to base + flex if flex is provided.
+
+    base - positive int
+    flex - positive int; defaults to -1 to disable
+    """
     global util_settings
     if flex == -1:
         tsleep(uniform(base, base * 2) + util_settings['sleep_mod'])
     else:
         tsleep(uniform(base, flex) + util_settings['sleep_mod'])
 
-# Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
-# to fix values in case OCR grabs the wrong characters.
 def check_timer(kc_window, timer_ref, dir, width):
+    """
+    Function for grabbing valid Kancolle timer readings (##:##:## format).
+    Attempts to fix erroneous OCR reads and repeats readings until a valid
+    timer value is returned.
+
+    kc_window - Sikuli window
+    timer_ref - reference image or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for text
+    width - positive int; width (in pixels) of area where the timer text should be
+    """
     ocr_matching = True
     while ocr_matching:
         if isinstance(timer_ref, str):
@@ -49,8 +61,8 @@ def check_timer(kc_window, timer_ref, dir, width):
         ocr_matching, timer = ocr_check(timer)
     return timer
 
-# OCR character corrections and check
 def ocr_check(timer):
+    """OCR character checking"""
     timer = (
         timer.replace('O', '0').replace('o', '0').replace('D', '0')
         .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
@@ -104,7 +116,7 @@ def rnavigation(kc_window, destination, max=0):
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
         'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
-    menu_top_options = ['menu_top_profile.png', 'menu_top_encyclopedia.png', 'menu_top_inventory.png',
+    menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
         'menu_top_furniture.png', 'menu_top_shop.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
         'menu_side_repair.png', 'menu_side_development.png']
