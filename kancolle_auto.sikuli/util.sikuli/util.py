@@ -33,30 +33,45 @@ def sleep(base, flex=-1):
 
 # Custom function to get timer value of Kancolle (in ##:##:## format). Attempts
 # to fix values in case OCR grabs the wrong characters.
-def check_timer(kc_window, timer_img, width):
+def check_timer(kc_window, timer_ref, dir, width):
     ocr_matching = True
     while ocr_matching:
-        timer = find(timer_img).right(width).text()
-        # OCR character corrections
-        timer = (
-            timer.replace('O', '0').replace('o', '0').replace('D', '0')
-            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '')
-        )
-        if len(timer) == 8:
-            timer = list(timer)
-            timer[2] = ':'
-            timer[5] = ':'
-            timer = ''.join(timer)
-            m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
-            if m:
-                ocr_matching = False
-                log_msg("Got valid timer (%s)!" % timer)
-                return timer
-        if ocr_matching:
-            log_warning("Got invalid timer (%s)... trying again!" % timer)
+        if isinstance(timer_ref, str):
+            if dir == 'r':
+                timer = find(timer_ref).right(width).text().encode('utf-8')
+            elif dir == 'l':
+                timer = find(timer_ref).left(width).text().encode('utf-8')
+        elif isinstance(timer_ref, Match):
+            if dir == 'r':
+                timer = timer_ref.right(width).text().encode('utf-8')
+            elif dir == 'l':
+                timer = timer_ref.left(width).text().encode('utf-8')
+        ocr_matching, timer = ocr_check(timer)
+    return timer
+
+# OCR character corrections and check
+def ocr_check(timer):
+    timer = (
+        timer.replace('O', '0').replace('o', '0').replace('D', '0')
+        .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+        .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+        .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+        .replace('B', '8').replace(':', '8').replace(' ', '')
+    )
+    if len(timer) == 8:
+        timer = list(timer)
+        timer[2] = ':'
+        timer[5] = ':'
+        timer = ''.join(timer)
+        m = match(r'^\d{2}:\d{2}:\d{2}$', timer)
+        if m:
+            ocr_matching = False
+            log_msg("Got valid timer (%s)!" % timer)
+            return (False, timer)
+    else:
+        log_warning("Got invalid timer (%s)... trying again!" % timer)
+        sleep(1)
+        return (True, timer)
 
 # Random Click action. Offsets the mouse into a random point within the
 # matching image/pattern before clicking.
