@@ -36,7 +36,7 @@ class Expedition:
                 log_warning("Expedition just returned:  %s" % expedition)
             else:
                 # Expedition is already running
-                expedition_timer = check_timer(self.kc_window, 'expedition_timer.png', 80)
+                expedition_timer = check_timer(self.kc_window, 'expedition_timer.png', 'r', 80)
                 # Set expedition's end time as determined via OCR and add it to
                 # running_expedition_list
                 expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]))

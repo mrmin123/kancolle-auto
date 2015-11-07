@@ -22,6 +22,7 @@ class Combat:
         self.retreat_limit = settings['retreat_limit']
         self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
+        self.repair_timers = []
         self.check_fatigue = settings['check_fatigue']
         self.port_check = settings['port_check']
         self.damage_counts = [0, 0, 0]
@@ -232,13 +233,22 @@ class Combat:
     # next sortie time accordingly
     def go_repair(self):
         empty_docks = 0
+        self.repair_timers = []
         rnavigation(self.kc_window, 'repair')
+        self.kc_window.wait('repair_screen_check.png')
+        # Are there any pre-existing repairs happening?
+        if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
+            for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
+                repair_timer = check_timer(self.kc_window, i, 'l', 100)
+                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                self.repair_timers.append(timer)
+            self.repair_timers.sort()
         if self.kc_window.exists('repair_empty.png'):
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1
         else:
-            self.next_sortie_time_set(0, 20)
-            log_warning("Cannot repair; docks are full. Checking back in 20 minutes!")
+            self.next_sortie_time_set()
+            log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
@@ -274,7 +284,7 @@ class Combat:
                             sleep(10)
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
-                        repair_timer = check_timer(self.kc_window, 'repair_timer.png', 80)
+                        repair_timer = check_timer(self.kc_window, 'repair_timer.png', 'r', 80)
                         if int(repair_timer[0:2]) >= self.repair_time_limit:
                             # Use bucket if the repair time is longer than desired
                             log_success("Repair time too long... using bucket!")
@@ -284,9 +294,11 @@ class Combat:
                                 sleep(10)
                         else:
                             # Try setting next sortie time according to repair timer
-                            log_success("Repair should be done at %s" % (datetime.datetime.now()
-                                + datetime.timedelta(hours=int(repair_timer[0:2]), minutes=int(repair_timer[3:5]))).strftime("%Y-%m-%d %H:%M:%S"))
+                            timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                            log_success("Repair should be done at %s" % timer.strftime("%Y-%m-%d %H:%M:%S"))
                             self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                            self.repair_timers.append(timer)
+                            self.repair_timers.sort()
                             empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
@@ -297,7 +309,13 @@ class Combat:
 
     # Set next sortie time; if the proposed time is longer than the previously
     # stored time, replace. Otherwise, keep the older (longer) one
-    def next_sortie_time_set(self, hours, minutes):
-        proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
-        if proposed_time > self.next_sortie_time:
-            self.next_sortie_time = proposed_time
+    def next_sortie_time_set(self, hours=-1, minutes=-1):
+        if hours == -1 and minutes == -1:
+            self.next_sortie_time = self.repair_timers[0]
+        else:
+            proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
+            if proposed_time > self.next_sortie_time:
+                self.next_sortie_time = proposed_time
+
+    def timer_end(self, hours, minutes):
+        return datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
