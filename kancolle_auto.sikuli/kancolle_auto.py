@@ -55,18 +55,22 @@ def go_home(refresh=False):
     # Focus on KanColle
     focus_window()
     # Check if we're already at home screen
-    if kc_window.exists('menu_main_sortie.png') and check_expedition():
-        # We are, so check for expeditions
+    if kc_window.exists('menu_main_sortie.png'):
         log_success("At Home!")
-        # If there are returning expeditions, there's no need to refresh
-        # the Home screen. Go straight to resupplying fleets
         log_msg("Checking for returning expeditions!")
-        resupply()
-    else:
-        if refresh:
+        # We are, so check for expeditions
+        if check_expedition():
+            # If there are returning expeditions, there's no need to refresh
+            # the Home screen. Go straight to resupplying fleets
+            resupply()
+        elif refresh:
+            # We're at home, but if we're do for a refresh, refresh
             rnavigation(kc_window, 'refresh_home')
-        else:
-            rnavigation(kc_window, 'home')
+            # Check for completed expeditions. Resupply them if there are.
+            if check_expedition():
+                resupply()
+    else:
+        rnavigation(kc_window, 'home')
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -278,7 +282,9 @@ def init():
     get_util_config()
     log_success("Starting kancolle_auto")
     try:
+        log_msg("Finding window!")
         focus_window()
+        log_msg("Defining module items!")
         if settings['expeditions_enabled'] == True:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
@@ -288,10 +294,6 @@ def init():
         # Go home
         go_home(True)
         if settings['expeditions_enabled'] == True:
-            # Resupply fleets if they returned on startup
-            if True in fleet_returned:
-                resupply()
-                go_home()
             # Run expeditions defined in expedition item
             expedition_item.go_expedition()
             expedition_action('all')
