@@ -2,8 +2,7 @@
 from sikuli import *
 import datetime
 from random import randint
-from util import (sleep, rclick, check_and_click, wait_and_click, rnavigation,
-    check_timer, log_msg, log_success, log_warning, log_error)
+from util import *
 
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8

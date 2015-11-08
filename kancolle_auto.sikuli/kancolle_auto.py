@@ -2,8 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (get_util_config, sleep, rclick, check_and_click, wait_and_click, rnavigation,
-    check_timer, log_msg, log_success, log_warning, log_error)
+from util import *
 
 # Sikuli settings
 Settings.OcrTextRead = True
