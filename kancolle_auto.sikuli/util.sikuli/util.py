@@ -300,10 +300,10 @@ def rnavigation(kc_window, destination, max=0):
             if kc_window.exists('expedition_screen_ready.png'):
                 final_target = ''
         elif final_target in ['menu_main_resupply.png', 'menu_side_resupply.png']:
-            if not kc_window.exists('resupply_screen.png'):
+            if kc_window.exists('resupply_screen.png'):
                 final_target = ''
         elif final_target in ['menu_main_repair.png', 'menu_side_repair.png']:
-            if not kc_window.exists('repair_screen_check.png'):
+            if kc_window.exists('repair_screen_check.png'):
                 final_target = ''
         else:
             final_target = ''
