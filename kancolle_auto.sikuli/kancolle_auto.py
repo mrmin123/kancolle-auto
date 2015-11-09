@@ -2,8 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
-from util import (get_util_config, sleep, rclick, check_and_click, wait_and_click, rnavigation,
-    check_timer, log_msg, log_success, log_warning, log_error)
+from util import *
 
 # Sikuli settings
 Settings.OcrTextRead = True
@@ -81,9 +80,9 @@ def go_home(refresh=False):
 def check_expedition():
     global kc_window, expedition_item, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
-    if check_and_click(kc_window, 'expedition_finish.png', [-400, 250, 0, 400]):
+    if check_and_click(kc_window, 'expedition_finish.png', expand_areas('expedition_finish')):
         sleep(3)
-        wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
+        wait_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
         # Identify which fleet came back
         if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
         elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
@@ -97,7 +96,7 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
-        wait_and_click(kc_window, 'next.png', WAITLONG, [-700, 30, -400, 30])
+        wait_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
         kc_window.wait('menu_main_sortie.png', WAITLONG)
         check_expedition()
         return True
@@ -113,7 +112,6 @@ def resupply():
         # Check if we're already at resupply screen
         if not kc_window.exists('resupply_screen.png'):
             rnavigation(kc_window, 'resupply')
-            kc_window.wait('resupply_screen.png', WAITLONG)
         for fleet_id, returned in enumerate(fleet_returned):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
