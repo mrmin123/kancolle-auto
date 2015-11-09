@@ -1,8 +1,7 @@
 # Ensei (expedition) task list.
 from sikuli import *
 import datetime
-from util import (sleep, rclick, check_and_click, wait_and_click, rnavigation,
-    check_timer, log_msg, log_success, log_warning, log_error)
+from util import *
 
 class Expedition:
     def __init__(self, kc_window, settings):
@@ -18,8 +17,6 @@ class Expedition:
     def go_expedition(self):
         # Navigate to Expedition menu
         rnavigation(self.kc_window, 'expedition', 2)
-        self.kc_window.wait('expedition_screen_ready.png', 60)
-        sleep(2)
 
     def run_expedition(self, expedition):
         # Run expedition
