@@ -96,8 +96,9 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
-        wait_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
-        kc_window.wait('menu_main_sortie.png', WAITLONG)
+        while not kc_window.exists('menu_main_sortie.png'):
+            check_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
+            sleep(2)
         check_expedition()
         return True
     else:
