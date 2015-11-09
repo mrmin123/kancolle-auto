@@ -117,6 +117,20 @@ def rclick(kc_window, pic, expand=[]):
     if reset_mouse:
         kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
 
+def expand_areas(target):
+    """
+    Function to return pre-defined click expand areas. Returns list of 4 ints
+    (see rclick function for more details).
+
+    target - str; which list to return
+    """
+    if target == 'expedition_finish':
+        return [-350, 200, 0, 400]
+    elif target == 'next':
+        return [-600, 0, -400, 0]
+    elif target == 'compass':
+        return [-250, 400, -200, 200]
+
 def rnavigation(kc_window, destination, max=0):
     """
     Random navigation function. Randomly wanders through menu items a number
@@ -137,6 +151,7 @@ def rnavigation(kc_window, destination, max=0):
         'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
     menu_sortie_top_options = ['sortie_top_combat.png', 'sortie_top_expedition.png', 'sortie_top_pvp.png']
+    final_target = ''
     # Set max evasion steps
     if max == 0:
         # If max evasion was not defined by the function call, use paranoia
@@ -174,12 +189,10 @@ def rnavigation(kc_window, destination, max=0):
             evade_count -= 1
             if rchoice.startswith('menu_top'):
                 # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
-                while not kc_window.exists('menu_main_sortie.png'):
-                    wait_and_click(kc_window, 'menu_top_home.png', 10)
-                    sleep(2)
+                final_target = 'menu_top_home.png'
             elif rchoice.startswith('menu_main'):
                 if evade_count == 0:
-                    wait_and_click(kc_window, 'menu_side_home.png')
+                    final_target = 'menu_side_home.png'
                 else:
                     rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + rchoice[10:]])
                     while evade_count > 0:
@@ -187,7 +200,7 @@ def rnavigation(kc_window, destination, max=0):
                         wait_and_click(kc_window, rchoice)
                         sleep(2)
                         evade_count -= 1
-                    wait_and_click(kc_window, 'menu_side_home.png')
+                    final_target = 'menu_side_home.png'
         elif destination in ['combat', 'expedition']:
             # Go to combat and expedition menu
             log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
@@ -195,7 +208,7 @@ def rnavigation(kc_window, destination, max=0):
             kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
             sleep(2)
             if evade_count == 0:
-                wait_and_click(kc_window, 'sortie_' + destination + '.png')
+                final_target = 'sortie_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
@@ -209,12 +222,12 @@ def rnavigation(kc_window, destination, max=0):
                     wait_and_click(kc_window, rchoice)
                     sleep(2)
                     evade_count -= 1
-                wait_and_click(kc_window, 'sortie_top_' + destination + '.png')
+                final_target = 'sortie_top_' + destination + '.png'
         else:
             # Go to and side menu sub screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))
             if evade_count == 0:
-                wait_and_click(kc_window, 'menu_main_' + destination + '.png')
+                final_target = 'menu_main_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_main_options, ['menu_main_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
@@ -227,15 +240,14 @@ def rnavigation(kc_window, destination, max=0):
                     wait_and_click(kc_window, rchoice)
                     sleep(2)
                     evade_count -= 1
-                wait_and_click(kc_window, 'menu_side_' + destination + '.png')
-        sleep(2)
+                final_target = 'menu_side_' + destination + '.png'
     if current_location == 'sidemenu':
         # Starting from a main menu item screen
         if destination == 'home' or destination == 'refresh_home':
             # Go or refresh home
             log_msg("Going home with %d or less sidestep(s)!" % (evade_count))
             if evade_count == 0:
-                wait_and_click(kc_window, 'menu_side_home.png')
+                final_target = 'menu_side_home.png'
             else:
                 rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [])
                 while evade_count > 0:
@@ -245,21 +257,19 @@ def rnavigation(kc_window, destination, max=0):
                     evade_count -= 1
                     if rchoice.startswith('menu_top'):
                         # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
-                        while not kc_window.exists('menu_main_sortie.png'):
-                            wait_and_click(kc_window, 'menu_top_home.png', 10)
-                            sleep(2)
+                        final_target = 'menu_top_home.png'
                         # This takes us back to home immediately, so no more random menus
                         evade_count = 0
                     else:
                         # Still at side menu item, so continue as normal
                         if evade_count == 0:
                             # Unless that was the last random menu item; then go home
-                            wait_and_click(kc_window, 'menu_side_home.png')
+                            final_target = 'menu_side_home.png'
         else:
             # Go to another main menu item screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))
             if evade_count == 0:
-                wait_and_click(kc_window, 'menu_side_' + destination + '.png')
+                final_target = 'menu_side_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + destination + '.png'])
                 while evade_count > 0:
@@ -267,19 +277,36 @@ def rnavigation(kc_window, destination, max=0):
                     wait_and_click(kc_window, rchoice)
                     evade_count -= 1
                     sleep(2)
-                wait_and_click(kc_window, 'menu_side_' + destination + '.png')
-        sleep(2)
+                final_target = 'menu_side_' + destination + '.png'
     if current_location == 'topmenu':
         # Starting from top menu item. Theoretically, the script should never
         # attempt to go anywhere but home from here
         if destination in ['home', 'refresh_home']:
             log_msg("Going home!")
             # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
-            while not kc_window.exists('menu_main_sortie.png'):
-                wait_and_click(kc_window, 'menu_top_home.png', 10)
-                sleep(2)
-    # Always reset mouse after reaching destination
-    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+            final_target = 'menu_top_home.png'
+    while final_target != '':
+        # In while loop so that if the button has to be pressed again for some
+        # reason, it'll do it. Only works for certain destinations.
+        wait_and_click(kc_window, final_target)
+        sleep(2)
+        # Always reset mouse after reaching destination
+        kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+        # If one of these targets, check to see if we're actually there.
+        if final_target in ['menu_top_home.png', 'menu_side_home.png']:
+            if kc_window.exists('menu_main_sortie.png'):
+                final_target = ''
+        elif final_target in ['sortie_expedition.png', 'sortie_top_expedition.png']:
+            if kc_window.exists('expedition_screen_ready.png'):
+                final_target = ''
+        elif final_target in ['menu_main_resupply.png', 'menu_side_resupply.png']:
+            if kc_window.exists('resupply_screen.png'):
+                final_target = ''
+        elif final_target in ['menu_main_repair.png', 'menu_side_repair.png']:
+            if kc_window.exists('repair_screen_check.png'):
+                final_target = ''
+        else:
+            final_target = ''
 
 def rnavigation_chooser(options, exclude):
     """

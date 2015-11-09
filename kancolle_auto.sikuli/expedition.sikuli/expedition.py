@@ -17,8 +17,6 @@ class Expedition:
     def go_expedition(self):
         # Navigate to Expedition menu
         rnavigation(self.kc_window, 'expedition', 2)
-        self.kc_window.wait('expedition_screen_ready.png', 60)
-        sleep(2)
 
     def run_expedition(self, expedition):
         # Run expedition

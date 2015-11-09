@@ -121,7 +121,7 @@ class Combat:
                 # Ended on resource nodes. Leave sortie.
                 if self.kc_window.exists('next_alt.png'):
                     log_success("Sortie complete!")
-                    check_and_click(self.kc_window, 'next_alt.png', [-700, 30, -400, 30])
+                    check_and_click(self.kc_window, 'next_alt.png', expand_areas('next'))
                     sortie_underway = False
                     return self.damage_counts
                 # If night battle prompt, proceed based on node and user config
@@ -137,20 +137,20 @@ class Combat:
                         log_msg("Declining night battle!")
                         check_and_click(self.kc_window, 'combat_nb_retreat.png')
                 # Click through post-battle report
-                wait_and_click(self.kc_window, 'next.png', 30, [-700, 30, -400, 30])
+                wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 # Tally damages at post-battle report screen
                 self.tally_damages()
-                wait_and_click(self.kc_window, 'next.png', 30, [-700, 30, -400, 30])
+                wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 # Check to see if we're at combat retreat/continue screen or
                 # item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
                     if not (self.kc_window.exists('menu_main_sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
-                        wait_and_click(self.kc_window, 'next_alt.png', 20, [-700, 30, -400, 30])
+                        wait_and_click(self.kc_window, 'next_alt.png', 20, expand_areas('next'))
                         sleep(5)
-                        if check_and_click(self.kc_window, 'next_alt.png', [-700, 30, -400, 30]):
+                        if check_and_click(self.kc_window, 'next_alt.png', expand_areas('next')):
                             sleep(3)
                 if self.kc_window.exists('combat_flagship_dmg.png'):
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
@@ -199,7 +199,7 @@ class Combat:
             or self.kc_window.exists('catbomb.png')):
             sleep(2)
         # If compass, press it
-        if check_and_click(self.kc_window, 'compass.png', [-300, 400, -200, 200]):
+        if check_and_click(self.kc_window, 'compass.png', expand_areas('compass')):
             # Now check for formation select, night battle prompt, or
             # post-battle report
             log_msg("Spinning compass!")
@@ -234,7 +234,6 @@ class Combat:
         empty_docks = 0
         self.repair_timers = []
         rnavigation(self.kc_window, 'repair')
-        self.kc_window.wait('repair_screen_check.png')
         # Are there any pre-existing repairs happening?
         if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
             for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
