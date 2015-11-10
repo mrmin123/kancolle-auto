@@ -3,6 +3,9 @@ from sikuli import *
 import datetime
 from util import *
 
+Settings.OcrTextRead = True
+Settings.MinSimilarity = 0.8
+
 class Expedition:
     def __init__(self, kc_window, settings):
         self.kc_window = kc_window
