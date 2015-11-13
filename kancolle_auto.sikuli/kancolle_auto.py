@@ -226,6 +226,12 @@ def get_config():
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
+    # 'Quests' section
+    settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',').sort()
+    if len(settings['active_quests']) > 0:
+        settings['quests_enabled'] = True
+    else:
+        settings['quests_enabled'] = False
     log_success("Config loaded!")
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment

@@ -6,8 +6,8 @@ from util import *
 class Quests:
     def __init__(self, kc_window, settings):
         self.kc_window = kc_window
-        self.active_quests = ['d2', 'd3', 'd4', 'd9'].sort()
-        self.active_quests_unchecked = ['d2', 'd3', 'd4', 'd9'].sort()
+        self.active_quests = list(settings['active_quests'])
+        self.active_quests_unchecked = list(settings['active_quests'])
         self.first_type = self.active_quests[0][0]
         self.last_type = self.active_quests[-1][0]
 
@@ -36,3 +36,5 @@ class Quests:
             else:
                 start_check = False
 
+    def reset_quests(self):
+        self.active_quests_unchecked = list(settings['active_quests'])
