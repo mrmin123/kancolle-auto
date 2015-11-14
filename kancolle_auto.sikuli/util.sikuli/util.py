@@ -201,8 +201,8 @@ def rnavigation(kc_window, destination, max=0):
                         sleep(2)
                         evade_count -= 1
                     final_target = 'menu_side_home.png'
-        elif destination in ['combat', 'expedition']:
-            # Go to combat and expedition menu
+        elif destination in ['combat', 'expedition', 'pvp']:
+            # Go to a sortie menu screen
             log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
             wait_and_click(kc_window, 'menu_main_sortie.png')
             kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
@@ -223,6 +223,27 @@ def rnavigation(kc_window, destination, max=0):
                     sleep(2)
                     evade_count -= 1
                 final_target = 'sortie_top_' + destination + '.png'
+        elif destination in ['quests']:
+            # Go to quests screen
+            log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
+            if evade_count == 0:
+                final_target = 'menu_top_quests.png'
+            else:
+                rchoice = rnavigation_chooser(menu_main_options + ['menu_top_profile.png', 'menu_top_inventory.png'], [])
+                wait_and_click(kc_window, rchoice)
+                sleep(2)
+                evade_count -= 1
+                while evade_count > 0:
+                    if rchoice.startswith('menu_top'):
+                        # Went to another top menu item. Go straight to target to make things simple
+                        final_target = 'menu_top_quests.png'
+                        evade_count = 0
+                    else:
+                        rchoice = rnavigation_chooser(menu_side_options, [])
+                        wait_and_click(kc_window, rchoice)
+                        sleep(2)
+                        evade_count -= 1
+                final_target = 'menu_top_quests.png'
         else:
             # Go to and side menu sub screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))
@@ -265,6 +286,27 @@ def rnavigation(kc_window, destination, max=0):
                         if evade_count == 0:
                             # Unless that was the last random menu item; then go home
                             final_target = 'menu_side_home.png'
+        elif destination in ['quests']:
+            # Go to quests screen
+            log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
+            if evade_count == 0:
+                final_target = 'menu_top_quests.png'
+            else:
+                rchoice = rnavigation_chooser(menu_top_options + menu_side_options, ['menu_top_quests.png', 'menu_top_shop.png'])
+                wait_and_click(kc_window, rchoice)
+                sleep(2)
+                evade_count -= 1
+                while evade_count > 0:
+                    if rchoice.startswith('menu_top'):
+                        # Went to another top menu item. Go straight to target to make things simple
+                        final_target = 'menu_top_quests.png'
+                        evade_count = 0
+                    else:
+                        rchoice = rnavigation_chooser(menu_side_options + ['menu_top_profile.png', 'menu_top_inventory.png'], [])
+                        wait_and_click(kc_window, rchoice)
+                        sleep(2)
+                        evade_count -= 1
+                final_target = 'menu_top_quests.png'
         else:
             # Go to another main menu item screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))
@@ -304,6 +346,11 @@ def rnavigation(kc_window, destination, max=0):
                 final_target = ''
         elif final_target in ['menu_main_repair.png', 'menu_side_repair.png']:
             if kc_window.exists('repair_screen_check.png'):
+                final_target = ''
+        elif final_target in ['menu_top_quests.png']:
+            if kc_window.exists('quests_screen_check.png'):
+                wait_and_click(kc_window, 'quests_screen_check.png') # Go away Ooyodo
+                sleep(1)
                 final_target = ''
         else:
             final_target = ''

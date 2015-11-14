@@ -2,6 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
+import quests as quest_module
 from util import *
 
 # Sikuli settings
@@ -16,6 +17,7 @@ settings = {
 fleet_returned = [False, False, False, False]
 expedition_item = None
 combat_item = None
+quest_item = None
 kc_window = None
 next_action = ''
 idle = False
@@ -227,7 +229,8 @@ def get_config():
     else:
         settings['combat_enabled'] = False
     # 'Quests' section
-    settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',').sort()
+    settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
+    settings['active_quests'].sort()
     if len(settings['active_quests']) > 0:
         settings['quests_enabled'] = True
     else:
@@ -289,6 +292,12 @@ def init():
     try:
         log_msg("Finding window!")
         focus_window()
+
+        quest_item = quest_module.Quests(kc_window, settings)
+        quest_item.go_quests()
+
+
+        exit()
         log_msg("Defining module items!")
         if settings['expeditions_enabled'] == True:
             # Define expedition list if expeditions module is enabled
