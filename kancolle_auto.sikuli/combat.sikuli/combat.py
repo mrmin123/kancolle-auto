@@ -31,14 +31,17 @@ class Combat:
         log_msg("Checking fleet condition...")
         self.damage_counts = [0, 0, 0]
         # Tally light damages (in different fatigue states, as well)
-        for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
-            self.damage_counts[0] += 1
+        if self.kc_window.exists(Pattern('dmg_light.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(dmg_similarity)):
+                self.damage_counts[0] += 1
         # Tally moderate damages (in different fatigue states, as well)
-        for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
-            self.damage_counts[1] += 1
+        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(dmg_similarity)):
+                self.damage_counts[1] += 1
         # Tally critical damages (in different fatigue states, as well)
-        for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
-            self.damage_counts[2] += 1
+        if self.kc_window.exists(Pattern('dmg_critical.png').similar(dmg_similarity)):
+            for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(dmg_similarity)):
+                self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
 
@@ -232,13 +235,15 @@ class Combat:
         self.repair_timers = []
         rnavigation(self.kc_window, 'repair')
         # Are there any pre-existing repairs happening?
-        for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
-            repair_timer = check_timer(self.kc_window, i, 'l', 100)
-            timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
-            self.repair_timers.append(timer)
-        self.repair_timers.sort()
-        for i in self.kc_window.findAll('repair_empty.png'):
-            empty_docks += 1
+        if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
+            for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
+                repair_timer = check_timer(self.kc_window, i, 'l', 100)
+                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                self.repair_timers.append(timer)
+            self.repair_timers.sort()
+        if self.kc_window.exists('repair_empty.png'):
+            for i in self.kc_window.findAll('repair_empty.png'):
+                empty_docks += 1
         else:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
