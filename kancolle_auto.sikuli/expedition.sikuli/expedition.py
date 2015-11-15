@@ -26,7 +26,7 @@ class Expedition:
             wait_and_click(self.kc_window, expedition.area_pict, 10)
             sleep(2)
         # If the expedition can't be selected, it's either running or just returned
-        if not check_and_click(self.kc_window.('decision.png')):
+        if not check_and_click(self.kc_window, 'decision.png'):
             if self.kc_window.exists('expedition_time_complete.png'):
                 # Expedition just returned
                 expedition.check_later(0, -1) # set the check_later time to now
