@@ -15,9 +15,9 @@ settings = {
     'expedition_id_fleet_map': {}
 }
 fleet_returned = [False, False, False, False]
+quest_item = None
 expedition_item = None
 combat_item = None
-quest_item = None
 kc_window = None
 next_action = ''
 idle = False
@@ -80,7 +80,7 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, fleet_returned, settings
+    global kc_window, expedition_item, quest_item, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(kc_window, 'expedition_finish.png', expand_areas('expedition_finish')):
         sleep(3)
@@ -98,6 +98,9 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
+        # Let the Quests module know, if it's enabled
+        if settings['quests_enabled'] == True:
+            quest_item.done_expeditions += 1
         while not kc_window.exists('menu_main_sortie.png'):
             check_and_click(kc_window, 'next.png', expand_areas('next'))
             sleep(2)
@@ -139,6 +142,12 @@ def resupply_action():
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
+
+def quest_action():
+    global kc_window, quest_item, settings
+    go_home()
+    quest_item.go_quests()
+    quest_item.check_quests()
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -285,21 +294,24 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, expedition_item, combat_item, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
     try:
         log_msg("Finding window!")
+
+
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
 
-        quest_item = quest_module.Quests(kc_window, settings)
-        quest_item.go_quests()
-        quest_item.check_quests()
-
-
+        if settings['quests_enabled'] == True:
+            # Define quest item if quest module is enabled
+            quest_item = quest_module.Quests(kc_window, settings)
+            quest_action()
         exit()
+
+
         log_msg("Defining module items!")
         if settings['expeditions_enabled'] == True:
             # Define expedition list if expeditions module is enabled
@@ -349,6 +361,9 @@ while True:
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()
+                # Let the Quests module know, if it's enabled
+                if settings['quests_enabled'] == True:
+                    quest_item.done_sorties += 1
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
         if idle == False:

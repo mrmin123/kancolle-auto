@@ -57,7 +57,7 @@ class Quests:
             else:
                 start_check = False
         self.quests_checklist_unchecked = temp_list
-        print self.quests_checklist_unchecked
+        log_msg("Quests to look for next time: %s" % ', '.join(self.quests_checklist_unchecked))
 
     def finish_quests(self):
         """
