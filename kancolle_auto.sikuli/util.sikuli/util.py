@@ -1,4 +1,4 @@
-import ConfigParser
+import ConfigParser, datetime
 from sikuli import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
