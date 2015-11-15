@@ -130,6 +130,8 @@ def expand_areas(target):
         return [-600, 0, -400, 0]
     elif target == 'compass':
         return [-250, 400, -200, 200]
+    elif target == 'quests_navigation':
+        return [-10, 10, -5, 5]
 
 def rnavigation(kc_window, destination, max=0):
     """
