@@ -206,7 +206,7 @@ def get_config():
     # 'General' section
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
-    settings['jpt_offset'] = config.getint('General', 'JPTOffset')
+    settings['jst_offset'] = config.getint('General', 'JSTOffset')
     # 'Expeditions' section
     if config.getboolean('Expeditions', 'Enabled'):
         settings['expeditions_enabled'] = True
@@ -336,9 +336,9 @@ log_msg("Initial checks and commands complete. Starting loop.")
 while True:
     try:
         if settings['quests_enabled']:
-            # Reset and check quests at 0500 JPT
+            # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
-            if jpt_convert(now_time).hour == 4 and jpt_convert(last_check).hour == 5:
+            if jst_convert(now_time).hour == 4 and jst_convert(last_check).hour == 5:
                 go_home()
                 quest_item.reset_quests()
                 quest_action()

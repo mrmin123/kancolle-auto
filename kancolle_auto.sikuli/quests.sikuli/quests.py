@@ -192,8 +192,6 @@ class Quests:
                 self.quest_tree.add_children('c2', [QuestNode('c3', [0, 5, 0])])
             if 'c4' in self.quests_checklist:
                 self.quest_tree.add_children('c2', [QuestNode('c4', [0, 20, 0])])
-        if 'c4' in self.quests_checklist:
-            self.quest_tree.add_children('root', [QuestNode('c4', [0, 20, 0])])
         if 'c8' in self.quests_checklist:
             self.quest_tree.add_children('root', [QuestNode('c8', [0, 7, 0])])
         # Expedition quests

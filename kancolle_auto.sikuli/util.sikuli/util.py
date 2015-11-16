@@ -20,7 +20,7 @@ def get_util_config():
     # 'General'/misc settings
     util_settings['paranoia'] = 0 if config.getint('General', 'Paranoia') < 0 else config.getint('General', 'Paranoia')
     util_settings['sleep_mod'] = 0 if config.getint('General', 'SleepModifier') < 0 else config.getint('General', 'SleepModifier')
-    util_settings['jpt_offset'] = config.getint('General', 'JPTOffset')
+    util_settings['jst_offset'] = config.getint('General', 'JSTOffset')
 
 def sleep(base, flex=-1):
     """
@@ -358,9 +358,9 @@ def rnavigation(kc_window, destination, max=0):
         else:
             final_target = ''
 
-def jpt_convert(time):
+def jst_convert(time):
     global util_settings
-    return time + datetime.timedelta(hours=util_settings['jpt_offset'])
+    return time + datetime.timedelta(hours=util_settings['jst_offset'])
 
 def rnavigation_chooser(options, exclude):
     """
