@@ -317,7 +317,7 @@ def pvp_action():
 
 
 def init():
-    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_check, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, last_pvp_check, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -325,16 +325,17 @@ def init():
         log_msg("Finding window!")
         focus_window()
         log_msg("Defining module items!")
-        last_check =  datetime.datetime.now()
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(kc_window, settings)
+            last_quest_check =  datetime.datetime.now()
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(kc_window, settings)
+            last_pvp_check =  datetime.datetime.now()
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
@@ -369,15 +370,15 @@ while True:
         if settings['quests_enabled']:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
-            if jst_convert(now_time).hour == 4 and jst_convert(last_quests_check).hour == 5:
+            if jst_convert(now_time).hour == 5 and jst_convert(last_quest_check).hour == 4:
                 go_home()
                 quest_item.reset_quests()
                 quest_action(True)
-            last_quests_check = now_time
+            last_quest_check = now_time
         if settings['pvp_enabled']:
             now_time = datetime.datetime.now()
-            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 6)
-                or (jst_convert(now_time).hour == 14 and jst_convert(last_pvp_check).hour == 15)):
+            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 4)
+                or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour == 14)):
                 pvp_action()
             last_pvp_check = now_time
         if settings['expeditions_enabled']:
