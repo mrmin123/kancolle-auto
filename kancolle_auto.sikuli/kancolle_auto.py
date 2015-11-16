@@ -2,6 +2,7 @@ import datetime, os, sys, random, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
+import quests as quest_module
 from util import *
 
 # Sikuli settings
@@ -14,8 +15,10 @@ settings = {
     'expedition_id_fleet_map': {}
 }
 fleet_returned = [False, False, False, False]
+quest_item = None
 expedition_item = None
 combat_item = None
+last_check = None
 kc_window = None
 next_action = ''
 idle = False
@@ -78,7 +81,7 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, fleet_returned, settings
+    global kc_window, expedition_item, quest_item, fleet_returned, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(kc_window, 'expedition_finish.png', expand_areas('expedition_finish')):
         sleep(3)
@@ -96,6 +99,9 @@ def check_expedition():
                     if fleet_id == expedition.fleet_id:
                         # Remove the associated expedition from running_expedition_list
                         expedition_item.running_expedition_list.remove(expedition)
+        # Let the Quests module know, if it's enabled
+        if settings['quests_enabled'] == True:
+            quest_item.done_expeditions += 1
         while not kc_window.exists('menu_main_sortie.png'):
             check_and_click(kc_window, 'next.png', expand_areas('next'))
             sleep(2)
@@ -137,6 +143,12 @@ def resupply_action():
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
+
+def quest_action():
+    global kc_window, quest_item
+    go_home()
+    quest_item.go_quests()
+    quest_item.check_quests()
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -194,6 +206,7 @@ def get_config():
     # 'General' section
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
+    settings['jpt_offset'] = config.getint('General', 'JPTOffset')
     # 'Expeditions' section
     if config.getboolean('Expeditions', 'Enabled'):
         settings['expeditions_enabled'] = True
@@ -226,6 +239,13 @@ def get_config():
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
+    # 'Quests' section
+    settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
+    settings['active_quests'].sort()
+    if len(settings['active_quests']) > 0:
+        settings['quests_enabled'] = True
+    else:
+        settings['quests_enabled'] = False
     log_success("Config loaded!")
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment
@@ -276,7 +296,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, expedition_item, combat_item, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, last_check, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -284,21 +304,29 @@ def init():
         log_msg("Finding window!")
         focus_window()
         log_msg("Defining module items!")
-        if settings['expeditions_enabled'] == True:
+        last_check =  datetime.datetime.now()
+        if settings['quests_enabled']:
+            # Define quest item if quest module is enabled
+            quest_item = quest_module.Quests(kc_window, settings)
+            quest_action()
+        if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
-        if settings['combat_enabled'] == True:
+        if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
         # Go home
         go_home(True)
-        if settings['expeditions_enabled'] == True:
+        if settings['expeditions_enabled']:
             # Run expeditions defined in expedition item
             expedition_item.go_expedition()
             expedition_action('all')
-        if settings['combat_enabled'] == True:
+        if settings['combat_enabled']:
             # Run sortie defined in combat item
             sortie_action()
+            # Let the Quests module know, if it's enabled
+            if settings['quests_enabled']:
+                quest_item.done_sorties += 1
     except FindFailed, e:
         refresh_kancolle(e)
 
@@ -307,7 +335,15 @@ init()
 log_msg("Initial checks and commands complete. Starting loop.")
 while True:
     try:
-        if settings['expeditions_enabled'] == True:
+        if settings['quests_enabled']:
+            # Reset and check quests at 0500 JPT
+            now_time = datetime.datetime.now()
+            if jpt_convert(now_time).hour == 4 and jpt_convert(last_check).hour == 5:
+                go_home()
+                quest_item.reset_quests()
+                quest_action()
+            last_check = now_time
+        if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
             for expedition in expedition_item.running_expedition_list:
                 now_time = datetime.datetime.now()
@@ -323,7 +359,7 @@ while True:
                     if fleet_status == True and fleet_id != 0:
                         expedition_action(fleet_id + 1)
         # If combat timer is up, go do sortie-related stuff
-        if settings['combat_enabled'] == True:
+        if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
             if combat_item.count_damage_above_limit('repair') > 0 and len(combat_item.repair_timers) > 0:
                 if datetime.datetime.now() > combat_item.repair_timers[0]:
@@ -332,6 +368,16 @@ while True:
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()
+                # Let the Quests module know, if it's enabled
+                if settings['quests_enabled']:
+                    quest_item.done_sorties += 1
+        if settings['quests_enabled']:
+            if idle == False:
+                # Expedition or Combat event occured. Loop 'increases'
+                quest_item.schedule_loop += 1
+            if quest_item.need_to_check():
+                go_home()
+                quest_action()
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
         if idle == False:

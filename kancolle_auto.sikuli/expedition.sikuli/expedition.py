@@ -29,7 +29,7 @@ class Expedition:
             wait_and_click(self.kc_window, expedition.area_pict, 10)
             sleep(2)
         # If the expedition can't be selected, it's either running or just returned
-        if not self.kc_window.exists('decision.png'):
+        if not check_and_click(self.kc_window, 'decision.png'):
             if self.kc_window.exists('expedition_time_complete.png'):
                 # Expedition just returned
                 expedition.check_later(0, -1) # set the check_later time to now
@@ -43,7 +43,6 @@ class Expedition:
                 self.running_expedition_list.append(expedition)
                 log_warning("Expedition is already running: %s" % expedition)
             return False
-        wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
         log_msg("Trying to send out fleet %s for expedition %s" % (expedition.fleet_id, expedition.id))
