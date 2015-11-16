@@ -1,7 +1,7 @@
 # Combat list.
 from sikuli import *
 import datetime
-from random import randint
+from random import randint, choice
 from util import *
 
 Settings.OcrTextRead = True
@@ -317,3 +317,39 @@ class Combat:
 
     def timer_end(self, hours, minutes):
         return datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
+
+class PvP:
+    def __init__(self, kc_window, settings):
+        self.kc_window = kc_window
+
+    def go_pvp(self):
+        rnavigation(self.kc_window, 'pvp', 2)
+        # Select random pvp opponent
+        random_choices = ['pvp_row_1.png', 'pvp_row_2.png']
+        random_choice_one = choice(random_choices)
+        random_choices.remove(random_choice_one)
+        random_choice_two = random_choices[0]
+        if not check_and_click(self.kc_window, random_choice_one):
+            if not check_and_click(self.kc_window, random_choice_two):
+                log_warning("No available PvP opponents!")
+                return False
+        # An opponent was chosen
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        wait_and_click(self.kc_window, 'pvp_start_1.png', 30)
+        wait_and_click(self.kc_window, 'pvp_start_2.png', 30)
+        log_msg("Sortieing against PvP opponent!")
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        wait_and_click(self.kc_window, 'formation_line_ahead.png', 30)
+        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        while not (self.kc_window.exists('next.png')
+            or self.kc_window.exists('combat_nb_fight.png')):
+            sleep(10)
+        check_and_click(self.kc_window, 'combat_nb_fight.png')
+        sleep(3)
+        while not self.kc_window.exists('next.png'):
+            sleep(10)
+        wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+        sleep(3)
+        wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+        log_msg("PvP complete!")
+        return True
