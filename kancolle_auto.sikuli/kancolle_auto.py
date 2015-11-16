@@ -375,7 +375,7 @@ while True:
             if idle == False:
                 # Expedition or Combat event occured. Loop 'increases'
                 quest_item.schedule_loop += 1
-            if quest_item.need_to_check:
+            if quest_item.need_to_check():
                 go_home()
                 quest_action()
         # If fleets have been sent out and idle period is beginning, let the user

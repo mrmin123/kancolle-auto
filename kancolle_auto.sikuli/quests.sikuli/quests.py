@@ -131,7 +131,6 @@ class Quests:
         Method containing actions for turning in a complete quest and receiving
         rewards.
         """
-        log_msg("Checking for completed quests!")
         while self.kc_window.exists('quest_completed.png'):
             if check_and_click(self.kc_window, 'quest_completed.png'):
                 log_success("Completed quest found!")
