@@ -154,6 +154,8 @@ def quest_action(first_run=False):
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
     global kc_window, fleet_returned, expedition_item, settings
+    go_home()
+    expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -343,11 +345,13 @@ def init():
             quest_action(True)
         if settings['expeditions_enabled']:
             # Run expeditions defined in expedition item
-            expedition_item.go_expedition()
             expedition_action('all')
         if settings['pvp_enabled']:
-            # Run PvP
-            pvp_action()
+            now_time = datetime.datetime.now()
+            if not 3 <= jst_convert(now_time).hour < 5:
+                # Run PvP, but not between the time when PvP resets, but quests
+                # do not!
+                pvp_action()
         if settings['combat_enabled']:
             # Run sortie defined in combat item
             sortie_action()
@@ -372,8 +376,8 @@ while True:
             last_quests_check = now_time
         if settings['pvp_enabled']:
             now_time = datetime.datetime.now()
-            if (jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 6)
-                or (jst_convert(now_time).hour == 14 and jst_convert(last_pvp_check).hour == 15):
+            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 6)
+                or (jst_convert(now_time).hour == 14 and jst_convert(last_pvp_check).hour == 15)):
                 pvp_action()
             last_pvp_check = now_time
         if settings['expeditions_enabled']:
