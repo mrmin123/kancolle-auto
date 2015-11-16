@@ -147,13 +147,51 @@ class Quests:
         """
         self.quest_tree = QuestNode('root')
         # Sortie quests
+        # Commented-out quests are not supported... no monthlies supported
+        # (mainly due to lack of images)
         if 'bd1' in self.quests_checklist:
             self.quest_tree.add_children('root', [QuestNode('bd1', [1, 0, 0])])
+            if 'bd2' in self.quests_checklist:
+                self.quest_tree.add_children('bd1', [QuestNode('bd2', [1, 0, 0])])
+                if 'bd3' in self.quests_checklist:
+                    self.quest_tree.add_children('bd2', [QuestNode('bd3', [3, 0, 0])])
+                if 'bd5' in self.quests_checklist:
+                    self.quest_tree.add_children('bd2', [QuestNode('bd5', [3, 0, 0])])
+                    #if 'bd7' in self.quests_checklist:
+                    #    self.quest_tree.add_children('bd5', [QuestNode('bd7', [5, 0, 0])])
+                    #    if 'bd8' in self.quests_checklist:
+                    #        self.quest_tree.add_children('bd7', [QuestNode('bd8', [2, 0, 0])])
+                    #if 'bw2' in self.quests_checklist:
+                    #    self.quest_tree.add_children('bd5', [QuestNode('bw2', [5, 0, 0])])
+                    #    if 'bw5' in self.quests_checklist:
+                    #        self.quest_tree.add_children('bw2', [QuestNode('bw5', [5, 0, 0])])
+                    #        if 'bw6' in self.quests_checklist:
+                    #            self.quest_tree.add_children('bw5', [QuestNode('bw6', [12, 0, 0])])
+                    #            if 'bw8' in self.quests_checklist:
+                    #                self.quest_tree.add_children('bw6', [QuestNode('bw8', [1, 0, 0])])
+                    #                if 'bw9' in self.quests_checklist:
+                    #                    self.quest_tree.add_children('bw8', [QuestNode('bw9', [2, 0, 0])])
+                    #        if 'bw7' in self.quests_checklist:
+                    #                self.quest_tree.add_children('bw5', [QuestNode('bw7', [5, 0, 0])])
+                if 'bw1' in self.quests_checklist:
+                    self.quest_tree.add_children('bd2', [QuestNode('bd6', [12, 0, 0])])
+                    if 'bw4' in self.quests_checklist:
+                        self.quest_tree.add_children('bw1', [QuestNode('bw4', [12, 0, 0])])
+                        #if 'bw10' in self.quests_checklist:
+                        #    self.quest_tree.add_children('bw4', [QuestNode('bw10', [15, 0, 0])])
+                if 'bw3' in self.quests_checklist:
+                    self.quest_tree.add_children('bd2', [QuestNode('bw3', [5, 0, 0])])
+            #if 'bd4' in self.quests_checklist:
+            #    self.quest_tree.add_children('bd1', [QuestNode('bd4', [3, 0, 0])])
+            #if 'bd6' in self.quests_checklist:
+            #    self.quest_tree.add_children('bd1', [QuestNode('bd6', [2, 0, 0])])
         # PvP quests
         if 'c2' in self.quests_checklist:
             self.quest_tree.add_children('root', [QuestNode('c2', [0, 3, 0])])
             if 'c3' in self.quests_checklist:
                 self.quest_tree.add_children('c2', [QuestNode('c3', [0, 5, 0])])
+            if 'c4' in self.quests_checklist:
+                self.quest_tree.add_children('c2', [QuestNode('c4', [0, 20, 0])])
         if 'c4' in self.quests_checklist:
             self.quest_tree.add_children('root', [QuestNode('c4', [0, 20, 0])])
         if 'c8' in self.quests_checklist:
