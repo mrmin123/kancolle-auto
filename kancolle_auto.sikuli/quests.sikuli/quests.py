@@ -49,7 +49,6 @@ class Quests:
             check = True
             self.schedule_expeditions = list(temp_list)
         if self.schedule_loop >= 3:
-            self.schedule_loop = 0
             check = True
         return check
 
