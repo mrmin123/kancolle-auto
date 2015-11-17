@@ -146,10 +146,12 @@ def resupply_action():
     else:
         log_msg("Fleet is already resupplied!")
 
+# Actions involved in checking quests
 def quest_action(first_run=False):
     global kc_window, quest_item
     go_home()
     quest_item.go_quests(first_run)
+    quest_item.schedule_loop = 0 #
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -169,7 +171,20 @@ def expedition_action(fleet_id):
             expedition_item.go_expedition()
         fleet_returned[expedition.fleet_id - 1] = False
 
-# Navigate to and conduct sorties
+# Actions involved in conducting PvPs
+def pvp_action():
+    global kc_window, pvp_item, settings
+    go_home()
+    while pvp_item.go_pvp():
+        fleet_returned[0] = True
+        go_home()
+        resupply()
+        if settings['quests_enabled']:
+            quest_action()
+        go_home()
+    fleet_returned[0] = False
+
+# Actions involved in conducting sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
     go_home(True)
@@ -184,7 +199,7 @@ def sortie_action():
     log_success("Next sortie!: %s" % combat_item)
 
 # Determine when the next automated action will be, whether it's a sortie or
-# expedition action
+# expedition action (currently disregards quests and PvP)
 def check_soonest():
     global expedition_item, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
@@ -303,20 +318,6 @@ def refresh_kancolle(e):
         print e
         raise
 
-def pvp_action():
-    global kc_window, pvp_item, settings
-    go_home()
-    while pvp_item.go_pvp():
-        fleet_returned[0] = True
-        go_home()
-        resupply()
-        if settings['quests_enabled']:
-            quest_action()
-        go_home()
-    fleet_returned[0] = False
-
-
-
 def init():
     global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, last_pvp_check, settings
     get_config()
@@ -377,6 +378,7 @@ while True:
                 quest_action(True)
             last_quest_check = now_time
         if settings['pvp_enabled']:
+            # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
             now_time = datetime.datetime.now()
             if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 4)
                 or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour == 14)):
