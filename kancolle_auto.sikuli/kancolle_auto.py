@@ -313,6 +313,7 @@ def pvp_action():
         if settings['quests_enabled']:
             quest_action()
         go_home()
+    fleet_returned[0] = False
 
 
 
@@ -328,14 +329,14 @@ def init():
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(kc_window, settings)
-            last_quest_check =  datetime.datetime.now()
+            last_quest_check = datetime.datetime.now()
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(kc_window, settings)
-            last_pvp_check =  datetime.datetime.now()
+            last_pvp_check = datetime.datetime.now()
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
