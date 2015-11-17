@@ -267,6 +267,7 @@ def get_config():
     settings['active_quests'].sort()
     if len(settings['active_quests']) > 0:
         settings['quests_enabled'] = True
+        settings['quests_check_schedule'] = config.getint('Quests', 'CheckSchedule')
     else:
         settings['quests_enabled'] = False
     log_success("Config loaded!")

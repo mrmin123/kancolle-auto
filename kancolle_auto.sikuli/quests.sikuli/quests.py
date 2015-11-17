@@ -9,10 +9,13 @@ class Quests:
     """
     def __init__(self, kc_window, settings):
         self.kc_window = kc_window
-        self.settings = settings
+        self.quest_check_schedule = settings['quests_check_schedule']
+        self.combat_enabled = settings['combat_enabled']
+        self.pvp_enabled = settings['pvp_enabled']
+        self.expeditions_enabled = settings['expeditions_enabled']
         self.quests_checklist = list(settings['active_quests'])
-        self.reset_quests()
         self.define_quest_tree()
+        self.reset_quests()
 
     def reset_quests(self):
         """
@@ -48,7 +51,7 @@ class Quests:
         if len(temp_list) < len(self.schedule_expeditions):
             check = True
             self.schedule_expeditions = list(temp_list)
-        if self.schedule_loop >= 3:
+        if self.schedule_loop >= self.quest_check_schedule:
             check = True
         return check
 
@@ -148,7 +151,7 @@ class Quests:
         # Sortie quests
         # Commented-out quests are not supported... no monthlies supported
         # (mainly due to lack of images)
-        if self.settings['combat_enabled']:
+        if self.combat_enabled:
             if 'bd1' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('bd1', [1, 0, 0])])
                 if 'bd2' in self.quests_checklist:
@@ -186,7 +189,7 @@ class Quests:
                 #if 'bd6' in self.quests_checklist:
                 #    self.quest_tree.add_children('bd1', [QuestNode('bd6', [2, 0, 0])])
         # PvP quests
-        if self.settings['pvp_enabled']:
+        if self.pvp_enabled:
             if 'c2' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('c2', [0, 3, 0])])
                 if 'c3' in self.quests_checklist:
@@ -196,7 +199,7 @@ class Quests:
             if 'c8' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('c8', [0, 7, 0])])
         # Expedition quests
-        if self.settings['expeditions_enabled']:
+        if self.expeditions_enabled:
             if 'd2' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('d2', [0, 0, 1])])
                 if 'd3' in self.quests_checklist:
