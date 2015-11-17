@@ -379,6 +379,7 @@ while True:
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
         if settings['scheduled_sleep_start_1'] <= now_time.hour * 100 + now_time.minute <= settings['scheduled_sleep_start_2']:
+            log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
             sleep(settings['scheduled_sleep_length'] * 3600, 600)
     try:
         if settings['quests_enabled']:
