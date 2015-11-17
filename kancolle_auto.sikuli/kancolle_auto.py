@@ -225,6 +225,13 @@ def get_config():
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
+    if config.getboolean('General', 'ScheduledSleepEnabled'):
+        settings['scheduled_sleep_enabled'] = True
+        settings['scheduled_sleep_start_1'] = config.getint('General', 'ScheduledSleepStart1')
+        settings['scheduled_sleep_start_2'] = config.getint('General', 'ScheduledSleepStart2')
+        settings['scheduled_sleep_length'] = config.getfloat('General', 'ScheduledSleepLength')
+    else:
+        settings['scheduled_sleep_enabled'] = False
     # 'Expeditions' section
     if config.getboolean('Expeditions', 'Enabled'):
         settings['expeditions_enabled'] = True
@@ -369,11 +376,15 @@ def init():
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
 while True:
+    if settings['scheduled_sleep_enabled']:
+        now_time = datetime.datetime.now()
+        if settings['scheduled_sleep_start_1'] <= now_time.hour * 100 + now_time.minute <= settings['scheduled_sleep_start_2']:
+            sleep(settings['scheduled_sleep_length'] * 3600, 600)
     try:
         if settings['quests_enabled']:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
-            if jst_convert(now_time).hour == 5 and jst_convert(last_quest_check).hour == 4:
+            if jst_convert(now_time).hour == 5 and jst_convert(last_quest_check).hour != 4:
                 go_home()
                 quest_item.reset_quests()
                 quest_action(True)
@@ -381,8 +392,8 @@ while True:
         if settings['pvp_enabled']:
             # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
             now_time = datetime.datetime.now()
-            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour == 4)
-                or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour == 14)):
+            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour != 4)
+                or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour != 14)):
                 pvp_action()
             last_pvp_check = now_time
         if settings['expeditions_enabled']:
