@@ -36,7 +36,7 @@ def sleep(base, flex=-1):
     else:
         tsleep(uniform(base, flex) + util_settings['sleep_mod'])
 
-def check_timer(kc_window, timer_ref, dir, width):
+def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
     Attempts to fix erroneous OCR reads and repeats readings until a valid
@@ -46,9 +46,13 @@ def check_timer(kc_window, timer_ref, dir, width):
     timer_ref - image name (str) or reference Match object (returned by findAll, for example)
     dir - 'l' or 'r'; direction to search for text
     width - positive int; width (in pixels) of area where the timer text should be
+    attempt_limit = how many times the OCR reads should repeat before returning
+        95:00:00 as an arbitrary high timer
     """
     ocr_matching = True
+    attempt = 0
     while ocr_matching:
+        attempt += 1
         if isinstance(timer_ref, str):
             if dir == 'r':
                 timer = find(timer_ref).right(width).text().encode('utf-8')
@@ -65,7 +69,7 @@ def check_timer(kc_window, timer_ref, dir, width):
             .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
             .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
             .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '')
+            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
         )
         if len(timer) == 8:
             # Length checks out...
@@ -79,7 +83,12 @@ def check_timer(kc_window, timer_ref, dir, width):
                 ocr_matching = False
                 log_msg("Got valid timer (%s)!" % timer)
                 return timer
-        # If we got this far, the timer reading is invalid. Try again!
+        # If we got this far, the timer reading is invalid.
+        # If an attempt_limit is set and met, return 95:00:00
+        if attempt_limit != 0 and attempt == attempt_limit:
+            log_warning("Got invalid timer and met attempt threshold. Returning 95:00:00!")
+            return '95:00:00'
+        # Otherwise, try again!
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
