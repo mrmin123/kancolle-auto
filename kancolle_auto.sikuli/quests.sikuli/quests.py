@@ -164,8 +164,8 @@ class Quests:
                         #    self.quest_tree.add_children('bd5', [QuestNode('bd7', [5, 0, 0])])
                         #    if 'bd8' in self.quests_checklist:
                         #        self.quest_tree.add_children('bd7', [QuestNode('bd8', [2, 0, 0])])
-                        #if 'bw2' in self.quests_checklist:
-                        #    self.quest_tree.add_children('bd5', [QuestNode('bw2', [5, 0, 0])])
+                        if 'bw2' in self.quests_checklist:
+                            self.quest_tree.add_children('bd5', [QuestNode('bw2', [5, 0, 0])])
                         #    if 'bw5' in self.quests_checklist:
                         #        self.quest_tree.add_children('bw2', [QuestNode('bw5', [5, 0, 0])])
                         #        if 'bw6' in self.quests_checklist:
@@ -184,8 +184,8 @@ class Quests:
                             #    self.quest_tree.add_children('bw4', [QuestNode('bw10', [15, 0, 0])])
                     if 'bw3' in self.quests_checklist:
                         self.quest_tree.add_children('bd2', [QuestNode('bw3', [5, 0, 0])])
-                #if 'bd4' in self.quests_checklist:
-                #    self.quest_tree.add_children('bd1', [QuestNode('bd4', [3, 0, 0])])
+                if 'bd4' in self.quests_checklist:
+                    self.quest_tree.add_children('bd1', [QuestNode('bd4', [3, 0, 0])])
                 if 'bd6' in self.quests_checklist:
                     self.quest_tree.add_children('bd1', [QuestNode('bd6', [2, 0, 0])])
         # PvP quests
