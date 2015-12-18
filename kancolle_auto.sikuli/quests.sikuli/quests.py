@@ -17,6 +17,14 @@ class Quests:
         self.define_quest_tree()
         self.reset_quests()
 
+        # Make sure quests are valid given the config. If not, remove it from
+        # the queue.
+        invalid_quests = []
+        for quest in self.quests_checklist_queue:
+            if self.quest_tree.find(quest) == None:
+                invalid_quests.append(quest)
+        self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(invalid_quests))
+
     def reset_quests(self):
         """
         Method for resetting of tracked quests.
