@@ -359,6 +359,12 @@ def rnavigation(kc_window, destination, max=0):
             final_target = ''
 
 def jst_convert(time):
+    """
+    Function for converting the input time to JST based on the JST Offset
+    specified by the user in the config.
+
+    time - datetime object
+    """
     global util_settings
     return time + datetime.timedelta(hours=util_settings['jst_offset'])
 
