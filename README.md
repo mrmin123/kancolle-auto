@@ -7,9 +7,11 @@
 #### Features
 
 * Expedition module &mdash; automatic expeditions
+* PvP module &mdash; automatic PvP
 * Combat module &mdash; automatic sorties and repairs
 * Quests module &mdash; automatic quests
-* Ability to enable just the Expedition module, just the Combat module, or both
+* Individual toggles for each of the above modules
+* Schedule sleeping/pausing of script
 * Catbomb recovery
 * Separate `config.ini` file for easier configuration and backup of configurations
 * Random variations to hopefully make the tool more difficult to detect
