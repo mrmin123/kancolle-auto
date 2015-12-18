@@ -177,7 +177,7 @@ class Quests:
                         #        if 'bw7' in self.quests_checklist:
                         #                self.quest_tree.add_children('bw5', [QuestNode('bw7', [5, 0, 0])])
                     if 'bw1' in self.quests_checklist:
-                        self.quest_tree.add_children('bd2', [QuestNode('bd6', [12, 0, 0])])
+                        self.quest_tree.add_children('bd2', [QuestNode('bw1', [12, 0, 0])])
                         if 'bw4' in self.quests_checklist:
                             self.quest_tree.add_children('bw1', [QuestNode('bw4', [12, 0, 0])])
                             #if 'bw10' in self.quests_checklist:
@@ -186,8 +186,8 @@ class Quests:
                         self.quest_tree.add_children('bd2', [QuestNode('bw3', [5, 0, 0])])
                 #if 'bd4' in self.quests_checklist:
                 #    self.quest_tree.add_children('bd1', [QuestNode('bd4', [3, 0, 0])])
-                #if 'bd6' in self.quests_checklist:
-                #    self.quest_tree.add_children('bd1', [QuestNode('bd6', [2, 0, 0])])
+                if 'bd6' in self.quests_checklist:
+                    self.quest_tree.add_children('bd1', [QuestNode('bd6', [2, 0, 0])])
         # PvP quests
         if self.pvp_enabled:
             if 'c2' in self.quests_checklist:
@@ -211,10 +211,11 @@ class Quests:
                 if 'd11' in self.quests_checklist:
                     self.quest_tree.add_children('d9', [QuestNode('d11', [0, 0, 7])])
         # Supply/Docking quests
-        if 'e3' in self.quests_checklist:
-            self.quest_tree.add_children('root', [QuestNode('e3', [0, 2, 0])])
-            if 'e4' in self.quests_checklist:
-                self.quest_tree.add_children('e3', [QuestNode('e4', [15, 10, 15])])
+        if self.combat_enabled:
+            if 'e3' in self.quests_checklist:
+                self.quest_tree.add_children('root', [QuestNode('e3', [0, 2, 0])])
+                if 'e4' in self.quests_checklist:
+                    self.quest_tree.add_children('e3', [QuestNode('e4', [15, 10, 15])])
 
 class QuestNode(object):
     """
