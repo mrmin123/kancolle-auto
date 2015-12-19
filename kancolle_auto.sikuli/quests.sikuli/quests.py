@@ -15,15 +15,16 @@ class Quests:
         self.expeditions_enabled = settings['expeditions_enabled']
         self.quests_checklist = list(settings['active_quests'])
         self.define_quest_tree()
-        self.reset_quests()
-
         # Make sure quests are valid given the config. If not, remove it from
-        # the queue.
+        # the queue. There is probably a better way to do this + the tree,
+        # but I'm doing this in a hurry right now...
         invalid_quests = []
-        for quest in self.quests_checklist_queue:
+        for quest in self.quests_checklist:
             if self.quest_tree.find(quest) == None:
                 invalid_quests.append(quest)
-        self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(invalid_quests))
+        self.quests_checklist = list(set(self.quests_checklist) - set(invalid_quests))
+        # Reset quests
+        self.reset_quests()
 
     def reset_quests(self):
         """
