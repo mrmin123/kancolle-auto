@@ -272,7 +272,7 @@ def get_config():
     # 'Quests' section
     settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
     settings['active_quests'].sort()
-    if len(settings['active_quests']) > 0:
+    if config.getboolean('Quests', 'Enabled') and len(settings['active_quests']) > 0:
         settings['quests_enabled'] = True
         settings['quests_check_schedule'] = config.getint('Quests', 'CheckSchedule')
     else:
