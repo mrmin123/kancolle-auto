@@ -238,7 +238,7 @@ class Combat:
         if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
             for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
                 repair_timer = check_timer(self.kc_window, i, 'l', 100)
-                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                 self.repair_timers.append(timer)
             self.repair_timers.sort()
         if self.kc_window.exists('repair_empty.png'):
@@ -292,9 +292,9 @@ class Combat:
                                 sleep(10)
                         else:
                             # Try setting next sortie time according to repair timer
-                            timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                            timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                             log_success("Repair should be done at %s" % timer.strftime("%Y-%m-%d %H:%M:%S"))
-                            self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]))
+                            self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                             self.repair_timers.append(timer)
                             self.repair_timers.sort()
                             empty_docks -= 1

@@ -259,7 +259,7 @@ class QuestNode(object):
                 if self.id == target_id:
                     children.extend([child.id])
                 else:
-                    return child.get_children_ids(target_id)
+                    children.extend(child.get_children_ids(target_id))
         return children
 
     def __repr__(self, depth=0):
