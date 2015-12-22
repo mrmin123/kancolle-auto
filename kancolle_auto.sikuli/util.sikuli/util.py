@@ -143,7 +143,7 @@ def expand_areas(target):
     elif target == 'quests_screen_check':
         return [-40, 700, -50, 300]
     elif target == 'quest_bar':
-        return [-170, 350, 45, -10]
+        return [-170, 350, -40, -5]
     elif target == 'quests_navigation':
         return [-10, 10, -5, 5]
     elif target == 'quest_completed':

@@ -30,7 +30,8 @@ class Quests:
         """
         Method for resetting of tracked quests.
         """
-        self.quests_checklist_queue = list(self.quests_checklist)
+        self.quests_checklist_queue = list(sorted(self.quests_checklist))
+        log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
         self.first_type = self.quests_checklist_queue[0][0]
         self.last_type = self.quests_checklist_queue[-1][0]
         self.active_quests = 0
