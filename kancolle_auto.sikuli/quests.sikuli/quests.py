@@ -30,7 +30,8 @@ class Quests:
         """
         Method for resetting of tracked quests.
         """
-        self.quests_checklist_queue = list(self.quests_checklist)
+        self.quests_checklist_queue = list(sorted(self.quests_checklist))
+        log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
         self.first_type = self.quests_checklist_queue[0][0]
         self.last_type = self.quests_checklist_queue[-1][0]
         self.active_quests = 0
@@ -85,13 +86,13 @@ class Quests:
             self.finish_quests()
             in_progress = self.count_in_progress() # Find number of active quests
             for quest in self.quests_checklist_queue:
-                if check_and_click(self.kc_window, Pattern(quest + '.png').exact()):
+                if check_and_click(self.kc_window, Pattern(quest + '.png').exact(), expand_areas('quest_bar')):
                     log_msg("Attempting to start quest %s!" % quest)
                     sleep(3)
                     in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
                     if in_progress_new < in_progress:
                         # Less active quests than previously. Reclick to reactivate
-                        check_and_click(self.kc_window, Pattern(quest + '.png').exact())
+                        check_and_click(self.kc_window, Pattern(quest + '.png').exact(), expand_areas('quest_bar'))
                         log_msg("Accidentally inactivated quest... reactivating!")
                         sleep(3)
                     if in_progress_new == in_progress:
@@ -143,7 +144,7 @@ class Quests:
         rewards.
         """
         while self.kc_window.exists('quest_completed.png'):
-            if check_and_click(self.kc_window, 'quest_completed.png'):
+            if check_and_click(self.kc_window, 'quest_completed.png', expand_areas('quest_completed')):
                 log_success("Completed quest found!")
                 while self.kc_window.exists('quest_reward_accept.png'):
                     check_and_click(self.kc_window, 'quest_reward_accept.png')

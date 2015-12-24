@@ -140,8 +140,16 @@ def expand_areas(target):
         return [-600, 0, -400, 0]
     elif target == 'compass':
         return [-250, 400, -200, 200]
+    elif target == 'quests_screen_check':
+        return [-40, 700, -50, 300]
+    elif target == 'quest_bar':
+        return [-160, 340, -40, 5]
     elif target == 'quests_navigation':
         return [-10, 10, -5, 5]
+    elif target == 'quest_completed':
+        return [-580, 25, 25, -25]
+    elif target == 'pvp_row':
+        return [-500, 50, -15, 45]
 
 def rnavigation(kc_window, destination, max=0):
     """
@@ -361,7 +369,7 @@ def rnavigation(kc_window, destination, max=0):
                 final_target = ''
         elif final_target in ['menu_top_quests.png']:
             if kc_window.exists('quests_screen_check.png'):
-                wait_and_click(kc_window, 'quests_screen_check.png') # Go away Ooyodo
+                wait_and_click(kc_window, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
                 sleep(1)
                 final_target = ''
         else:

@@ -329,8 +329,8 @@ class PvP:
         random_choice_one = choice(random_choices)
         random_choices.remove(random_choice_one)
         random_choice_two = random_choices[0]
-        if not check_and_click(self.kc_window, random_choice_one):
-            if not check_and_click(self.kc_window, random_choice_two):
+        if not check_and_click(self.kc_window, random_choice_one, expand_areas('pvp_row')):
+            if not check_and_click(self.kc_window, random_choice_two, expand_areas('pvp_row')):
                 log_warning("No available PvP opponents!")
                 return False
         # An opponent was chosen
