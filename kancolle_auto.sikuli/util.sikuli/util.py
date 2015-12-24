@@ -143,13 +143,13 @@ def expand_areas(target):
     elif target == 'quests_screen_check':
         return [-40, 700, -50, 300]
     elif target == 'quest_bar':
-        return [-170, 350, -40, -5]
+        return [-160, 340, -40, 5]
     elif target == 'quests_navigation':
         return [-10, 10, -5, 5]
     elif target == 'quest_completed':
         return [-580, 25, 25, -25]
     elif target == 'pvp_row':
-        return [-500, 80, -35, 45]
+        return [-500, 50, -15, 45]
 
 def rnavigation(kc_window, destination, max=0):
     """
