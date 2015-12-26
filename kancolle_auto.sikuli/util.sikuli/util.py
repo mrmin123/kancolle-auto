@@ -149,7 +149,7 @@ def expand_areas(target):
     elif target == 'quest_completed':
         return [-580, 25, 25, -25]
     elif target == 'pvp_row':
-        return [-500, 50, -15, 45]
+        return [-500, 50, -10, 40]
 
 def rnavigation(kc_window, destination, max=0):
     """
