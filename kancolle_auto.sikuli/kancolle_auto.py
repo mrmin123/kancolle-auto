@@ -34,8 +34,8 @@ def focus_window():
     kc_window = myApp.focusedWindow()
     # Wake screen up in case machine has been idle
     # Would cause issues when (0,0) to (1,1) - windows focus issue??
-    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
-    kc_window.mouseMove(Location(kc_window.x + 120,kc_window.y + 120))
+    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
+    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
     # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
     while not (kc_window.exists(Pattern('menu_main_home.png').exact())
