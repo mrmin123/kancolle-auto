@@ -11,6 +11,7 @@ Settings.MinSimilarity = 0.8
 
 # Declare globals
 WAITLONG = 60
+sleep_cycle = 20
 settings = {
     'expedition_id_fleet_map': {}
 }
@@ -213,7 +214,7 @@ def check_soonest():
 
 # Load the config.ini file
 def get_config():
-    global settings
+    global settings, sleep_cycle
     log_msg("Reading config file")
     # Change paths and read config.ini
     os.chdir(getBundlePath())
@@ -225,6 +226,7 @@ def get_config():
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
+    sleep_cycle = config.getint('General', 'SleepCycle')
     if config.getboolean('General', 'ScheduledSleepEnabled'):
         settings['scheduled_sleep_enabled'] = True
         settings['scheduled_sleep_start_1'] = config.getint('General', 'ScheduledSleepStart1')
@@ -439,6 +441,6 @@ while True:
             check_soonest()
             log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
             idle = True
-        sleep(20)
+        sleep(sleep_cycle)
     except FindFailed, e:
         refresh_kancolle(e)
