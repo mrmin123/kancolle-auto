@@ -147,7 +147,7 @@ def expand_areas(target):
     elif target == 'quests_navigation':
         return [-10, 10, -5, 5]
     elif target == 'quest_completed':
-        return [-580, 25, 25, -25]
+        return [-580, 25, -25, 25]
     elif target == 'pvp_row':
         return [-500, 50, -10, 40]
 
