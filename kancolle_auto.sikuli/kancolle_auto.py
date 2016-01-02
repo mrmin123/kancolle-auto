@@ -21,7 +21,7 @@ expedition_item = None
 combat_item = None
 pvp_item = None
 last_quest_check = None
-last_pvp_check = None
+pvp_skip = False
 kc_window = None
 next_action = ''
 idle = False
@@ -329,7 +329,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, last_pvp_check, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -347,7 +347,6 @@ def init():
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(kc_window, settings)
-            last_pvp_check = datetime.datetime.now()
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
@@ -394,11 +393,14 @@ while True:
             last_quest_check = now_time
         if settings['pvp_enabled']:
             # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
-            now_time = datetime.datetime.now()
-            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour != 4)
-                or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour != 14)):
+            if ((jst_convert(now_time).hour == 5 and pvp_skip is False)
+                or (jst_convert(now_time).hour == 15 and pvp_skip is False)):
                 pvp_action()
-            last_pvp_check = now_time
+                pvp_skip = True # Let's not keep checking for PvP after the initial check
+            # Reset the pvp_skip variable in preparation for the next pvp check
+            if ((jst_convert(now_time).hour == 6 and pvp_skip is True)
+                or (jst_convert(now_time).hour == 16 and pvp_skip is True)):
+                pvp_skip = False
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
             for expedition in expedition_item.running_expedition_list:
