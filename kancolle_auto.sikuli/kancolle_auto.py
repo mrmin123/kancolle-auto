@@ -20,7 +20,7 @@ quest_item = None
 expedition_item = None
 combat_item = None
 pvp_item = None
-last_quest_check = None
+quest_reset_skip = False
 pvp_skip = False
 kc_window = None
 next_action = ''
@@ -329,7 +329,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -340,7 +340,6 @@ def init():
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(kc_window, settings)
-            last_quest_check = datetime.datetime.now()
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
@@ -386,11 +385,14 @@ while True:
         if settings['quests_enabled']:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
-            if jst_convert(now_time).hour == 5 and jst_convert(last_quest_check).hour != 4:
+            if jst_convert(now_time).hour == 5 and quest_reset_skip is False:
                 go_home()
                 quest_item.reset_quests()
                 quest_action(True)
-            last_quest_check = now_time
+                quest_reset_skip = True # Let's not keep resetting the quests
+            # Reset the quest_reset_skip variable in preparation for the next quest reset
+            if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
+                quest_reset_skip = False
         if settings['pvp_enabled']:
             # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
             if ((jst_convert(now_time).hour == 5 and pvp_skip is False)
