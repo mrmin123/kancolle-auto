@@ -34,7 +34,7 @@ def sleep(base, flex=-1):
     if flex == -1:
         tsleep(uniform(base, base * 2) + util_settings['sleep_mod'])
     else:
-        tsleep(uniform(base, flex) + util_settings['sleep_mod'])
+        tsleep(uniform(base, base + flex) + util_settings['sleep_mod'])
 
 def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
     """
