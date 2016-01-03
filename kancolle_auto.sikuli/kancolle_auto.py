@@ -411,6 +411,9 @@ while True:
                     idle = False
                     log_msg("Checking for return of expedition %s" % expedition.id)
                     go_home(True)
+                    # Set the fleet returned flag to True for the expected fleet to force
+                    # a refresh on its status, even if it wasn't received by the script
+                    fleet_returned[expedition.fleet_id - 1] = True
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
                 go_home()
