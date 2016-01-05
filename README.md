@@ -4,6 +4,8 @@
 
 **Please refer to the [releases page](https://github.com/mrmin123/kancolle-auto/releases) for stable releases, or the master branch for bleeding-edge (potentially unstable and buggy).** The [Changelog](http://github.com/mrmin123/kancolle-auto/wiki/Changelog) will have information on what's different.  Please refer to the [Setup page](https://github.com/mrmin123/kancolle-auto/wiki/Setup) for instructions on setting up kancolle-auto.
 
+kancolle-auto is meant for educational purposes only. Actual and prolonged use of kancolle-auto may result in your account being banned. Remember that botting is against the rules!
+
 #### Features
 
 * Expedition module &mdash; automatic expeditions
