@@ -155,6 +155,7 @@ class Combat:
                 if self.kc_window.exists('combat_flagship_dmg.png'):
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
+                rejigger_mouse(self.kc_window, 370, 770, 100, 400)
                 # Check to see if we're back at Home screen
                 if self.kc_window.exists('menu_main_sortie.png'):
                     log_success("Sortie complete!")
