@@ -1,3 +1,4 @@
+import random
 import ConfigParser, datetime
 from sikuli import *
 from random import uniform, randint, choice
@@ -125,7 +126,7 @@ def rclick(kc_window, pic, expand=[]):
             pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
     kc_window.click(pic)
     if reset_mouse:
-        kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+        kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
 
 def expand_areas(target):
     """
@@ -194,7 +195,7 @@ def rnavigation(kc_window, destination, max=0):
     else:
         current_location = 'other'
     # Random navigations, depending on where we are, and where we want to go
-    kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
     if current_location == 'home':
         # Starting from home screen
         if destination == 'home':
@@ -225,14 +226,14 @@ def rnavigation(kc_window, destination, max=0):
             # Go to a sortie menu screen
             log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
             wait_and_click(kc_window, 'menu_main_sortie.png')
-            kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+            kc_window.mouseMove(Location(kc_window.x + random.randint(50, 750), kc_window.y + random.randint(0, 100)))
             sleep(2)
             if evade_count == 0:
                 final_target = 'sortie_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
-                kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+                kc_window.mouseMove(Location(kc_window.x + random.randint(50, 750), kc_window.y + random.randint(0, 100)))
                 evade_count -= 1
                 while evade_count > 0:
                     if rchoice.startswith('sortie_top'):
@@ -353,7 +354,7 @@ def rnavigation(kc_window, destination, max=0):
         wait_and_click(kc_window, final_target)
         sleep(2)
         # Always reset mouse after reaching destination
-        kc_window.mouseMove(Location(kc_window.x + 100, kc_window.y + 100))
+        kc_window.mouseMove(Location(kc_window.x + random.randint(50, 500), kc_window.y + random.randint(0, 100)))
         # If one of these targets, check to see if we're actually there.
         if final_target in ['menu_top_home.png', 'menu_side_home.png']:
             if kc_window.exists('menu_main_sortie.png'):

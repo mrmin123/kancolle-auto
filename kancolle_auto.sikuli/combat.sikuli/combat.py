@@ -1,3 +1,4 @@
+import random
 # Combat list.
 from sikuli import *
 import datetime
@@ -77,7 +78,7 @@ class Combat:
         # If an EO is specified, press the red EO arrow on the right
         if self.subarea_num > 4:
             wait_and_click(self.kc_window, 'combat_panel_eo.png')
-            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+            self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 750), self.kc_window.y + random.randint(0, 100)))
         wait_and_click(self.kc_window, self.subarea_pict)
         sleep(2)
         # Check if port is filled, if necessary
@@ -88,7 +89,7 @@ class Combat:
                 return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 750), self.kc_window.y + random.randint(0, 400)))
         # Taly damages
         self.tally_damages()
         # Check for resupply needs
@@ -203,7 +204,7 @@ class Combat:
             # Now check for formation select, night battle prompt, or
             # post-battle report
             log_msg("Spinning compass!")
-            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+            self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 350), self.kc_window.y + random.randint(0, 180)))
             # Restart this loop in case there's another compass coming up
             sleep(6)
             self.loop_pre_combat(nodes_run)
@@ -211,7 +212,7 @@ class Combat:
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
-            self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+            self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 750), self.kc_window.y + random.randint(0, 180)))
             sleep(10)
             self.loop_post_formation()
         # Check for catbomb
@@ -334,13 +335,13 @@ class PvP:
                 log_warning("No available PvP opponents!")
                 return False
         # An opponent was chosen
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 750), self.kc_window.y + random.randint(50, 350)))
         wait_and_click(self.kc_window, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_window, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 350), self.kc_window.y + random.randint(0, 180)))
         wait_and_click(self.kc_window, 'formation_line_ahead.png', 30)
-        self.kc_window.mouseMove(Location(self.kc_window.x + 100, self.kc_window.y + 100))
+        self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(50, 750), self.kc_window.y + random.randint(0, 180)))
         while not (self.kc_window.exists('next.png')
             or self.kc_window.exists('combat_nb_fight.png')):
             sleep(10)
