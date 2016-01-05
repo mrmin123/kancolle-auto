@@ -1,4 +1,4 @@
-import datetime, os, sys, random, ConfigParser
+import datetime, os, sys, ConfigParser
 sys.path.append(os.getcwd())
 import expedition as expedition_module
 import combat as combat_module
@@ -34,9 +34,8 @@ def focus_window():
     myApp = App.focus(settings['program'])
     kc_window = myApp.focusedWindow()
     # Wake screen up in case machine has been idle
-    # Would cause issues when (0,0) to (1,1) - windows focus issue??
-    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
-    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
+    rejigger_mouse(kc_window, 370, 770, 100, 400)
+    rejigger_mouse(kc_window, 370, 770, 100, 400)
     # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
     while not (kc_window.exists(Pattern('menu_main_home.png').exact())

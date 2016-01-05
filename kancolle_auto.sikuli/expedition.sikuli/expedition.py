@@ -1,4 +1,3 @@
-import random
 # Ensei (expedition) task list.
 from sikuli import *
 import datetime
@@ -45,7 +44,7 @@ class Expedition:
                 log_warning("Expedition is already running: %s" % expedition)
             return False
         sleep(1)
-        self.kc_window.mouseMove(Location(self.kc_window.x + random.randint(100, 750), self.kc_window.y + random.randint(0, 300)))
+        rejigger_mouse(self.kc_window, 100, 750, 0, 300)
         log_msg("Trying to send out fleet %s for expedition %s" % (expedition.fleet_id, expedition.id))
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:
