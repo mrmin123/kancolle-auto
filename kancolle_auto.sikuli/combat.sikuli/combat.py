@@ -155,8 +155,9 @@ class Combat:
                 if self.kc_window.exists('combat_flagship_dmg.png'):
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
+                rejigger_mouse(self.kc_window, 370, 770, 100, 400)
                 # Check to see if we're back at Home screen
-                if self.kc_window.exists('menu_main_home.png'):
+                if self.kc_window.exists('menu_main_sortie.png'):
                     log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
@@ -203,7 +204,7 @@ class Combat:
             # Now check for formation select, night battle prompt, or
             # post-battle report
             log_msg("Spinning compass!")
-            rejigger_mouse(self.kc_window, 50, 350, 0, 180)
+            rejigger_mouse(self.kc_window, 50, 350, 0, 150)
             # Restart this loop in case there's another compass coming up
             sleep(6)
             self.loop_pre_combat(nodes_run)
@@ -211,7 +212,7 @@ class Combat:
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
-            rejigger_mouse(self.kc_window, 50, 750, 0, 180)
+            rejigger_mouse(self.kc_window, 50, 750, 0, 150)
             sleep(10)
             self.loop_post_formation()
         # Check for catbomb
