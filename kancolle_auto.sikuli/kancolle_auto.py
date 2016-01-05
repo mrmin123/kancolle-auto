@@ -11,6 +11,7 @@ Settings.MinSimilarity = 0.8
 
 # Declare globals
 WAITLONG = 60
+sleep_cycle = 20
 settings = {
     'expedition_id_fleet_map': {}
 }
@@ -19,8 +20,8 @@ quest_item = None
 expedition_item = None
 combat_item = None
 pvp_item = None
-last_quest_check = None
-last_pvp_check = None
+quest_reset_skip = False
+pvp_skip = False
 kc_window = None
 next_action = ''
 idle = False
@@ -213,7 +214,7 @@ def check_soonest():
 
 # Load the config.ini file
 def get_config():
-    global settings
+    global settings, sleep_cycle
     log_msg("Reading config file")
     # Change paths and read config.ini
     os.chdir(getBundlePath())
@@ -225,6 +226,7 @@ def get_config():
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
+    sleep_cycle = config.getint('General', 'SleepCycle')
     if config.getboolean('General', 'ScheduledSleepEnabled'):
         settings['scheduled_sleep_enabled'] = True
         settings['scheduled_sleep_start_1'] = config.getint('General', 'ScheduledSleepStart1')
@@ -327,7 +329,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, last_quest_check, last_pvp_check, settings
+    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -338,14 +340,12 @@ def init():
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(kc_window, settings)
-            last_quest_check = datetime.datetime.now()
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(kc_window, settings)
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(kc_window, settings)
-            last_pvp_check = datetime.datetime.now()
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
@@ -385,18 +385,24 @@ while True:
         if settings['quests_enabled']:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
-            if jst_convert(now_time).hour == 5 and jst_convert(last_quest_check).hour != 4:
+            if jst_convert(now_time).hour == 5 and quest_reset_skip is False:
                 go_home()
                 quest_item.reset_quests()
                 quest_action(True)
-            last_quest_check = now_time
+                quest_reset_skip = True # Let's not keep resetting the quests
+            # Reset the quest_reset_skip variable in preparation for the next quest reset
+            if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
+                quest_reset_skip = False
         if settings['pvp_enabled']:
             # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
-            now_time = datetime.datetime.now()
-            if ((jst_convert(now_time).hour == 5 and jst_convert(last_pvp_check).hour != 4)
-                or (jst_convert(now_time).hour == 15 and jst_convert(last_pvp_check).hour != 14)):
+            if ((jst_convert(now_time).hour == 5 and pvp_skip is False)
+                or (jst_convert(now_time).hour == 15 and pvp_skip is False)):
                 pvp_action()
-            last_pvp_check = now_time
+                pvp_skip = True # Let's not keep checking for PvP after the initial check
+            # Reset the pvp_skip variable in preparation for the next pvp check
+            if ((jst_convert(now_time).hour == 6 and pvp_skip is True)
+                or (jst_convert(now_time).hour == 16 and pvp_skip is True)):
+                pvp_skip = False
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
             for expedition in expedition_item.running_expedition_list:
@@ -405,6 +411,9 @@ while True:
                     idle = False
                     log_msg("Checking for return of expedition %s" % expedition.id)
                     go_home(True)
+                    # Set the fleet returned flag to True for the expected fleet to force
+                    # a refresh on its status, even if it wasn't received by the script
+                    fleet_returned[expedition.fleet_id - 1] = True
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
                 go_home()
@@ -439,6 +448,6 @@ while True:
             check_soonest()
             log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
             idle = True
-        sleep(20)
+        sleep(sleep_cycle)
     except FindFailed, e:
         refresh_kancolle(e)

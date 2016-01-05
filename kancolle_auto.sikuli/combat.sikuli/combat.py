@@ -156,7 +156,7 @@ class Combat:
                     wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
                     sleep(3)
                 # Check to see if we're back at Home screen
-                if self.kc_window.exists('menu_main_sortie.png'):
+                if self.kc_window.exists('menu_main_home.png'):
                     log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
