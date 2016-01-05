@@ -1,4 +1,3 @@
-import random
 import ConfigParser, datetime
 from sikuli import *
 from random import uniform, randint, choice
@@ -93,6 +92,39 @@ def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
+def rejigger_mouse(kc_window, x1, x2, y1, y2):
+    """
+    Function for rejiggering the mouse position when required, usually to wake
+    the screen up or move the mouse out of the way of buttons. The function
+    will throw the mouse to around where the kanmasu portrait would be on the
+    main screen. Thanks to @minh6a for working on this!
+
+    kc_window - Sikuli window
+    x1, x2 - random value range for x-coord
+    y1, y2 - random value range for y-coord
+    """
+    global util_settings
+
+    # If the screen dimensions are not set, grab it using Sikuli's Screen class
+    if 'screen_x' not in util_settings or 'screen_y' not in util_settings:
+        temp_screen = Screen().getBounds()
+        util_settings['screen_x'] = temp_screen.width
+        util_settings['screen_y'] = temp_screen.height
+
+    # Generate random coordinates
+    rand_x = kc_window.x + randint(x1, x2)
+    rand_y = kc_window.y + randint(y1, y2)
+
+    # Make sure that the randomly generated coordinates are not outside the
+    # screen's boundaries
+    if rand_x > util_settings['screen_x']:
+        rand_x = util_settings['screen_x'] - 1
+    if rand_y > util_settings['screen_y']:
+        rand_y = util_settings['screen_y'] - 1
+
+    # Rejigger mouse
+    kc_window.mouseMove(Location(rand_x, rand_y))
+
 def rclick(kc_window, pic, expand=[]):
     """
     Function for randomizing click location. If expand is not provided the
@@ -126,7 +158,7 @@ def rclick(kc_window, pic, expand=[]):
             pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
     kc_window.click(pic)
     if reset_mouse:
-        kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
+        rejigger_mouse(kc_window, 370, 770, 100, 400)
 
 def expand_areas(target):
     """
@@ -195,7 +227,7 @@ def rnavigation(kc_window, destination, max=0):
     else:
         current_location = 'other'
     # Random navigations, depending on where we are, and where we want to go
-    kc_window.mouseMove(Location(kc_window.x + 370 + random.randint(0, 400), kc_window.y + random.randint(100, 400)))
+    rejigger_mouse(kc_window, 370, 770, 100, 400)
     if current_location == 'home':
         # Starting from home screen
         if destination == 'home':
@@ -226,14 +258,14 @@ def rnavigation(kc_window, destination, max=0):
             # Go to a sortie menu screen
             log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
             wait_and_click(kc_window, 'menu_main_sortie.png')
-            kc_window.mouseMove(Location(kc_window.x + random.randint(50, 750), kc_window.y + random.randint(0, 100)))
+            rejigger_mouse(kc_window, 50, 750, 0, 100)
             sleep(2)
             if evade_count == 0:
                 final_target = 'sortie_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
-                kc_window.mouseMove(Location(kc_window.x + random.randint(50, 750), kc_window.y + random.randint(0, 100)))
+                rejigger_mouse(kc_window, 50, 750, 0, 100)
                 evade_count -= 1
                 while evade_count > 0:
                     if rchoice.startswith('sortie_top'):
@@ -354,7 +386,7 @@ def rnavigation(kc_window, destination, max=0):
         wait_and_click(kc_window, final_target)
         sleep(2)
         # Always reset mouse after reaching destination
-        kc_window.mouseMove(Location(kc_window.x + random.randint(50, 500), kc_window.y + random.randint(0, 100)))
+        rejigger_mouse(kc_window, 50, 500, 0, 100)
         # If one of these targets, check to see if we're actually there.
         if final_target in ['menu_top_home.png', 'menu_side_home.png']:
             if kc_window.exists('menu_main_sortie.png'):
