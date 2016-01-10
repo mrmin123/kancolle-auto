@@ -11,6 +11,9 @@ class Quests:
         self.kc_window = kc_window
         self.quest_check_schedule = settings['quests_check_schedule']
         self.combat_enabled = settings['combat_enabled']
+        if self.combat_enabled:
+            self.combat_area = settings['combat_area']
+            self.combat_subarea = settings['combat_subarea']
         self.pvp_enabled = settings['pvp_enabled']
         self.expeditions_enabled = settings['expeditions_enabled']
         self.quests_checklist = list(settings['active_quests'])
@@ -170,22 +173,22 @@ class Quests:
                         self.quest_tree.add_children('bd2', [QuestNode('bd3', [3, 0, 0])])
                     if 'bd5' in self.quests_checklist:
                         self.quest_tree.add_children('bd2', [QuestNode('bd5', [3, 0, 0])])
-                        #if 'bd7' in self.quests_checklist:
-                        #    self.quest_tree.add_children('bd5', [QuestNode('bd7', [5, 0, 0])])
-                        #    if 'bd8' in self.quests_checklist:
-                        #        self.quest_tree.add_children('bd7', [QuestNode('bd8', [2, 0, 0])])
+                        if 'bd7' in self.quests_checklist and self.combat_area == 2:
+                            self.quest_tree.add_children('bd5', [QuestNode('bd7', [5, 0, 0])])
+                            if 'bd8' in self.quests_checklist:
+                                self.quest_tree.add_children('bd7', [QuestNode('bd8', [2, 0, 0])])
                         if 'bw2' in self.quests_checklist:
                             self.quest_tree.add_children('bd5', [QuestNode('bw2', [5, 0, 0])])
-                        #    if 'bw5' in self.quests_checklist:
-                        #        self.quest_tree.add_children('bw2', [QuestNode('bw5', [5, 0, 0])])
-                        #        if 'bw6' in self.quests_checklist:
-                        #            self.quest_tree.add_children('bw5', [QuestNode('bw6', [12, 0, 0])])
+                            if 'bw5' in self.quests_checklist:
+                                self.quest_tree.add_children('bw2', [QuestNode('bw5', [5, 0, 0])])
+                                if 'bw6' in self.quests_checklist and self.combat_area == 4:
+                                    self.quest_tree.add_children('bw5', [QuestNode('bw6', [12, 0, 0])])
                         #            if 'bw8' in self.quests_checklist:
                         #                self.quest_tree.add_children('bw6', [QuestNode('bw8', [1, 0, 0])])
                         #                if 'bw9' in self.quests_checklist:
                         #                    self.quest_tree.add_children('bw8', [QuestNode('bw9', [2, 0, 0])])
-                        #        if 'bw7' in self.quests_checklist:
-                        #                self.quest_tree.add_children('bw5', [QuestNode('bw7', [5, 0, 0])])
+                                if 'bw7' in self.quests_checklist and self.combat_area == 3 and (self.combat_subarea == 3 or self.combat_subarea == 4 or self.combat_subarea == 5):
+                                        self.quest_tree.add_children('bw5', [QuestNode('bw7', [5, 0, 0])])
                     if 'bw1' in self.quests_checklist:
                         self.quest_tree.add_children('bd2', [QuestNode('bw1', [12, 0, 0])])
                         if 'bw4' in self.quests_checklist:
