@@ -299,7 +299,9 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
             sleep(1)
-            wait_and_click(kc_window, 'recovery_kc3_startanyway.png', 20)
+            type(Key.TAB) # Tab over to 'Start Anyway' button
+            sleep(1)
+            type(Key.SPACE)
         elif settings['recovery_method'] == 'KCV':
             # Recovery steps if using KanColleViewer
             type(Key.F5)
