@@ -16,10 +16,12 @@ settings = {
     'expedition_id_fleet_map': {}
 }
 fleet_returned = [False, False, False, False]
+current_fleetcomp = 1
 quest_item = None
 expedition_item = None
 combat_item = None
 pvp_item = None
+fleetcomp_switcher = None
 quest_reset_skip = False
 pvp_skip = False
 kc_window = None
@@ -68,7 +70,7 @@ def go_home(refresh=False):
             # the Home screen. Go straight to resupplying fleets
             resupply()
         elif refresh:
-            # We're at home, but if we're do for a refresh, refresh
+            # We're at home, but if we're due for a refresh, refresh
             rnavigation(kc_window, 'refresh_home')
             # Check for completed expeditions. Resupply them if there are.
             if check_expedition():
@@ -174,6 +176,8 @@ def expedition_action(fleet_id):
 # Actions involved in conducting PvPs
 def pvp_action():
     global kc_window, pvp_item, settings
+    # Switch fleet comp, if necessary
+    fleetcomp_switch_action(settings['pvp_fleetcomp'])
     go_home()
     while pvp_item.go_pvp():
         fleet_returned[0] = True
@@ -187,7 +191,8 @@ def pvp_action():
 # Actions involved in conducting sorties
 def sortie_action():
     global kc_window, fleet_returned, combat_item, settings
-    go_home(True)
+    fleetcomp_switch_action(settings['combat_fleetcomp'])
+    go_home()
     combat_item.go_sortie()
     fleet_returned[0] = True
     # Check home, repair if needed, and resupply
@@ -197,6 +202,16 @@ def sortie_action():
     resupply()
     fleet_returned[0] = False
     log_success("Next sortie!: %s" % combat_item)
+
+# Actions that check and switch fleet comps
+def fleetcomp_switch_action(fleetcomp):
+    global kc_window, current_fleetcomp, fleetcomp_switcher, settings
+    if fleetcomp_switcher and fleetcomp != current_fleetcomp:
+        # fleetcomp_switcher is defined (aka necessary) AND the needed fleetcomp
+        # is different from the current fleetcomp, go home then switch fleets
+        go_home()
+        fleetcomp_switcher.switch_fleetcomp(fleetcomp)
+        current_fleetcomp = fleetcomp
 
 # Determine when the next automated action will be, whether it's a sortie or
 # expedition action (currently disregards quests and PvP)
@@ -332,7 +347,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, quest_item, expedition_item, combat_item, pvp_item, settings
+    global kc_window, fleet_returned, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -352,6 +367,11 @@ def init():
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
+        if settings['pvp_enabled'] and settings['combat_enabled']:
+            if settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
+                # Define fleet comp switcher module if both pvp and combat modules are enabled
+                # and they have different fleet comps assigned
+                fleetcomp_switcher = combat_module.FleetcompSwitcher(kc_window, settings)
         # Go home
         go_home(True)
         if settings['quests_enabled']:
@@ -363,8 +383,7 @@ def init():
         if settings['pvp_enabled']:
             now_time = datetime.datetime.now()
             if not 3 <= jst_convert(now_time).hour < 5:
-                # Run PvP, but not between the time when PvP resets, but quests
-                # do not!
+                # Run PvP, but not between the time when PvP resets but quests do not!
                 pvp_action()
         if settings['combat_enabled']:
             # Run sortie defined in combat item
