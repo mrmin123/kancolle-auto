@@ -248,11 +248,13 @@ def get_config():
     # 'PvP' section
     if config.getboolean('PvP', 'Enabled'):
         settings['pvp_enabled'] = True
+        settings['pvp_fleetcomp'] = config.getint('PvP', 'FleetComp')
     else:
         settings['pvp_enabled'] = False
     # 'Combat' section
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
+        settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
