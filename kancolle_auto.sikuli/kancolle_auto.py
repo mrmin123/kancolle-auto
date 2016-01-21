@@ -16,7 +16,7 @@ settings = {
     'expedition_id_fleet_map': {}
 }
 fleet_returned = [False, False, False, False]
-current_fleetcomp = 1
+current_fleetcomp = 0
 quest_item = None
 expedition_item = None
 combat_item = None
