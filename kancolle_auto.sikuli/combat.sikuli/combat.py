@@ -359,8 +359,9 @@ class FleetcompSwitcher:
     def __init__(self, kc_window, settings):
         self.kc_window = kc_window
 
-    def switch_fleetcomp(fleetcomp):
-        rnavigation(kc_window, 'fleetcomp')
+    def switch_fleetcomp(self, fleetcomp):
+        # Navigate to the fleetcomp page, then enter the fleetcomp screen
+        rnavigation(self.kc_window, 'fleetcomp')
         wait_and_click(self.kc_window, 'fleetcomp_screen.png', 30)
         self.kc_window.wait('fleetcomp_button_offset.png', 30)
         # the button_offset image is located 50 pixels above the first button,

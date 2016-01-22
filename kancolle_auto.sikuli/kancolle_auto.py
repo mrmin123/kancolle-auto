@@ -368,7 +368,11 @@ def init():
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
         if settings['pvp_enabled'] and settings['combat_enabled']:
-            if settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
+            if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
+                # If either of the fleetcomp values are set to 0, do not define the fleet comp
+                # switcher module
+                pass
+            elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
                 # Define fleet comp switcher module if both pvp and combat modules are enabled
                 # and they have different fleet comps assigned
                 fleetcomp_switcher = combat_module.FleetcompSwitcher(kc_window, settings)
