@@ -354,3 +354,17 @@ class PvP:
         wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
         log_msg("PvP complete!")
         return True
+
+class FleetcompSwitcher:
+    def __init__(self, kc_window, settings):
+        self.kc_window = kc_window
+
+    def switch_fleetcomp(self, fleetcomp):
+        # Navigate to the fleetcomp page, then enter the fleetcomp screen
+        rnavigation(self.kc_window, 'fleetcomp')
+        wait_and_click(self.kc_window, 'fleetcomp_screen.png', 30)
+        self.kc_window.wait('fleetcomp_button_offset.png', 30)
+        # the button_offset image is located 50 pixels above the first button,
+        # and each subsequent buttons are situated 52 pixels apart vertically
+        target_button = Pattern('fleetcomp_button_offset.png').targetOffset(randint(-15, 15), 50 + (52 * (fleetcomp - 1)) + randint(-8, 8))
+        self.kc_window.click(target_button)
