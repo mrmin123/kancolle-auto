@@ -11,6 +11,7 @@ class Combat:
     def __init__(self, kc_window, settings):
         self.next_sortie_time = datetime.datetime.now()
         self.kc_window = kc_window
+        self.submarine_switch = settings['submarine_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
@@ -302,6 +303,31 @@ class Combat:
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
                     sleep(2)
+            if settings['submarine_switch']:
+                rnavigation(self.kc_window, 'fleetcomp')
+                if self.kc_window.exists('fleetcomp_dmg_repair.png'):
+                    for i in self.kc_window.findAll('fleetcomp_dmg_repair.png'):
+                        ship_detail_button = i.targetOffset(-98 + randint(-33, 33), 53 + randint(-8, 8))
+                        self.kc_window.click(ship_detail_button)
+                        wait(2)
+                        if self.kc_window.exists(Pattern('fleetcomp_stats_submarine.png').exact()):
+                            check_and_click(self.kc_window, 'fleetcomp_stats_misc.png')
+                            ship_switch_button = i.targetOffset(-15 + randint(-33, 33), 53 + randint(-8, 8))
+                            self.kc_window.click(ship_detail_button)
+                            # if sort is not correct
+                            #   click sort button until correct one
+                            # while next page icon exists
+                            #   if sub shipclasses exist
+                            #       findall sub shipclass ships
+                            #           click it
+                            #           if not under repair
+                            #               click switch
+                            #               exit loop
+                            #           else
+                            #               click away
+                            #   click next page
+                        else:
+                            check_and_click(self.kc_window, 'fleetcomp_stats_misc.png')
 
     def __str__(self):
         return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -362,7 +388,7 @@ class FleetcompSwitcher:
     def switch_fleetcomp(self, fleetcomp):
         # Navigate to the fleetcomp page, then enter the fleetcomp screen
         rnavigation(self.kc_window, 'fleetcomp')
-        wait_and_click(self.kc_window, 'fleetcomp_switch_button.png', 30)
+        wait_and_click(self.kc_window, 'fleetcomp_switchscreen_button.png', 30)
         self.kc_window.wait('fleetcomp_button_offset.png', 30)
         # the button_offset image is located 50 pixels above the first button,
         # and each subsequent buttons are situated 52 pixels apart vertically
