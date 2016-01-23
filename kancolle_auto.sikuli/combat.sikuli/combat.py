@@ -362,7 +362,7 @@ class FleetcompSwitcher:
     def switch_fleetcomp(self, fleetcomp):
         # Navigate to the fleetcomp page, then enter the fleetcomp screen
         rnavigation(self.kc_window, 'fleetcomp')
-        wait_and_click(self.kc_window, 'fleetcomp_screen.png', 30)
+        wait_and_click(self.kc_window, 'fleetcomp_switch_button.png', 30)
         self.kc_window.wait('fleetcomp_button_offset.png', 30)
         # the button_offset image is located 50 pixels above the first button,
         # and each subsequent buttons are situated 52 pixels apart vertically
