@@ -270,6 +270,7 @@ def get_config():
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
         settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
+        settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
