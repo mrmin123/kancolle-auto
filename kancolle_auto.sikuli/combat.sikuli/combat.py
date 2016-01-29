@@ -343,7 +343,7 @@ class Combat:
                         if self.kc_window.exists('fleetcomp_shiplist_submarine.png'):
                             saw_subs = True
                         else:
-                            if saw_subs = True:
+                            if saw_subs:
                                 # We're not seeing any more submarines in the shiplist...
                                 return False
                         if self.kc_window.exists('fleetcomp_shiplist_submarine_available.png'):
