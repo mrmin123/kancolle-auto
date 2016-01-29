@@ -285,7 +285,7 @@ class Combat:
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
                         repair_timer = check_timer(self.kc_window, 'repair_timer.png', 'r', 80, 5)
-                        if int(repair_timer[0:2]) >= self.repair_time_limit:
+                        if int(repair_timer[0:2] + repair_timer[3:5]) >= self.repair_time_limit:
                             # Use bucket if the repair time is longer than desired
                             log_success("Repair time too long... using bucket!")
                             self.kc_window.click('repair_bucket_switch.png')
