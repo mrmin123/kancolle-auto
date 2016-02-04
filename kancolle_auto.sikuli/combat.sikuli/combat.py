@@ -304,8 +304,9 @@ class Combat:
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
                     sleep(2)
         # If submarine switching is enabled, run through it if repairs were required
-        if settings['submarine_switch']:
+        if self.submarine_switch:
             if self.switch_sub():
+                log_msg("Attempting to switch out submarines!")
                 # If switch_subs() returns True (all ships being repaired are switched out)
                 # empty repair_timers and set a fast next sortie time
                 self.repair_timers = []
@@ -313,22 +314,23 @@ class Combat:
 
     def switch_sub(self):
         # See if it's possible to switch any submarines out
-        rnavigation(self.kc_window, 'fleetcomp')
+        #rnavigation(self.kc_window, 'fleetcomp')
         if self.kc_window.exists('fleetcomp_dmg_repair.png'):
             ships_under_repair = 0
             ships_switched_out = 0
             # Check each ship being repaired
             for i in self.kc_window.findAll('fleetcomp_dmg_repair.png'):
+                log_msg("Found ship under repair!")
+                target_region = i.offset(Location(-165, 0)).right(180).below(70)
                 ships_under_repair += 1
                 # Check if the ship is a submarine by checking its stats
-                ship_detail_button = i.targetOffset(-98 + randint(-33, 33), 53 + randint(-8, 8))
-                self.kc_window.click(ship_detail_button)
+                target_region.click('fleetcomp_ship_stats_button.png')
                 wait(2)
                 if self.kc_window.exists(Pattern('fleetcomp_ship_stats_submarine.png').exact()):
+                    log_msg("Ship under repair is a submarine!")
                     # If the ship is a sub, back out of stats screen and go to ship switch list
                     check_and_click(self.kc_window, 'fleetcomp_ship_stats_misc.png')
-                    ship_switch_button = i.targetOffset(-15 + randint(-33, 33), 53 + randint(-8, 8))
-                    self.kc_window.click(ship_switch_button)
+                    target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_window.wait('fleetcomp_shiplist_sort_arrow.png')
                     wait(1)
                     # Make sure the sort order is correct
@@ -341,38 +343,46 @@ class Combat:
                     saw_subs = False
                     while not sub_chosen or not sub_unavailable:
                         if self.kc_window.exists('fleetcomp_shiplist_submarine.png'):
+                            log_msg("We are seeing submarines!")
                             saw_subs = True
                         else:
                             if saw_subs:
                                 # We're not seeing any more submarines in the shiplist...
+                                log_warning("No more submarines!")
                                 return False
                         if self.kc_window.exists('fleetcomp_shiplist_submarine_available.png'):
+                            log_msg("We are seeing available submarines!")
                             for sub in self.kc_window.findAll('fleetcomp_shiplist_submarine_available.png'):
-                                check_and_click(self.kc_window, sub)
-                                if not (self.kc_window.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact())
-                                    or self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
+                                self.kc_window.click(sub)
+                                if (self.kc_window.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact())
+                                    and not (self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity))
-                                    or self.kc_window.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
+                                    or self.kc_window.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)))):
                                     # Submarine available. Switch it in!
+                                    log_msg("Swapping submarines!")
                                     check_and_click(self.kc_window, 'fleetcomp_shiplist_ship_switch_button.png')
                                     ships_switched_out += 1
                                     sub_chosen = True
                                     break
                                 else:
                                     # Submarine is damaged/under repair; click away
+                                    log_msg("Submarine not available, moving on!")
                                     check_and_click(self.kc_window, 'fleetcomp_shiplist_ship_misc.png')
                                     pass
                         # If we went through all the submarines on the shiplist page and
                         # haven't found a valid replacement, head to the next page
-                        if not check_and_click(self.kc_window, 'fleetcomp_shiplist_next_page.png'):
+                        if not sub_chosen and not check_and_click(self.kc_window, 'fleetcomp_shiplist_next_page.png'):
                             # If we do not have any more available pages, we do not have any more available submarines
+                            log_msg("No more ships to look at, moving on!")
                             check_and_click(self.kc_window, 'fleetcomp_shiplist_misc.png')
                             sub_unavailable = True
                 else:
                     check_and_click(self.kc_window, 'fleetcomp_ship_stats_misc.png')
             if ships_under_repair == ships_switched_out:
+                log_success("All submarines successfully swapped out! Continuing sorties!")
                 return True
+        log_warning("Not all ships under repairs are submarines, or not all submarines could not be swapped out! Waiting for repairs!")
         return False
 
     def __str__(self):
