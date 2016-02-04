@@ -314,10 +314,11 @@ class Combat:
 
     def switch_sub(self):
         # See if it's possible to switch any submarines out
-        #rnavigation(self.kc_window, 'fleetcomp')
+        rnavigation(self.kc_window, 'fleetcomp')
         if self.kc_window.exists('fleetcomp_dmg_repair.png'):
             ships_under_repair = 0
             ships_switched_out = 0
+            shiplist_page = 1
             # Check each ship being repaired
             for i in self.kc_window.findAll('fleetcomp_dmg_repair.png'):
                 log_msg("Found ship under repair!")
@@ -334,9 +335,12 @@ class Combat:
                     self.kc_window.wait('fleetcomp_shiplist_sort_arrow.png')
                     wait(1)
                     # Make sure the sort order is correct
+                    log_msg("Checking shiplist sort order and moving to first page if necessary!")
                     while not self.kc_window.exists('fleetcomp_shiplist_sort_type.png'):
                         check_and_click(self.kc_window, 'fleetcomp_shiplist_sort_arrow.png')
                         wait (1)
+                    if shiplist_page == 1:
+                        check_and_click(self.kc_window, 'fleetcomp_shiplist_first_page.png')
                     # Sort through pages and find a sub that's not damaged/under repair
                     sub_chosen = False
                     sub_unavailable = False
@@ -370,9 +374,13 @@ class Combat:
                                     log_msg("Submarine not available, moving on!")
                                     check_and_click(self.kc_window, 'fleetcomp_shiplist_ship_misc.png')
                                     pass
-                        # If we went through all the submarines on the shiplist page and
-                        # haven't found a valid replacement, head to the next page
-                        if not sub_chosen and not check_and_click(self.kc_window, 'fleetcomp_shiplist_next_page.png'):
+                        # If we went through all the submarines on the shiplist page and haven't found a valid
+                        # replacement, head to the next page (up to page 11 supported)
+                        if not sub_chosen:
+                            shiplist_page += 1
+                            if shiplist_page < 12:
+                                if check_and_click(self.kc_window, 'fleetcomp_shiplist_pg' + str(shiplist_page) + '.png'):
+                                    continue
                             # If we do not have any more available pages, we do not have any more available submarines
                             log_msg("No more ships to look at, moving on!")
                             check_and_click(self.kc_window, 'fleetcomp_shiplist_misc.png')
