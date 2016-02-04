@@ -377,8 +377,6 @@ def init():
                 # Define fleet comp switcher module if both pvp and combat modules are enabled
                 # and they have different fleet comps assigned
                 fleetcomp_switcher = combat_module.FleetcompSwitcher(kc_window, settings)
-        combat_item.switch_sub()
-        exit()
         # Go home
         go_home(True)
         if settings['quests_enabled']:
