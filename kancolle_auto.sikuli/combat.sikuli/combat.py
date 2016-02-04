@@ -349,7 +349,8 @@ class Combat:
                         if self.kc_window.exists('fleetcomp_shiplist_submarine_available.png'):
                             for sub in self.kc_window.findAll('fleetcomp_shiplist_submarine_available.png'):
                                 check_and_click(self.kc_window, sub)
-                                if not (self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
+                                if not (self.kc_window.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()
+                                    or self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
