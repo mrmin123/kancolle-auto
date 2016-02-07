@@ -166,7 +166,7 @@ class Combat:
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or
                 # additional nodes
-                self.next_sortie_time_set(0, randint(1, 4))
+                self.next_sortie_time_set(0, randint(1, 2))
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
                     log_msg("Ran the required number of nodes. Falling back!")
@@ -310,7 +310,7 @@ class Combat:
                 # If switch_subs() returns True (all ships being repaired are switched out)
                 # empty repair_timers and set a fast next sortie time
                 self.repair_timers = []
-                self.next_sortie_time_set(0, randint(1, 4))
+                self.next_sortie_time_set(0, randint(1, 2))
 
     def switch_sub(self):
         # See if it's possible to switch any submarines out
