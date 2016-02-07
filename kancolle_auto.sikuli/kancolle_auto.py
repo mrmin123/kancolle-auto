@@ -270,6 +270,7 @@ def get_config():
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
         settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
+        settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
         settings['combat_area'] = config.getint('Combat', 'Area')
         settings['combat_subarea'] = config.getint('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
@@ -282,6 +283,9 @@ def get_config():
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
+        # Backwards compatibility check
+        if len(str(settings['repair_time_limit'])) < 4:
+            settings['repair_time_limit'] *= 100
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         log_success("Combat enabled!")
@@ -464,8 +468,9 @@ while True:
             if idle == False:
                 # Expedition or Combat event occured. Loop 'increases'
                 quest_item.schedule_loop += 1
-                log_msg("Quest check loop count at %s; need to check is %s with ~%s quests being tracked" % (quest_item.schedule_loop, quest_item.need_to_check(), quest_item.active_quests))
-            if quest_item.need_to_check():
+                temp_need_to_check = quest_item.need_to_check()
+                log_msg("Quest check loop count at %s; need to check is %s with ~%s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
+            if temp_need_to_check:
                 go_home()
                 quest_action()
         # If fleets have been sent out and idle period is beginning, let the user

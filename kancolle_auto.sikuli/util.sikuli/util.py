@@ -1,6 +1,6 @@
 import ConfigParser, datetime
 from sikuli import *
-from random import uniform, randint, choice
+from random import randint, choice
 from time import sleep as tsleep, strftime
 from re import match
 
@@ -32,9 +32,9 @@ def sleep(base, flex=-1):
     """
     global util_settings
     if flex == -1:
-        tsleep(uniform(base, base * 2) + util_settings['sleep_mod'])
+        tsleep(randint(base, base * 2) + util_settings['sleep_mod'])
     else:
-        tsleep(uniform(base, base + flex) + util_settings['sleep_mod'])
+        tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
 def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
     """
@@ -153,9 +153,9 @@ def rclick(kc_window, pic, expand=[]):
         reset_mouse = True
     if len(expand) == 4:
         if isinstance(pic, str):
-            pic = Pattern(pic).targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
+            pic = Pattern(pic).targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
         elif isinstance(pic, Pattern):
-            pic = pic.targetOffset(int(uniform(expand[0], expand[1])), int(uniform(expand[2], expand[3])))
+            pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
     kc_window.click(pic)
     if reset_mouse:
         rejigger_mouse(kc_window, 370, 770, 100, 400)
