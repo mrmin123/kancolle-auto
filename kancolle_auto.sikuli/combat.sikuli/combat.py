@@ -395,6 +395,9 @@ class Combat:
             if ships_under_repair == ships_switched_out:
                 log_success("All submarines successfully swapped out! Continuing sorties!")
                 return True
+        else:
+            log_msg("No ships being repaired at the moment. Continuing sorties!")
+            return True
         log_warning("Not all ships under repairs are submarines, or not all submarines could not be swapped out! Waiting for repairs!")
         return False
 
