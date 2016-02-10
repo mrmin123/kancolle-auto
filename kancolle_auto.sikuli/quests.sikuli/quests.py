@@ -89,13 +89,13 @@ class Quests:
             self.finish_quests()
             in_progress = self.count_in_progress() # Find number of active quests
             for quest in self.quests_checklist_queue:
-                if check_and_click(self.kc_window, Pattern(quest + '.png').similiar(0.999), expand_areas('quest_bar')):
+                if check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar')):
                     log_msg("Attempting to start quest %s!" % quest)
                     sleep(3)
                     in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
                     if in_progress_new < in_progress:
                         # Less active quests than previously. Reclick to reactivate
-                        check_and_click(self.kc_window, Pattern(quest + '.png').similiar(0.999), expand_areas('quest_bar'))
+                        check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar'))
                         log_msg("Accidentally inactivated quest... reactivating!")
                         sleep(3)
                     if in_progress_new == in_progress:
