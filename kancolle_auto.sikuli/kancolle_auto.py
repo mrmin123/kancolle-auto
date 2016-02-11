@@ -480,6 +480,7 @@ while True:
             if temp_need_to_check:
                 go_home()
                 quest_action()
+                temp_need_to_check = False # Disable need to check after checking
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
         if idle == False:
