@@ -368,6 +368,7 @@ class Combat:
                             for sub in self.kc_window.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                                 self.kc_window.click(sub)
                                 if (self.kc_window.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact())
+                                    and self.kc_window.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact())
                                     and not (self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity))
                                     or self.kc_window.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity))
@@ -380,7 +381,7 @@ class Combat:
                                     break
                                 else:
                                     # Submarine is damaged/under repair; click away
-                                    log_msg("Submarine not available, moving on!")
+                                    log_msg("Submarine not available (or is Taigei), moving on!")
                                     check_and_click(self.kc_window, 'fleetcomp_shiplist_first_page.png')
                                     sleep(2)
                                     pass
