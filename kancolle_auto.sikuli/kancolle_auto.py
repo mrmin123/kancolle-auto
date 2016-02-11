@@ -155,6 +155,14 @@ def quest_action(first_run=False):
     quest_item.go_quests(first_run)
     quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
 
+# Identify which expeditions need to be sent to expedition_action. Used for
+# sending out singular expeditions
+def expedition_action_wrapper():
+    global fleet_returned, expedition_item
+    for fleet_id, fleet_status in enumerate(fleet_returned):
+        if fleet_status == True and fleet_id != 0:
+            expedition_action(fleet_id + 1)
+
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
     global kc_window, fleet_returned, expedition_item, settings
@@ -183,6 +191,9 @@ def pvp_action():
         fleet_returned[0] = True
         go_home()
         resupply()
+        if settings['expeditions_enabled']:
+            if True in fleet_returned[1:]:
+                expedition_action_wrapper()
         if settings['quests_enabled']:
             quest_action()
         go_home()
@@ -446,11 +457,7 @@ while True:
                     fleet_returned[expedition.fleet_id - 1] = True
             # If there are fleets ready to go, go start their assigned expeditions
             if True in fleet_returned:
-                go_home()
-                expedition_item.go_expedition()
-                for fleet_id, fleet_status in enumerate(fleet_returned):
-                    if fleet_status == True and fleet_id != 0:
-                        expedition_action(fleet_id + 1)
+                expedition_action_wrapper()
         # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
