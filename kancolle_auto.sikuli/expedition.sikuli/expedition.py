@@ -28,6 +28,7 @@ class Expedition:
         while not check_and_click(self.kc_window, expedition.name_pict):
             wait_and_click(self.kc_window, expedition.area_pict, 10)
             sleep(2)
+        sleep(1)
         # If the expedition can't be selected, it's either running or just returned
         if not check_and_click(self.kc_window, 'decision.png'):
             if self.kc_window.exists('expedition_time_complete.png'):
