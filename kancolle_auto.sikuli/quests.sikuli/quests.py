@@ -136,9 +136,11 @@ class Quests:
         number (int) of active quests visible on screen.
         """
         in_progress = 0
-        if self.kc_window.exists('quest_in_progress.png'):
+        try:
             for i in self.kc_window.findAll('quest_in_progress.png'):
                 in_progress += 1
+        except:
+            pass
         return in_progress
 
     def finish_quests(self):
@@ -146,14 +148,12 @@ class Quests:
         Method containing actions for turning in a complete quest and receiving
         rewards.
         """
-        while self.kc_window.exists('quest_completed.png'):
-            if check_and_click(self.kc_window, 'quest_completed.png', expand_areas('quest_completed')):
-                log_success("Completed quest found!")
-                while self.kc_window.exists('quest_reward_accept.png'):
-                    check_and_click(self.kc_window, 'quest_reward_accept.png')
-                    sleep(2)
-                if check_and_click(self.kc_window, 'quests_prev_page.png', expand_areas('quests_navigation')):
-                    sleep(2)
+        while check_and_click(self.kc_window, 'quest_completed.png', expand_areas('quest_completed')):
+            log_success("Completed quest found!")
+            while check_and_click(self.kc_window, 'quest_reward_accept.png'):
+                sleep(2)
+            if check_and_click(self.kc_window, 'quests_prev_page.png', expand_areas('quests_navigation')):
+                sleep(2)
 
     def define_quest_tree(self):
         """

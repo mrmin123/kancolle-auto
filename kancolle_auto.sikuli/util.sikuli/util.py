@@ -125,41 +125,6 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2):
     # Rejigger mouse
     kc_window.mouseMove(Location(rand_x, rand_y))
 
-def rclick(kc_window, pic, expand=[]):
-    """
-    Function for randomizing click location. If expand is not provided the
-    click location will be within the image/Pattern's area. If expand is provided,
-    the click location will be in the area expanded relative to the center of
-    the image/Pattern.
-
-    kc_window - Sikuli window
-    pic - image name (str) or Pattern object to match/click
-    expand - list containing custom click boundaries in [left, right, top, bottom]
-        directions. Values should all be (int)s, and relative to the center of
-        the matched Pattern. Defaults to [] to default to Pattern area.
-    """
-    reset_mouse = False
-    if len(expand) == 0:
-        # This slows down the click actions, but it looks for the pattern and
-        # finds the size of the image from the resulting Pattern object.
-        m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
-        if m:
-            # If a match is found and the x,y sizes can be ascertained, generate
-            # the random offsets. Otherwise, just click the damn middle.
-            x_width = int(m.group(1)) / 2
-            y_height = int(m.group(2)) / 2
-            expand = [-x_width, x_width, -y_height, y_height]
-    else:
-        reset_mouse = True
-    if len(expand) == 4:
-        if isinstance(pic, str):
-            pic = Pattern(pic).targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
-        elif isinstance(pic, Pattern):
-            pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
-    kc_window.click(pic)
-    if reset_mouse:
-        rejigger_mouse(kc_window, 370, 770, 100, 400)
-
 def expand_areas(target):
     """
     Function to return pre-defined click expand areas. Returns list of 4 ints
@@ -440,7 +405,7 @@ def check_and_click(kc_window, pic, expand=[]):
         for more details). Defaults to [].
     """
     if kc_window.exists(pic):
-        rclick(kc_window, pic, expand)
+        kc_window.click(pattern_generator(pic, expand, 'prematched'))
         return True
     return False
 
@@ -455,10 +420,46 @@ def wait_and_click(kc_window, pic, time=5, expand=[]):
         for more details). Defaults to [].
     """
     if time:
-        kc_window.wait(pic, time)
+        kc_window.wait(pattern_generator(pic, expand), time)
     else:
-        kc_window.wait(pic)
-    rclick(kc_window, pic, expand)
+        kc_window.wait(pattern_generator(pic, expand))
+    kc_window.click(kc_window.getLastMatch())
+
+def pattern_generator(pic, expand=[], mod=''):
+    """
+    Function for generating Sikuli Pattern with randomized click locations.
+    If expand is not provided the click location will be within the
+    image/Pattern's area. If expand is provided, the click location will be in
+    the area expanded relative to the center of the image/Pattern.
+
+    pic - image name (str) or Pattern object to match/click
+    expand - list containing custom click boundaries in [left, right, top, bottom]
+        directions. Values should all be (int)s, and relative to the center of
+        the matched Pattern. Defaults to [] to default to Pattern area.
+    mod - currently only for dictating whether or not to use a previous match
+        for dimension generation (speeds up check_and_click)
+    """
+    if len(expand) == 0:
+        # This slows down the click actions, but it looks for the pattern and
+        # finds the size of the image from the resulting Pattern object.
+        if mod == 'prematched':
+            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(getLastMatch()))
+        else:
+            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
+        if m:
+            # If a match is found and the x,y sizes can be ascertained, generate
+            # the random offsets. Otherwise, just click the damn middle.
+            x_width = int(m.group(1)) / 2
+            y_height = int(m.group(2)) / 2
+            expand = [-x_width, x_width, -y_height, y_height]
+    else:
+        reset_mouse = True
+    if len(expand) == 4:
+        if isinstance(pic, str):
+            pic = Pattern(pic).targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
+        elif isinstance(pic, Pattern):
+            pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
+    return pic
 
 class color:
     """

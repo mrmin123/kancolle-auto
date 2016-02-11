@@ -129,7 +129,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     sleep(1)
-                    rclick(kc_window, fleet_name)
+                    kc_window.click(pattern_generator(fleet_name))
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -141,9 +141,9 @@ def resupply():
 # Actions involved in resupplying a fleet
 def resupply_action():
     global kc_window
-    if kc_window.exists(Pattern('resupply_all.png').exact()):
+    if kc_window.exists(pattern_generator(Pattern('resupply_all.png').exact())):
         # Rework for new resupply screen
-        rclick(kc_window, 'resupply_all.png')
+        kc_window.click(kc_window.getLastMatch())
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")

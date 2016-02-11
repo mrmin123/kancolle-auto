@@ -32,17 +32,23 @@ class Combat:
         log_msg("Checking fleet condition...")
         self.damage_counts = [0, 0, 0]
         # Tally light damages (in different fatigue states, as well)
-        if self.kc_window.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)):
+        try:
             for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(self.dmg_similarity)):
                 self.damage_counts[0] += 1
+        except:
+            pass
         # Tally moderate damages (in different fatigue states, as well)
-        if self.kc_window.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
+        try:
             for i in self.kc_window.findAll(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
                 self.damage_counts[1] += 1
+        except:
+            pass
         # Tally critical damages (in different fatigue states, as well)
-        if self.kc_window.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
+        try:
             for i in self.kc_window.findAll(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
                 self.damage_counts[2] += 1
+        except:
+            pass
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
 
@@ -120,9 +126,8 @@ class Combat:
                 # battle prompt, or post-battle report screen
                 self.loop_pre_combat(nodes_run)
                 # Ended on resource nodes. Leave sortie.
-                if self.kc_window.exists('next_alt.png'):
+                if check_and_click(self.kc_window, 'next_alt.png', expand_areas('next')):
                     log_success("Sortie complete!")
-                    check_and_click(self.kc_window, 'next_alt.png', expand_areas('next'))
                     sortie_underway = False
                     return self.damage_counts
                 # If night battle prompt, proceed based on node and user config
@@ -153,8 +158,7 @@ class Combat:
                         sleep(5)
                         if check_and_click(self.kc_window, 'next_alt.png', expand_areas('next')):
                             sleep(3)
-                if self.kc_window.exists('combat_flagship_dmg.png'):
-                    wait_and_click(self.kc_window, 'combat_flagship_dmg.png')
+                if check_and_click(self.kc_window, 'combat_flagship_dmg.png'):
                     sleep(3)
                 rejigger_mouse(self.kc_window, 370, 770, 100, 400)
                 # Check to see if we're back at Home screen
@@ -237,16 +241,18 @@ class Combat:
         self.repair_timers = []
         rnavigation(self.kc_window, 'repair')
         # Are there any pre-existing repairs happening?
-        if self.kc_window.exists(Pattern('repair_timer_alt.png').similar(0.5)):
+        try:
             for i in self.kc_window.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
                 repair_timer = check_timer(self.kc_window, i, 'l', 100)
                 timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                 self.repair_timers.append(timer)
             self.repair_timers.sort()
-        if self.kc_window.exists('repair_empty.png'):
+        except:
+            pass
+        try:
             for i in self.kc_window.findAll('repair_empty.png'):
                 empty_docks += 1
-        else:
+        except:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
@@ -445,9 +451,8 @@ class PvP:
             sleep(10)
         check_and_click(self.kc_window, 'combat_nb_fight.png')
         sleep(3)
-        while not self.kc_window.exists('next.png'):
+        while not check_and_click(self.kc_window, 'next.png', expand_areas('next')):
             sleep(10)
-        wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
         sleep(3)
         wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
         log_msg("PvP complete!")
