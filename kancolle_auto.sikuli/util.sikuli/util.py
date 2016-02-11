@@ -230,6 +230,7 @@ def rnavigation(kc_window, destination, max=0):
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
+                sleep(2)
                 rejigger_mouse(kc_window, 50, 750, 0, 100)
                 evade_count -= 1
                 while evade_count > 0:
@@ -270,6 +271,7 @@ def rnavigation(kc_window, destination, max=0):
             else:
                 rchoice = rnavigation_chooser(menu_main_options, ['menu_main_' + destination + '.png'])
                 wait_and_click(kc_window, rchoice)
+                sleep(2)
                 evade_count -= 1
                 while evade_count > 0:
                     if rchoice.startswith('menu_main'):
