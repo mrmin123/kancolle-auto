@@ -23,6 +23,7 @@ combat_item = None
 pvp_item = None
 fleetcomp_switcher = None
 quest_reset_skip = False
+default_quest_mode = 'pvp'
 pvp_skip = False
 kc_window = None
 next_action = ''
@@ -129,7 +130,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     sleep(1)
-                    kc_window.click(pattern_generator(fleet_name))
+                    kc_window.click(pattern_generator(kc_window, fleet_name))
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -141,18 +142,18 @@ def resupply():
 # Actions involved in resupplying a fleet
 def resupply_action():
     global kc_window
-    if kc_window.exists(pattern_generator(Pattern('resupply_all.png').exact())):
+    if kc_window.exists(pattern_generator(kc_window, Pattern('resupply_all.png').exact())):
         # Rework for new resupply screen
-        kc_window.click(getLastMatch())
+        kc_window.click(kc_window.getLastMatch())
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
 
 # Actions involved in checking quests
-def quest_action(first_run=False):
+def quest_action(mode, first_run=False):
     global kc_window, quest_item
     go_home()
-    quest_item.go_quests(first_run)
+    quest_item.go_quests(mode, first_run)
     quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
 
 # Identify which expeditions need to be sent to expedition_action. Used for
@@ -186,6 +187,8 @@ def pvp_action():
     global kc_window, pvp_item, settings
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
+    if settings['quests_enabled']:
+        quest_action('pvp')
     go_home()
     while pvp_item.go_pvp():
         fleet_returned[0] = True
@@ -195,7 +198,7 @@ def pvp_action():
             if True in fleet_returned[1:]:
                 expedition_action_wrapper()
         if settings['quests_enabled']:
-            quest_action()
+            quest_action('pvp')
         go_home()
     fleet_returned[0] = False
 
@@ -362,7 +365,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, settings
+    global kc_window, fleet_returned, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -382,6 +385,7 @@ def init():
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(kc_window, settings)
+            default_quest_mode = 'sortie'
         if settings['pvp_enabled'] and settings['combat_enabled']:
             if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
                 # If either of the fleetcomp values are set to 0, do not define the fleet comp
@@ -395,7 +399,7 @@ def init():
         go_home(True)
         if settings['quests_enabled']:
             # Run through quests defined in quests item
-            quest_action(True)
+            quest_action(default_quest_mode, True)
         if settings['expeditions_enabled']:
             # Run expeditions defined in expedition item
             expedition_action('all')
@@ -429,7 +433,7 @@ while True:
             if jst_convert(now_time).hour == 5 and quest_reset_skip is False:
                 go_home()
                 quest_item.reset_quests()
-                quest_action(True)
+                quest_action(default_quest_mode, True)
                 quest_reset_skip = True # Let's not keep resetting the quests
             # Reset the quest_reset_skip variable in preparation for the next quest reset
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
@@ -479,7 +483,7 @@ while True:
                 log_msg("Quest check loop count at %s; need to check is %s with ~%s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
             if temp_need_to_check:
                 go_home()
-                quest_action()
+                quest_action(default_quest_mode)
                 temp_need_to_check = False # Disable need to check after checking
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur

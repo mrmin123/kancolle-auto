@@ -407,7 +407,7 @@ def check_and_click(kc_window, pic, expand=[]):
         for more details). Defaults to [].
     """
     if kc_window.exists(pic):
-        kc_window.click(pattern_generator(pic, expand, 'prematched'))
+        kc_window.click(pattern_generator(kc_window, pic, expand, 'prematched'))
         return True
     return False
 
@@ -422,12 +422,12 @@ def wait_and_click(kc_window, pic, time=5, expand=[]):
         for more details). Defaults to [].
     """
     if time:
-        kc_window.wait(pattern_generator(pic, expand), time)
+        kc_window.wait(pattern_generator(kc_window, pic, expand), time)
     else:
-        kc_window.wait(pattern_generator(pic, expand))
-    kc_window.click(getLastMatch())
+        kc_window.wait(pattern_generator(kc_window, pic, expand))
+    kc_window.click(kc_window.getLastMatch())
 
-def pattern_generator(pic, expand=[], mod=''):
+def pattern_generator(kc_window, pic, expand=[], mod=''):
     """
     Function for generating Sikuli Pattern with randomized click locations.
     If expand is not provided the click location will be within the
@@ -445,7 +445,7 @@ def pattern_generator(pic, expand=[], mod=''):
         # This slows down the click actions, but it looks for the pattern and
         # finds the size of the image from the resulting Pattern object.
         if mod == 'prematched':
-            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(getLastMatch()))
+            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_window.getLastMatch()))
         else:
             m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
         if m:
