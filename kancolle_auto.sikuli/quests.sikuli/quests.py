@@ -74,6 +74,7 @@ class Quests:
         and starting up quests as needed.
         """
         rnavigation(self.kc_window, 'quests', 2)
+        sleep(1)
         start_check = True
         temp_list = []
         self.active_quests = 0
@@ -94,22 +95,25 @@ class Quests:
             disable = 'b'
             toggled_quests = list(self.activated_pvp_quests)
         while start_check:
-            started_quests = []
-            self.finish_quests(page_backtrack)
-            try:
-                # Check if enabled quests on the page are ones to be disabled
-                for i in self.kc_window.findAll('quest_in_progress.png'):
-                    quest_check_area = i.left(570)
-                    # If they are, disable them
-                    if quest_check_area.exists(disable + '.png'):
-                        self.kc_window.click(quest_check_area)
-                        sleep(3)
-                    else:
-                        self.active_quests += 1
-            except:
-                pass
             toggled_quests.extend([q for q in self.quests_checklist_queue if q[0] != disable])
             toggled_quests = list(set(toggled_quests))
+            quest_types = list(set([q[0] for q in toggled_quests]))
+            if mode == 'sortie':
+                quest_types.sort()
+            elif mode == 'pvp':
+                quest_types.sort(reverse = True)
+            started_quests = []
+            skip_page = True
+            self.finish_quests(page_backtrack)
+            self.filter_quests(disable)
+            for quest_type in quest_types:
+                if self.kc_window.exists(quest_type + '.png'):
+                    skip_page = False
+                    break
+            if skip_page:
+                if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
+                    start_check = False
+                    break
             for quest in toggled_quests:
                 if self.kc_window.exists(Pattern(quest + '.png').similar(0.999)):
                     quest_check_area = self.kc_window.getLastMatch().below(1).above(60).right(255)
@@ -149,6 +153,22 @@ class Quests:
             self.quests_checklist_queue += temp_list
             self.quests_checklist_queue.sort()
         log_msg("New quests to look for next time: %s" % ', '.join(self.quests_checklist_queue))
+
+    def filter_quests(self, disable):
+        log_msg("Filtering out quests...")
+        try:
+            # Check if enabled quests on the page are ones to be disabled
+            for i in self.kc_window.findAll('quest_in_progress.png'):
+                quest_check_area = i.left(570)
+                # If they are, disable them
+                if quest_check_area.exists(disable + '.png'):
+                    log_msg("Disabling quest!")
+                    self.kc_window.click(quest_check_area)
+                    sleep(3)
+                else:
+                    self.active_quests += 1
+        except:
+            pass
 
     def finish_quests(self, page_backtrack):
         """
