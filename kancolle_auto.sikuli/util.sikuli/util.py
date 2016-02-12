@@ -425,7 +425,7 @@ def wait_and_click(kc_window, pic, time=5, expand=[]):
         kc_window.wait(pattern_generator(pic, expand), time)
     else:
         kc_window.wait(pattern_generator(pic, expand))
-    kc_window.click(kc_window.getLastMatch())
+    kc_window.click(getLastMatch())
 
 def pattern_generator(pic, expand=[], mod=''):
     """

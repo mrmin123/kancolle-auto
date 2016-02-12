@@ -87,35 +87,44 @@ class Quests:
         while start_check:
             started_quests = []
             self.finish_quests()
+            try:
+                for i in self.kc_window.findAll('quest_in_progress.png'):
+                    quest_check_area = i.left()
+                    if quest_check_area.exists('b.png'):
+                        self.kc_window.click(quest_check_area)
+                        sleep(3)
+            except:
+                pass
+
+
             in_progress = self.count_in_progress() # Find number of active quests
             for quest in self.quests_checklist_queue:
-                if check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar')):
-                    log_msg("Attempting to start quest %s!" % quest)
-                    sleep(3)
-                    in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
-                    if in_progress_new < in_progress:
-                        # Less active quests than previously. Reclick to reactivate
-                        check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar'))
-                        log_msg("Accidentally inactivated quest... reactivating!")
-                        sleep(3)
-                    if in_progress_new == in_progress:
-                        # Clicked quest, but it wouldn't activate. Queue at max!
-                        log_warning("Couldn't activate quest. Queue must be at maximum!")
-                        temp_list.extend([quest])
+                if self.kc_window.exists(Pattern(quest + '.png').similar(0.999)):
+                    quest_check_area = getLastMatch().below().above().right()
+                    if quest_check_area.exists('quest_in_progress.png'):
+                        log_msg("Quest %s already active!" % quest)
                     else:
-                        # Quest activated. Remove activated quest from queue and
-                        # add children to temp queue
-                        temp_list.extend(self.quest_tree.get_children_ids(quest))
-                        started_quests.append(quest)
-                        waits = self.quest_tree.find(quest).wait
-                        if waits[0] > 0:
-                            self.schedule_sorties.append(self.done_sorties + waits[0])
-                        if waits[1] > 0:
-                            self.schedule_pvp.append(self.done_pvp + waits[1])
-                        if waits[2] > 0:
-                            self.schedule_expeditions.append(self.done_expeditions + waits[2])
-                        if in_progress_new > in_progress:
-                            in_progress = in_progress_new
+                        log_msg("Attempting to start quest %s!" % quest)
+                        check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar'))
+                        sleep(3)
+                        if not quest_check_area.exists('quest_in_progress.png'):
+                            log_warning("Couldn't activate quest. Queue must be at maximum!")
+                            temp_list.extend([quest])
+                            continue
+                    # Quest activated. Remove activated quest from queue and
+                    # add children to temp queue
+                    temp_list.extend(self.quest_tree.get_children_ids(quest))
+                    started_quests.append(quest)
+                    waits = self.quest_tree.find(quest).wait
+                    if waits[0] > 0:
+                        self.schedule_sorties.append(self.done_sorties + waits[0])
+                    if waits[1] > 0:
+                        self.schedule_pvp.append(self.done_pvp + waits[1])
+                    if waits[2] > 0:
+                        self.schedule_expeditions.append(self.done_expeditions + waits[2])
+                    in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
+                    if in_progress_new > in_progress:
+                        in_progress = in_progress_new
             self.active_quests += in_progress
             self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_window, 'quests_next_page.png', expand_areas('quests_navigation')):
