@@ -298,9 +298,6 @@ def get_config():
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
-        # Backwards compatibility check
-        if len(str(settings['repair_time_limit'])) < 4:
-            settings['repair_time_limit'] *= 100
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         log_success("Combat enabled!")
