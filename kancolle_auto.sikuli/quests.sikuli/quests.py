@@ -114,7 +114,8 @@ class Quests:
                 if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
                     start_check = False
                     break
-                else: continue
+                else:
+                    continue
             for quest in toggled_quests:
                 if self.kc_window.exists(Pattern(quest + '.png').similar(0.999)):
                     quest_check_area = self.kc_window.getLastMatch().below(1).above(60).right(255)
