@@ -237,7 +237,7 @@ class Combat:
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
             sleep(4)
-            self.kc_window.click(mouseAt()) # In case of boss monologue
+            self.kc_window.click(atMouse()) # In case of boss monologue
             rejigger_mouse(self.kc_window, 50, 750, 0, 150)
             sleep(10)
             self.loop_post_formation()
