@@ -286,7 +286,7 @@ def get_config():
         settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
         settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
         settings['combat_area'] = config.getint('Combat', 'Area')
-        settings['combat_subarea'] = config.getint('Combat', 'Subarea')
+        settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:

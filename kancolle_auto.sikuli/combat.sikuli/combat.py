@@ -16,7 +16,7 @@ class Combat:
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%d.png' % settings['combat_area']
         self.subarea = settings['combat_subarea']
-        self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
+        self.subarea_pict = 'combat_panel_%d-%s.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
@@ -86,7 +86,7 @@ class Combat:
         wait_and_click(self.kc_window, self.area_pict)
         rejigger_mouse(self.kc_window, 50, 750, 0, 100)
         sleep(2)
-        if self.area_pict = 'E':
+        if self.area_pict == 'E':
             # Special logic for Event maps
             for page in range(1, str(self.subarea[0])):
                 check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
