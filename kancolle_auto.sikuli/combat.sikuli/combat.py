@@ -14,8 +14,7 @@ class Combat:
         self.submarine_switch = settings['submarine_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
-        self.area_pict = 'combat_area_%d.png' % settings['combat_area']
-        self.subarea = settings['combat_subarea']
+        self.area_pict = 'combat_area_%s.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%d-%s.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
         self.formations = settings['formations']
@@ -88,14 +87,14 @@ class Combat:
         sleep(2)
         if self.area_pict == 'E':
             # Special logic for Event maps
-            for page in range(1, str(self.subarea[0])):
+            for page in range(1, self.subarea_num[0]):
                 check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
                 sleep(1)
             wait_and_click(self.kc_window, '_event_panel_' + self.subarea + '.png')
         else:
             # Logic
             # If an EO is specified, press the red EO arrow on the right
-            if self.subarea_num > 4:
+            if str(self.subarea_num) > 4:
                 wait_and_click(self.kc_window, 'combat_panel_eo.png')
                 rejigger_mouse(self.kc_window, 50, 750, 0, 100)
                 sleep(1)
