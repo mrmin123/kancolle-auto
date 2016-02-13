@@ -85,7 +85,7 @@ class Combat:
         wait_and_click(self.kc_window, self.area_pict)
         rejigger_mouse(self.kc_window, 50, 750, 0, 100)
         sleep(2)
-        if self.area_pict == 'E':
+        if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, self.subarea_num[0]):
                 check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
