@@ -87,7 +87,7 @@ class Combat:
         sleep(2)
         if self.area_num == 'E':
             # Special logic for Event maps
-            for page in range(1, self.subarea_num[0]):
+            for page in range(1, int(self.subarea_num[0])):
                 check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
                 sleep(1)
             wait_and_click(self.kc_window, '_event_panel_' + self.subarea + '.png')
@@ -230,6 +230,8 @@ class Combat:
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
+            sleep(4)
+            self.kc_window.click(mouseAt()) # In case of boss monologue
             rejigger_mouse(self.kc_window, 50, 750, 0, 150)
             sleep(10)
             self.loop_post_formation()
