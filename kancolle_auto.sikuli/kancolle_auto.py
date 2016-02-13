@@ -109,6 +109,7 @@ def check_expedition():
             quest_item.done_expeditions += 1
         while not kc_window.exists('menu_main_sortie.png'):
             check_and_click(kc_window, 'next.png', expand_areas('next'))
+            rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(2)
         check_expedition()
         return True

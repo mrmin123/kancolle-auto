@@ -90,7 +90,7 @@ class Combat:
             for page in range(1, int(self.subarea_num[0])):
                 check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
                 sleep(1)
-            wait_and_click(self.kc_window, '_event_panel_' + self.subarea + '.png')
+            wait_and_click(self.kc_window, '_event_panel_' + self.subarea_num + '.png')
         else:
             # Logic
             # If an EO is specified, press the red EO arrow on the right
