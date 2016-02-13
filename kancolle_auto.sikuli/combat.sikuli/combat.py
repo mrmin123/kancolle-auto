@@ -15,7 +15,7 @@ class Combat:
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
-        self.subarea_pict = 'combat_panel_%d-%s.png' % (settings['combat_area'], settings['combat_subarea'])
+        self.subarea_pict = 'combat_panel_%s-%s.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
