@@ -236,8 +236,9 @@ class Combat:
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
-            sleep(4)
-            self.kc_window.click(atMouse()) # In case of boss monologue
+            sleep(10)
+            mouseDown(Button.LEFT) # In case of boss monologue
+            mouseUp()
             rejigger_mouse(self.kc_window, 50, 750, 0, 150)
             sleep(10)
             self.loop_post_formation()
