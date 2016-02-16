@@ -229,6 +229,7 @@ class Combat:
         while not loop_pre_combat_stop:
             # If compass, press it
             #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('compass.png'), expand_areas('compass'))):
+            print 'check compass'
             if check_and_click(self.kc_window, 'compass.png', expand_areas('compass')):
                 # Rework for new resupply screen
                 self.kc_window.click(self.kc_window.getLastMatch())
@@ -241,17 +242,18 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             # Node select
-            if len(self.node_selects) > 0:
-                if self.kc_window.exists('combat_node_select.png'):
-                    for node in self.node_selects:
-                        check_and_click(self.kc_window, Pattern('%s.png' % node))
-                    # Assume that the node was selected...
-                    sleep(5)
-                    self.loop_pre_combat(nodes_run)
-                    loop_pre_combat_stop = True
-                    break
+            print 'check node select'
+            elif len(self.node_selects) > 0 and self.kc_window.exists('combat_node_select.png'):
+                for node in self.node_selects:
+                    check_and_click(self.kc_window, Pattern('%s.png' % node), expand_areas('node_select'))
+                # Assume that the node was selected...
+                sleep(5)
+                self.loop_pre_combat(nodes_run)
+                loop_pre_combat_stop = True
+                break
             # If formation select, select formation based on user config
             #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95))):
+            print 'check formation %s' % self.formations[nodes_run]
             elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
