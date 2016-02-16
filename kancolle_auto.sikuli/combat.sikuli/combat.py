@@ -19,6 +19,7 @@ class Combat:
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
+        self.node_selects = settings['node_selects']
         self.retreat_limit = settings['retreat_limit']
         self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
@@ -108,10 +109,16 @@ class Combat:
         sleep(1)
         # Check if port is filled, if necessary
         if self.port_check:
-            if self.kc_window.exists('combat_start_warning_shipsfull.png'):
-                log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
-                self.next_sortie_time_set(0, 15)
-                return self.damage_counts
+            if self.area_num == 'E':
+                if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                    log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                    self.next_sortie_time_set(0, 15)
+                    return self.damage_counts
+            else:
+                if self.kc_window.exists('combat_start_warning_shipsfull.png'):
+                    log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                    self.next_sortie_time_set(0, 15)
+                    return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_window, 50, 750, 0, 400)
@@ -211,6 +218,9 @@ class Combat:
                 # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
+            elif self.area_num == 'E' and self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
         return self.damage_counts
 
     def loop_pre_combat(self, nodes_run):

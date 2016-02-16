@@ -295,6 +295,7 @@ def get_config():
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
+        settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
