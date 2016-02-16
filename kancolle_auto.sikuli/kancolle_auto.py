@@ -109,6 +109,7 @@ def check_expedition():
             quest_item.done_expeditions += 1
         while not kc_window.exists('menu_main_sortie.png'):
             check_and_click(kc_window, 'next.png', expand_areas('next'))
+            rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(2)
         check_expedition()
         return True
@@ -285,8 +286,8 @@ def get_config():
         settings['combat_enabled'] = True
         settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
         settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
-        settings['combat_area'] = config.getint('Combat', 'Area')
-        settings['combat_subarea'] = config.getint('Combat', 'Subarea')
+        settings['combat_area'] = config.get('Combat', 'Area')
+        settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:
@@ -297,9 +298,6 @@ def get_config():
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
-        # Backwards compatibility check
-        if len(str(settings['repair_time_limit'])) < 4:
-            settings['repair_time_limit'] *= 100
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         log_success("Combat enabled!")

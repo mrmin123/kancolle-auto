@@ -14,8 +14,8 @@ class Combat:
         self.submarine_switch = settings['submarine_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
-        self.area_pict = 'combat_area_%d.png' % settings['combat_area']
-        self.subarea_pict = 'combat_panel_%d-%d.png' % (settings['combat_area'], settings['combat_subarea'])
+        self.area_pict = 'combat_area_%s.png' % settings['combat_area']
+        self.subarea_pict = 'combat_panel_%s-%s.png' % (settings['combat_area'], settings['combat_subarea'])
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
@@ -80,13 +80,32 @@ class Combat:
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         rnavigation(self.kc_window, 'combat', 2)
-        wait_and_click(self.kc_window, self.area_pict)
-        # If an EO is specified, press the red EO arrow on the right
-        if self.subarea_num > 4:
-            wait_and_click(self.kc_window, 'combat_panel_eo.png')
-            rejigger_mouse(self.kc_window, 50, 750, 0, 100)
-        wait_and_click(self.kc_window, self.subarea_pict)
+        rejigger_mouse(self.kc_window, 50, 750, 0, 100)
         sleep(2)
+        wait_and_click(self.kc_window, self.area_pict)
+        rejigger_mouse(self.kc_window, 50, 750, 0, 100)
+        sleep(2)
+        if self.area_num == 'E':
+            # Special logic for Event maps
+            for page in range(1, int(self.subarea_num[0])):
+                check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
+                sleep(1)
+            wait_and_click(self.kc_window, '_event_panel_' + self.subarea_num + '.png')
+            sleep(1)
+            if check_and_click(self.kc_window, 'event_complete_01.png'):
+                sleep(1)
+                check_and_click(self.kc_window, 'event_complete_02.png')
+            else:
+                check_and_click(self.kc_window, 'event_incomplete.png')
+        else:
+            # Logic
+            # If an EO is specified, press the red EO arrow on the right
+            if str(self.subarea_num) > 4:
+                wait_and_click(self.kc_window, 'combat_panel_eo.png')
+                rejigger_mouse(self.kc_window, 50, 750, 0, 100)
+                sleep(1)
+            wait_and_click(self.kc_window, self.subarea_pict)
+        sleep(1)
         # Check if port is filled, if necessary
         if self.port_check:
             if self.kc_window.exists('combat_start_warning_shipsfull.png'):
@@ -217,6 +236,9 @@ class Combat:
         elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
             # Now check for night battle prompt or post-battle report
             log_msg("Selecting fleet formation!")
+            sleep(10)
+            mouseDown(Button.LEFT) # In case of boss monologue
+            mouseUp()
             rejigger_mouse(self.kc_window, 50, 750, 0, 150)
             sleep(10)
             self.loop_post_formation()
