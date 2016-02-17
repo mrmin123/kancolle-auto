@@ -194,9 +194,8 @@ class Combat:
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen
-                    self.kc_window.wait('next.png', 30)
                     self.tally_damages(True)
-                    check_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+                    wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                     sleep(3)
                 # Check to see if we're at combat retreat/continue screen or
                 # item/ship reward screen(s)
