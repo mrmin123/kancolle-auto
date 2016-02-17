@@ -87,6 +87,13 @@ class Combat:
         if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
             log_warning("Fleet needs resupply!")
             return False
+        # Check fleet morale, if necessary
+        if self.check_fatigue:
+            fatigue_timer = self.fatigue_check()
+            if fatigue_timer:
+                log_warning("Fleet is fatigued! Sortie cancelled!")
+                self.next_sortie_time_set(0, fatigue_timer)
+                return False
         return True
 
     # Navigate to Sortie menu and click through sortie!
@@ -141,6 +148,8 @@ class Combat:
             wait(2)
             if not self.pre_sortie_check(True):
                 return self.damage_counts
+            check_and_click(self.kc_window, 'fleet_1.png')
+            sleep(1)
         else:
             # If not combined fleet, check damage and morale only on Fleet 1
             if not self.pre_sortie_check():
@@ -152,13 +161,6 @@ class Combat:
         if self.count_damage_above_limit('repair') > 0:
             log_warning("Ships (%d) in condition below repair threshold! Sortie cancelled!" % self.count_damage_above_limit('repair'))
             return self.damage_counts
-        # Check fleet morale, if necessary
-        if self.check_fatigue:
-            fatigue_timer = self.fatigue_check()
-            if fatigue_timer:
-                log_warning("Fleet is fatigued! Sortie cancelled!")
-                self.next_sortie_time_set(0, fatigue_timer)
-                return self.damage_counts
         if not self.kc_window.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
             wait_and_click(self.kc_window, 'combat_start.png')
