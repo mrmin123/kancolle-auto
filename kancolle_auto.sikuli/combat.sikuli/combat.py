@@ -104,11 +104,11 @@ class Combat:
                 sleep(1)
             wait_and_click(self.kc_window, '_event_panel_' + self.subarea_num + '.png')
             sleep(1)
-            if check_and_click(self.kc_window, 'event_complete_01.png'):
+            if check_and_click(self.kc_window, 'event_start_screen_1.png'):
                 sleep(1)
-                check_and_click(self.kc_window, 'event_complete_02.png')
+                check_and_click(self.kc_window, 'event_start_screen_2.png')
             else:
-                check_and_click(self.kc_window, 'event_incomplete.png')
+                check_and_click(self.kc_window, 'event_start_screen_2.png')
         else:
             # Logic
             # If an EO is specified, press the red EO arrow on the right
