@@ -195,12 +195,20 @@ class Combat:
                 wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 if self.combined_fleet:
-                    # If combined fleet, click through to the additional post-battle report screen
+                    # If combined fleet, click through to the additional post-battle report screen and FCF
                     self.tally_damages(True)
                     wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                     sleep(3)
-                # Check to see if we're at combat retreat/continue screen or
-                # item/ship reward screen(s)
+                    if self.kc_window.exists('fcf_check.png'):
+                        # Only bother to retreat via FCF if only one ship is critically damaged,
+                        # otherwise, continue with FCF and retreat normally
+                        if self.damage_counts[2] == 1:
+                            check_and_click(self.kc_window, 'fcf_retreat.png')
+                            self.damage_counts[2] -= 1
+                        else:
+                            check_and_click(self.kc_window, 'fcf_continue.png')
+                        sleep(2)
+                # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
                     if not (self.kc_window.exists('menu_main_sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
@@ -218,8 +226,7 @@ class Combat:
                     return self.damage_counts
                 # We ran a node, so increase the counter
                 nodes_run += 1
-                # Set next sortie time to soon in case we have no failures or
-                # additional nodes
+                # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, randint(1, 2))
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
