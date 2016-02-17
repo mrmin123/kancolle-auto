@@ -210,12 +210,16 @@ def sortie_action():
     go_home()
     combat_item.go_sortie()
     fleet_returned[0] = True
+    if settings['combined_fleet']:
+        fleet_returned[1] = True
     # Check home, repair if needed, and resupply
     go_home()
     if combat_item.count_damage_above_limit('repair') > 0:
         combat_item.go_repair()
     resupply()
     fleet_returned[0] = False
+    if settings['combined_fleet']:
+        fleet_returned[1] = False
     log_success("Next sortie!: %s" % combat_item)
 
 # Actions that check and switch fleet comps
@@ -289,6 +293,9 @@ def get_config():
         settings['combat_area'] = config.get('Combat', 'Area')
         settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
+        if settings['combined_fleet']:
+            # Remove fleet 2 from expedition list if combined fleet is enabled
+            settings['expedition_id_fleet_map'].pop(2)
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')

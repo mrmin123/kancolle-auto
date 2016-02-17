@@ -30,9 +30,10 @@ class Combat:
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
-    def tally_damages(self):
+    def tally_damages(self, add=False):
         log_msg("Checking fleet condition...")
-        self.damage_counts = [0, 0, 0]
+        if not add:
+            self.damage_counts = [0, 0, 0]
         # Tally light damages (in different fatigue states, as well)
         try:
             for i in self.kc_window.findAll(Pattern('dmg_light.png').similar(self.dmg_similarity)):
@@ -79,6 +80,15 @@ class Combat:
             log_success("Ships have good morale!")
             return None
 
+    def pre_sortie_check(add=False):
+        # Tally damages
+        self.tally_damages(add)
+        # Check for resupply needs
+        if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
+            log_warning("Fleet needs resupply!")
+            return False
+        return True
+
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
         rnavigation(self.kc_window, 'combat', 2)
@@ -123,12 +133,18 @@ class Combat:
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_window, 50, 750, 0, 400)
-        # Taly damages
-        self.tally_damages()
-        # Check for resupply needs
-        if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
-            log_warning("Fleet 1 needs resupply!")
-            return self.damage_counts
+        if self.combined_fleet:
+            # If combined fleet, check damage and morale on both pages
+            if not self.pre_sortie_check():
+                return self.damage_counts
+            check_and_click(self.kc_window, 'fleet_2.png')
+            wait(2)
+            if not self.pre_sortie_check(True):
+                return self.damage_counts
+        else:
+            # If not combined fleet, check damage and morale only on Fleet 1
+            if not self.pre_sortie_check():
+                return self.damage_counts
         # Check fleet damage state
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
@@ -176,6 +192,12 @@ class Combat:
                 self.tally_damages()
                 wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
                 sleep(3)
+                if self.combined_fleet:
+                    # If combined fleet, click through to the additional post-battle report screen
+                    self.kc_window.wait('next.png', 30)
+                    self.tally_damages(True)
+                    check_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+                    sleep(3)
                 # Check to see if we're at combat retreat/continue screen or
                 # item/ship reward screen(s)
                 if not self.kc_window.exists('combat_retreat.png'):
@@ -229,7 +251,6 @@ class Combat:
         loop_pre_combat_stop = False
         while not loop_pre_combat_stop:
             # If compass, press it
-            #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('compass.png'), expand_areas('compass'))):
             if check_and_click(self.kc_window, 'compass.png', expand_areas('compass')):
                 # Rework for new resupply screen
                 self.kc_window.click(self.kc_window.getLastMatch())
@@ -251,7 +272,6 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             # If formation select, select formation based on user config
-            #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95))):
             elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
