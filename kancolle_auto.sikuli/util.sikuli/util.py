@@ -138,6 +138,8 @@ def expand_areas(target):
         return [-600, 0, -400, 0]
     elif target == 'compass':
         return [-250, 400, -200, 200]
+    elif target == 'node_select':
+        return[-9, 9, -9, 9]
     elif target == 'quests_screen_check':
         return [-40, 700, -50, 300]
     elif target == 'quest_bar':

@@ -19,6 +19,7 @@ class Combat:
         self.nodes = settings['nodes']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
+        self.node_selects = settings['node_selects']
         self.retreat_limit = settings['retreat_limit']
         self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
@@ -108,10 +109,16 @@ class Combat:
         sleep(1)
         # Check if port is filled, if necessary
         if self.port_check:
-            if self.kc_window.exists('combat_start_warning_shipsfull.png'):
-                log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
-                self.next_sortie_time_set(0, 15)
-                return self.damage_counts
+            if self.area_num == 'E':
+                if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                    log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                    self.next_sortie_time_set(0, 15)
+                    return self.damage_counts
+            else:
+                if self.kc_window.exists('combat_start_warning_shipsfull.png'):
+                    log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                    self.next_sortie_time_set(0, 15)
+                    return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_window, 50, 750, 0, 400)
@@ -211,40 +218,59 @@ class Combat:
                 # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
+            elif self.area_num == 'E' and self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
         return self.damage_counts
 
     def loop_pre_combat(self, nodes_run):
-        # Check for compass, formation select, night battle prompt, or
-        # post-battle report
-        while not (self.kc_window.exists('compass.png')
-            or self.kc_window.exists(Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95))
-            or self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')
-            or self.kc_window.exists('catbomb.png')):
+        # Check for compass, formation select, night battle prompt, or post-battle report
+        loop_pre_combat_stop = False
+        while not loop_pre_combat_stop:
+            # If compass, press it
+            #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('compass.png'), expand_areas('compass'))):
+            if check_and_click(self.kc_window, 'compass.png', expand_areas('compass')):
+                # Rework for new resupply screen
+                self.kc_window.click(self.kc_window.getLastMatch())
+                # Now check for formation select, night battle prompt, or post-battle report
+                log_msg("Spinning compass!")
+                rejigger_mouse(self.kc_window, 50, 350, 0, 150)
+                # Restart this loop in case there's another compass coming up
+                sleep(6)
+                self.loop_pre_combat(nodes_run)
+                loop_pre_combat_stop = True
+                break
+            # Node select
+            elif len(self.node_selects) > 0 and self.kc_window.exists('combat_node_select.png'):
+                for node in self.node_selects:
+                    check_and_click(self.kc_window, Pattern('%s.png' % node), expand_areas('node_select'))
+                # Assume that the node was selected...
+                sleep(5)
+                self.loop_pre_combat(nodes_run)
+                loop_pre_combat_stop = True
+                break
+            # If formation select, select formation based on user config
+            #if self.kc_window.exists(pattern_generator(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95))):
+            elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
+                # Now check for night battle prompt or post-battle report
+                log_msg("Selecting fleet formation!")
+                sleep(10)
+                mouseDown(Button.LEFT) # In case of boss monologue
+                mouseUp()
+                rejigger_mouse(self.kc_window, 50, 750, 0, 150)
+                sleep(10)
+                self.loop_post_formation()
+                loop_pre_combat_stop = True
+                break
+            elif (self.kc_window.exists('combat_nb_retreat.png')
+                or self.kc_window.exists('next.png')
+                or self.kc_window.exists('next_alt.png')
+                or self.kc_window.exists('catbomb.png')):
+                loop_pre_combat_stop = True
+                break
+            elif self.kc_window.exists('catbomb.png'):
+                raise FindFailed('Catbombed during sortie :(')
             sleep(2)
-        # If compass, press it
-        if check_and_click(self.kc_window, 'compass.png', expand_areas('compass')):
-            # Now check for formation select, night battle prompt, or
-            # post-battle report
-            log_msg("Spinning compass!")
-            rejigger_mouse(self.kc_window, 50, 350, 0, 150)
-            # Restart this loop in case there's another compass coming up
-            sleep(6)
-            self.loop_pre_combat(nodes_run)
-        # If formation select, select formation based on user config
-        elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
-            # Now check for night battle prompt or post-battle report
-            log_msg("Selecting fleet formation!")
-            sleep(10)
-            mouseDown(Button.LEFT) # In case of boss monologue
-            mouseUp()
-            rejigger_mouse(self.kc_window, 50, 750, 0, 150)
-            sleep(10)
-            self.loop_post_formation()
-        # Check for catbomb
-        if self.kc_window.exists('catbomb.png'):
-            raise FindFailed('Catbombed during sortie :(')
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
