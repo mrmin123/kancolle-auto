@@ -295,8 +295,7 @@ def get_config():
         settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
         if settings['combined_fleet']:
             # Remove fleet 2 from expedition list if combined fleet is enabled
-            if 2 in settings['expedition_id_fleet_map']:
-                settings['expedition_id_fleet_map'].pop(2)
+            settings['expedition_id_fleet_map'].pop(2, None)
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')

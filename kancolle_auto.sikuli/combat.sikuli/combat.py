@@ -100,7 +100,7 @@ class Combat:
         if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, int(self.subarea_num[0])):
-                check_and_click(self.kc_window, '_event_next_page_' + page + '.png')
+                check_and_click(self.kc_window, '_event_next_page_' + str(page) + '.png')
                 sleep(1)
             wait_and_click(self.kc_window, '_event_panel_' + self.subarea_num + '.png')
             sleep(1)
