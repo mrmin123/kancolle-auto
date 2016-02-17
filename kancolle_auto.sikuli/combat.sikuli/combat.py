@@ -80,7 +80,7 @@ class Combat:
             log_success("Ships have good morale!")
             return None
 
-    def pre_sortie_check(add=False):
+    def pre_sortie_check(self, add=False):
         # Tally damages
         self.tally_damages(add)
         # Check for resupply needs
