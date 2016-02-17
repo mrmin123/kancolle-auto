@@ -288,14 +288,15 @@ def get_config():
         settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
         settings['combat_area'] = config.get('Combat', 'Area')
         settings['combat_subarea'] = config.get('Combat', 'Subarea')
+        settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
         settings['nodes'] = config.getint('Combat', 'Nodes')
+        settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
-        settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')

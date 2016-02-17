@@ -16,10 +16,11 @@ class Combat:
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
         self.subarea_pict = 'combat_panel_%s-%s.png' % (settings['combat_area'], settings['combat_subarea'])
+        self.combined_fleet = settings['combined_fleet']
         self.nodes = settings['nodes']
+        self.node_selects = settings['node_selects']
         self.formations = settings['formations']
         self.night_battles = settings['night_battles']
-        self.node_selects = settings['node_selects']
         self.retreat_limit = settings['retreat_limit']
         self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
