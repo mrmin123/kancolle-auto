@@ -333,8 +333,10 @@ class Combat:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
+            log_msg("Attempting to conduct repairs on %d ships!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
+                log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
                 repair_start = False
                 wait_and_click(self.kc_window, 'repair_empty.png', 30)
                 sleep(2)
@@ -343,19 +345,19 @@ class Combat:
                     log_success("Starting repair on critically damaged ship!")
                     self.damage_counts[2] -= 1
                     repair_start = True
-                if repair_start == False and self.repair_limit <= 1:
+                if not repair_start and self.repair_limit <= 1:
                     log_msg("Check for moderately-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_moderate.png').similar(0.95)):
                         log_success("Starting repair on moderately damaged ship!")
                         self.damage_counts[1] -= 1
                         repair_start = True
-                if repair_start == False and self.repair_limit == 0:
+                if not repair_start and self.repair_limit == 0:
                     log_msg("Check for lightly-damaged ships.")
                     if check_and_click(self.kc_window, Pattern('repair_dmg_light.png').similar(0.95)):
                         log_success("Starting repair on lightly damaged ship!")
                         self.damage_counts[0] -= 1
                         repair_start = True
-                if repair_start == True:
+                if repair_start:
                     repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
                     sleep(2)
                     if self.repair_time_limit == 0:
@@ -386,6 +388,7 @@ class Combat:
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
                     sleep(2)
+                log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
         if self.submarine_switch:
             if self.switch_sub():
