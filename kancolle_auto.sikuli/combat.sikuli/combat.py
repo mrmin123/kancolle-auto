@@ -198,7 +198,7 @@ class Combat:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
                     self.tally_damages(True)
                     wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
-                    sleep(3)
+                    sleep(5)
                     if self.kc_window.exists('fcf_check.png'):
                         # Only bother to retreat via FCF if only one ship is critically damaged,
                         # otherwise, continue with FCF and retreat normally
