@@ -104,6 +104,8 @@ class Quests:
                 quest_types.sort(reverse = True)
             started_quests = []
             skip_page = True
+            log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
+            log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
             self.finish_quests(page_backtrack)
             self.filter_quests(disable)
             for quest_type in quest_types:
@@ -143,9 +145,9 @@ class Quests:
                         self.schedule_expeditions.append(self.done_expeditions + waits[2])
                     #in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
                     if quest[0] == 'b':
-                        self.activated_sortie_quests.append(quest)
+                        self.activated_sortie_quests = list(set(self.activated_sortie_quests.append(quest)))
                     elif quest[0] == 'c':
-                        self.activated_pvp_quests.append(quest)
+                        self.activated_pvp_quests = list(set(self.activated_pvp_quests.append(quest)))
             self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
                 start_check = False
@@ -213,10 +215,10 @@ class Quests:
                                 self.quest_tree.add_children('bw2', [QuestNode('bw5', [5, 0, 0])])
                                 if 'bw6' in self.quests_checklist and self.combat_area == 4:
                                     self.quest_tree.add_children('bw5', [QuestNode('bw6', [12, 0, 0])])
-                        #            if 'bw8' in self.quests_checklist:
-                        #                self.quest_tree.add_children('bw6', [QuestNode('bw8', [1, 0, 0])])
-                        #                if 'bw9' in self.quests_checklist:
-                        #                    self.quest_tree.add_children('bw8', [QuestNode('bw9', [2, 0, 0])])
+                                    #if 'bw8' in self.quests_checklist:
+                                    #    self.quest_tree.add_children('bw6', [QuestNode('bw8', [1, 0, 0])])
+                                    #    if 'bw9' in self.quests_checklist:
+                                    #        self.quest_tree.add_children('bw8', [QuestNode('bw9', [2, 0, 0])])
                                 if 'bw7' in self.quests_checklist and self.combat_area == 3 and (self.combat_subarea == 3 or self.combat_subarea == 4 or self.combat_subarea == 5):
                                         self.quest_tree.add_children('bw5', [QuestNode('bw7', [5, 0, 0])])
                     if 'bw1' in self.quests_checklist:
