@@ -166,6 +166,7 @@ class Combat:
             wait_and_click(self.kc_window, 'combat_start.png')
             sortie_underway = True
             nodes_run = 0
+            fcf_retreated = False
             while sortie_underway:
                 # Begin loop that checks for combat, formation select, night
                 # battle prompt, or post-battle report screen
@@ -205,6 +206,7 @@ class Combat:
                         if self.damage_counts[2] == 1:
                             check_and_click(self.kc_window, 'fcf_retreat.png')
                             self.damage_counts[2] -= 1
+                            fcf_retreated = True
                         else:
                             check_and_click(self.kc_window, 'fcf_continue.png')
                         sleep(2)
@@ -223,6 +225,9 @@ class Combat:
                 if self.kc_window.exists('menu_main_sortie.png'):
                     log_success("Sortie complete!")
                     sortie_underway = False
+                    if fcf_retreated:
+                        # If a ship was retreated using FCF, mod the damage counts properly to reflect this
+                        self.damage_counts[2] += 1
                     return self.damage_counts
                 # We ran a node, so increase the counter
                 nodes_run += 1
