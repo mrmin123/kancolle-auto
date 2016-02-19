@@ -119,7 +119,7 @@ class Combat:
         else:
             # Logic
             # If an EO is specified, press the red EO arrow on the right
-            if str(self.subarea_num) > 4:
+            if int(self.subarea_num) > 4:
                 wait_and_click(self.kc_window, 'combat_panel_eo.png')
                 rejigger_mouse(self.kc_window, 50, 750, 0, 100)
                 sleep(1)
