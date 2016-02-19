@@ -145,9 +145,11 @@ class Quests:
                         self.schedule_expeditions.append(self.done_expeditions + waits[2])
                     #in_progress_new = self.count_in_progress() # Find number of active quests after pressing quest
                     if quest[0] == 'b':
-                        self.activated_sortie_quests = list(set(self.activated_sortie_quests.append(quest)))
+                        self.activated_sortie_quests.append(quest)
+                        self.activated_sortie_quests = list(set(self.activated_sortie_quests))
                     elif quest[0] == 'c':
-                        self.activated_pvp_quests = list(set(self.activated_pvp_quests.append(quest)))
+                        self.activated_pvp_quests.append(quest)
+                        self.activated_pvp_quests = list(set(self.activated_pvp_quests))
             self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
                 start_check = False
