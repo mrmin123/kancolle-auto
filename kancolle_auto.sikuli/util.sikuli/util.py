@@ -111,6 +111,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2):
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
+        sleep(1)
         temp_game = kc_window.find(Pattern('menu_main_home.png').exact())
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
