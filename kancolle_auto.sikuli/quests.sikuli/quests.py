@@ -227,8 +227,8 @@ class Quests:
                         self.quest_tree.add_children('bd2', [QuestNode('bw1', [12, 0, 0])])
                         if 'bw4' in self.quests_checklist:
                             self.quest_tree.add_children('bw1', [QuestNode('bw4', [12, 0, 0])])
-                            #if 'bw10' in self.quests_checklist:
-                            #    self.quest_tree.add_children('bw4', [QuestNode('bw10', [15, 0, 0])])
+                            if 'bw10' in self.quests_checklist:
+                                self.quest_tree.add_children('bw4', [QuestNode('bw10', [15, 0, 0])])
                     if 'bw3' in self.quests_checklist:
                         self.quest_tree.add_children('bd2', [QuestNode('bw3', [5, 0, 0])])
                 if 'bd4' in self.quests_checklist:
