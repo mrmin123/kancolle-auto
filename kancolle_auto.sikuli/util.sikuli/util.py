@@ -110,10 +110,15 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2):
         temp_screen = Screen().getBounds()
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
+    if 'game_x' not in util_settings or 'game_y' not in util_settings:
+        sleep(1)
+        temp_game = kc_window.find(Pattern('menu_main_home.png').exact())
+        util_settings['game_x'] = temp_game.x - 99
+        util_settings['game_y'] = temp_game.y
 
     # Generate random coordinates
-    rand_x = kc_window.x + randint(x1, x2)
-    rand_y = kc_window.y + randint(y1, y2)
+    rand_x = util_settings['game_x'] + randint(x1, x2)
+    rand_y = util_settings['game_y'] + randint(y1, y2)
 
     # Make sure that the randomly generated coordinates are not outside the
     # screen's boundaries
