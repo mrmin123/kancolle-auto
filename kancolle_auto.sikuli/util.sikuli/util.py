@@ -92,7 +92,7 @@ def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
-def rejigger_mouse(kc_window, x1, x2, y1, y2):
+def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
     """
     Function for rejiggering the mouse position when required, usually to wake
     the screen up or move the mouse out of the way of buttons. The function
@@ -110,15 +110,18 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2):
         temp_screen = Screen().getBounds()
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
-    if 'game_x' not in util_settings or 'game_y' not in util_settings:
-        sleep(1)
-        temp_game = kc_window.find(Pattern('menu_main_home.png').exact())
+    if find_position:
+        temp_game = kc_window.getLastMatch()
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
 
     # Generate random coordinates
-    rand_x = util_settings['game_x'] + randint(x1, x2)
-    rand_y = util_settings['game_y'] + randint(y1, y2)
+    if 'game_x' not in util_settings or 'game_y' not in util_settings:
+        rand_x = kc_window.x + randint(x1, x2)
+        rand_y = kc_window.y + randint(y1, y2)
+    else:
+        rand_x = util_settings['game_x'] + randint(x1, x2)
+        rand_y = util_settings['game_y'] + randint(y1, y2)
 
     # Make sure that the randomly generated coordinates are not outside the
     # screen's boundaries

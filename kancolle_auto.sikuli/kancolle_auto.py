@@ -53,6 +53,7 @@ def focus_window():
     if loop_count == 10:
         log_error("Could not find Kancolle homepage after 10 attempts. Exiting script.")
         exit()
+    rejigger_mouse(kc_window, 370, 770, 100, 400, True)
     sleep(2)
 
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
