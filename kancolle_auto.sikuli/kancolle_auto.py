@@ -173,11 +173,11 @@ def expedition_action(fleet_id):
             if fleet_id != expedition.fleet_id:
                 continue
         while expedition_item.run_expedition(expedition):
-            fleet_needs_resupply[fleet_id - 1] = True
+            fleet_needs_resupply[expedition.fleet_id - 1] = True
             check_and_click(kc_window, 'menu_side_resupply.png')
             resupply()
             expedition_item.go_expedition()
-        fleet_needs_resupply[fleet_id - 1] = False
+        fleet_needs_resupply[expedition.fleet_id - 1] = False
 
 # Actions involved in conducting PvPs
 def pvp_action():
