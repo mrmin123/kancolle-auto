@@ -157,7 +157,7 @@ def quest_action(mode, first_run=False):
 # sending out singular expeditions
 def expedition_action_wrapper():
     global expedition_item
-    for expedition in expedition_item:
+    for expedition in expedition_item.expedition_list:
         if expedition.returned:
             expedition_action(fleet_id + 1)
 
