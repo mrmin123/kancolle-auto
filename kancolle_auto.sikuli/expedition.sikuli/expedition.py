@@ -9,12 +9,11 @@ Settings.MinSimilarity = 0.8
 class Expedition:
     def __init__(self, kc_window, settings):
         self.kc_window = kc_window
-        self.expedition_list = None
-        self.running_expedition_list = []
+        #self.running_expedition_list = {}
         self.expedition_id_fleet_map = settings['expedition_id_fleet_map']
         # Populate expedition_list with Ensei objects on init
         self.expedition_list = []
-        for fleet_id in self.expedition_id_fleet_map:
+        for fleet_id in sorted(self.expedition_id_fleet_map.keys()):
             self.expedition_list.append(ensei_factory(self.expedition_id_fleet_map[fleet_id], fleet_id))
 
     def go_expedition(self):
@@ -34,14 +33,14 @@ class Expedition:
             if self.kc_window.exists('expedition_time_complete.png'):
                 # Expedition just returned
                 expedition.check_later(0, -1) # set the check_later time to now
+                expedition.returned = False
                 log_warning("Expedition just returned:  %s" % expedition)
             else:
                 # Expedition is already running
                 expedition_timer = check_timer(self.kc_window, 'expedition_timer.png', 'r', 80)
-                # Set expedition's end time as determined via OCR and add it to
-                # running_expedition_list
+                # Set expedition's end time as determined via OCR
                 expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]) - 1)
-                self.running_expedition_list.append(expedition)
+                expedition.returned = False
                 log_warning("Expedition is already running: %s" % expedition)
             return False
         sleep(1)
@@ -60,7 +59,7 @@ class Expedition:
                 return True
             wait_and_click(self.kc_window, 'ensei_start.png')
             expedition.start()
-            self.running_expedition_list.append(expedition)
+            expedition.returned = False
             log_success("Expedition sent!: %s" % expedition)
             sleep(3)
             return False
@@ -78,6 +77,7 @@ class Ensei:
         self.area_pict = area_pict
         self.duration = duration
         self.fleet_id = fleet_id
+        self.returned = True
 
     def __str__(self):
         return "Expedition %d (ETA %s)" % (self.id, self.end_time.strftime("%Y-%m-%d %H:%M:%S"))

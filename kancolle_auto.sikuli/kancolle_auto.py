@@ -15,7 +15,7 @@ sleep_cycle = 20
 settings = {
     'expedition_id_fleet_map': {}
 }
-fleet_returned = [False, False, False, False]
+fleet_needs_resupply = [False, False, False, False]
 current_fleetcomp = 0
 quest_item = None
 expedition_item = None
@@ -86,24 +86,20 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, quest_item, fleet_returned, settings
+    global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(kc_window, 'expedition_finish.png', expand_areas('expedition_finish')):
         sleep(3)
         wait_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
-        # Identify which fleet came back
-        if kc_window.exists(Pattern('returned_fleet2.png').exact()): fleet_id = 2
-        elif kc_window.exists(Pattern('returned_fleet3.png').exact()): fleet_id = 3
-        elif kc_window.exists(Pattern('returned_fleet4.png').exact()): fleet_id = 4
-        log_success("Yes, fleet %s has returned!" % fleet_id)
-        # Check if the returned fleet is one defined by the user
+        log_success("Yes, an expedition has returned!")
+        # Guesstimate which expedition came back
         if settings['expeditions_enabled'] == True and expedition_item is not None:
-            if fleet_id in expedition_item.expedition_id_fleet_map:
-                fleet_returned[fleet_id - 1] = True
-                for expedition in expedition_item.running_expedition_list:
-                    if fleet_id == expedition.fleet_id:
-                        # Remove the associated expedition from running_expedition_list
-                        expedition_item.running_expedition_list.remove(expedition)
+            for expedition in expedition_item.expedition_list:
+                now_time = datetime.datetime.now()
+                if now_time > expedition.end_time and not expedition.returned:
+                    fleet_needs_resupply[expedition.fleet_id - 1] = True
+                    expedition.returned = True
+                    break
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
             quest_item.done_expeditions += 1
@@ -119,13 +115,13 @@ def check_expedition():
 
 # Resupply all or a specific fleet
 def resupply():
-    global fleet_returned
+    global fleet_needs_resupply
     log_msg("Lets resupply fleets!")
-    if True in fleet_returned:
+    if True in fleet_needs_resupply:
         # Check if we're already at resupply screen
         if not kc_window.exists('resupply_screen.png'):
             rnavigation(kc_window, 'resupply')
-        for fleet_id, returned in enumerate(fleet_returned):
+        for fleet_id, returned in enumerate(fleet_needs_resupply):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
@@ -160,14 +156,14 @@ def quest_action(mode, first_run=False):
 # Identify which expeditions need to be sent to expedition_action. Used for
 # sending out singular expeditions
 def expedition_action_wrapper():
-    global fleet_returned, expedition_item
-    for fleet_id, fleet_status in enumerate(fleet_returned):
-        if fleet_status == True and fleet_id != 0:
-            expedition_action(fleet_id + 1)
+    global expedition_item
+    for expedition in expedition_item.expedition_list:
+        if expedition.returned:
+            expedition_action(expedition.fleet_id + 1)
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
-    global kc_window, fleet_returned, expedition_item, settings
+    global kc_window, fleet_needs_resupply, expedition_item, settings
     go_home()
     expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
@@ -177,11 +173,11 @@ def expedition_action(fleet_id):
             if fleet_id != expedition.fleet_id:
                 continue
         while expedition_item.run_expedition(expedition):
-            fleet_returned[expedition.fleet_id - 1] = True
+            fleet_needs_resupply[expedition.fleet_id - 1] = True
             check_and_click(kc_window, 'menu_side_resupply.png')
             resupply()
             expedition_item.go_expedition()
-        fleet_returned[expedition.fleet_id - 1] = False
+        fleet_needs_resupply[expedition.fleet_id - 1] = False
 
 # Actions involved in conducting PvPs
 def pvp_action():
@@ -192,34 +188,33 @@ def pvp_action():
         quest_action('pvp')
     go_home()
     while pvp_item.go_pvp():
-        fleet_returned[0] = True
+        fleet_needs_resupply[0] = True
         go_home()
         resupply()
         if settings['expeditions_enabled']:
-            if True in fleet_returned[1:]:
-                expedition_action_wrapper()
+            expedition_action_wrapper()
         if settings['quests_enabled']:
             quest_action('pvp')
         go_home()
-    fleet_returned[0] = False
+    fleet_needs_resupply[0] = False
 
 # Actions involved in conducting sorties
 def sortie_action():
-    global kc_window, fleet_returned, combat_item, settings
+    global kc_window, fleet_needs_resupply, combat_item, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     go_home()
     combat_item.go_sortie()
-    fleet_returned[0] = True
+    fleet_needs_resupply[0] = True
     if settings['combined_fleet']:
-        fleet_returned[1] = True
+        fleet_needs_resupply[1] = True
     # Check home, repair if needed, and resupply
     go_home()
     if combat_item.count_damage_above_limit('repair') > 0:
         combat_item.go_repair()
     resupply()
-    fleet_returned[0] = False
+    fleet_needs_resupply[0] = False
     if settings['combined_fleet']:
-        fleet_returned[1] = False
+        fleet_needs_resupply[1] = False
     log_success("Next sortie!: %s" % combat_item)
 
 # Actions that check and switch fleet comps
@@ -238,7 +233,7 @@ def check_soonest():
     global expedition_item, combat_item, next_action, settings
     next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
     if settings['expeditions_enabled']:
-        for expedition in expedition_item.running_expedition_list:
+        for expedition in expedition_item.expedition_list:
             if next_action == '':
                 next_action = expedition.end_time
             else:
@@ -372,7 +367,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_returned, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
+    global kc_window, fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -457,18 +452,18 @@ while True:
                 pvp_skip = False
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
-            for expedition in expedition_item.running_expedition_list:
+            for expedition in expedition_item.expedition_list:
                 now_time = datetime.datetime.now()
-                if now_time > expedition.end_time:
+                if now_time > expedition.end_time and not expedition.returned:
                     idle = False
                     log_msg("Checking for return of expedition %s" % expedition.id)
                     go_home(True)
                     # Set the fleet returned flag to True for the expected fleet to force
                     # a refresh on its status, even if it wasn't received by the script
-                    fleet_returned[expedition.fleet_id - 1] = True
+                    fleet_needs_resupply[expedition.fleet_id - 1] = True
+                    expedition.returned = True
             # If there are fleets ready to go, go start their assigned expeditions
-            if True in fleet_returned:
-                expedition_action_wrapper()
+            expedition_action_wrapper()
         # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
