@@ -292,6 +292,8 @@ def get_config():
         if settings['combined_fleet']:
             # Remove fleet 2 from expedition list if combined fleet is enabled
             settings['expedition_id_fleet_map'].pop(2, None)
+            # Disable PvP if combined fleet is enabled
+            settings['pvp_enabled'] = False
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
