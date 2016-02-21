@@ -53,6 +53,7 @@ def focus_window():
     if loop_count == 10:
         log_error("Could not find Kancolle homepage after 10 attempts. Exiting script.")
         exit()
+    # One more rejigger once the game has been found, to store game window coordinates
     rejigger_mouse(kc_window, 370, 770, 100, 400, True)
     sleep(2)
 
@@ -100,6 +101,7 @@ def check_expedition():
                 if now_time > expedition.end_time and not expedition.returned:
                     fleet_needs_resupply[expedition.fleet_id - 1] = True
                     expedition.returned = True
+                    log_msg("It's probably fleet %d that returned!" % expedition.fleet_id)
                     break
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
@@ -160,7 +162,7 @@ def expedition_action_wrapper():
     global expedition_item
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
-            expedition_action(expedition.fleet_id + 1)
+            expedition_action(expedition.fleet_id)
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -256,11 +258,12 @@ def get_config():
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
     sleep_cycle = config.getint('General', 'SleepCycle')
-    if config.getboolean('General', 'ScheduledSleepEnabled'):
+    # 'Scheduled Sleep' section
+    if config.getboolean('ScheduleSleep', 'Enabled'):
         settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start_1'] = config.getint('General', 'ScheduledSleepStart1')
-        settings['scheduled_sleep_start_2'] = config.getint('General', 'ScheduledSleepStart2')
-        settings['scheduled_sleep_length'] = config.getfloat('General', 'ScheduledSleepLength')
+        settings['scheduled_sleep_start_1'] = config.getint('ScheduleSleep', 'StartTime1')
+        settings['scheduled_sleep_start_2'] = config.getint('ScheduleSleep', 'StartTIme2')
+        settings['scheduled_sleep_length'] = config.getfloat('ScheduleSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False
     # 'Expeditions' section
@@ -296,6 +299,8 @@ def get_config():
             settings['pvp_enabled'] = False
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
+        if '' in settings['node_selects']:
+            settings['node_selects'].remove('')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))

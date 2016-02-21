@@ -128,19 +128,19 @@ class Combat:
         sleep(1)
         # Check if port is filled, if necessary
         if self.port_check:
-            if self.area_num == 'E':
-                if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
-                    log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
-                    self.next_sortie_time_set(0, 15)
-                    return self.damage_counts
-            else:
-                if self.kc_window.exists('combat_start_warning_shipsfull.png'):
-                    log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
-                    self.next_sortie_time_set(0, 15)
-                    return self.damage_counts
+            if self.kc_window.exists('combat_start_warning_shipsfull.png'):
+                log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
+                return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_window, 50, 750, 0, 400)
+        # Always check port when deploying to Event maps
+        if self.area_num == 'E':
+            if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
+                return self.damage_counts
         if self.combined_fleet:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():
@@ -205,10 +205,12 @@ class Combat:
                         # Only bother to retreat via FCF if only one ship is critically damaged,
                         # otherwise, continue with FCF and retreat normally
                         if self.damage_counts[2] == 1:
+                            log_warning("Retreating ships via FCF!")
                             check_and_click(self.kc_window, 'fcf_retreat.png')
                             self.damage_counts[2] -= 1
                             fcf_retreated = True
                         else:
+                            log_warning("%d ships are critically damaged; not retreating via FCF!" % self.damage_counts[2])
                             check_and_click(self.kc_window, 'fcf_continue.png')
                         sleep(2)
                 # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
@@ -278,6 +280,7 @@ class Combat:
                 break
             # Node select
             elif len(self.node_selects) > 0 and self.kc_window.exists('combat_node_select.png'):
+                # Try all the nodes specified, since we don't know which one is active
                 for node in self.node_selects:
                     check_and_click(self.kc_window, Pattern('%s.png' % node), expand_areas('node_select'))
                 # Assume that the node was selected...

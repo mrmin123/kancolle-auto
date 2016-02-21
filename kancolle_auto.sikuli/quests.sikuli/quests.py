@@ -16,6 +16,12 @@ class Quests:
             self.combat_subarea = settings['combat_subarea']
         self.pvp_enabled = settings['pvp_enabled']
         self.expeditions_enabled = settings['expeditions_enabled']
+        if self.expeditions_enabled:
+            self.expeditions_tokyo_express = False
+            for fleet in settings['expedition_id_fleet_map']:
+                if settings['expedition_id_fleet_map'][fleet] == 37 or settings['expedition_id_fleet_map'][fleet] == 38:
+                    self.expeditions_tokyo_express = True
+                    break
         self.quests_checklist = list(settings['active_quests'])
         self.define_quest_tree()
         # Make sure quests are valid given the config. If not, remove it from
@@ -196,8 +202,7 @@ class Quests:
         """
         self.quest_tree = QuestNode('root')
         # Sortie quests
-        # Commented-out quests are not supported... no monthlies supported
-        # (mainly due to lack of images)
+        # Commented-out quests are not supported due to lack of images
         if self.combat_enabled:
             if 'bd1' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('bd1', [1, 0, 0])])
@@ -253,10 +258,11 @@ class Quests:
                     self.quest_tree.add_children('d2', [QuestNode('d3', [0, 0, 5])])
             if 'd4' in self.quests_checklist:
                 self.quest_tree.add_children('root', [QuestNode('d4', [0, 0, 15])])
-            if 'd9' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('d9', [0, 0, 1])])
-                if 'd11' in self.quests_checklist:
-                    self.quest_tree.add_children('d9', [QuestNode('d11', [0, 0, 7])])
+            if self.expeditions_tokyo_express:
+                if 'd9' in self.quests_checklist:
+                    self.quest_tree.add_children('root', [QuestNode('d9', [0, 0, 1])])
+                    if 'd11' in self.quests_checklist:
+                        self.quest_tree.add_children('d9', [QuestNode('d11', [0, 0, 7])])
         # Supply/Docking quests
         if self.combat_enabled:
             if 'e3' in self.quests_checklist:
