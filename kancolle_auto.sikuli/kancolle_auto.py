@@ -259,11 +259,11 @@ def get_config():
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
     sleep_cycle = config.getint('General', 'SleepCycle')
     # 'Scheduled Sleep' section
-    if config.getboolean('ScheduleSleep', 'Enabled'):
+    if config.getboolean('ScheduledSleep', 'Enabled'):
         settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start_1'] = config.getint('ScheduleSleep', 'StartTime1')
-        settings['scheduled_sleep_start_2'] = config.getint('ScheduleSleep', 'StartTIme2')
-        settings['scheduled_sleep_length'] = config.getfloat('ScheduleSleep', 'SleepLength')
+        settings['scheduled_sleep_start_1'] = config.getint('ScheduledSleep', 'StartTime1')
+        settings['scheduled_sleep_start_2'] = config.getint('ScheduledSleep', 'StartTIme2')
+        settings['scheduled_sleep_length'] = config.getfloat('ScheduledSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False
     # 'Expeditions' section
