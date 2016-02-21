@@ -128,19 +128,19 @@ class Combat:
         sleep(1)
         # Check if port is filled, if necessary
         if self.port_check:
-            if self.area_num == 'E':
-                if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
-                    log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
-                    self.next_sortie_time_set(0, 15)
-                    return self.damage_counts
-            else:
-                if self.kc_window.exists('combat_start_warning_shipsfull.png'):
-                    log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
-                    self.next_sortie_time_set(0, 15)
-                    return self.damage_counts
+            if self.kc_window.exists('combat_start_warning_shipsfull.png'):
+                log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
+                return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_window, 50, 750, 0, 400)
+        # Always check port when deploying to Event maps
+        if self.area_num == 'E':
+            if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
+                log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
+                self.next_sortie_time_set(0, 15)
+                return self.damage_counts
         if self.combined_fleet:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():

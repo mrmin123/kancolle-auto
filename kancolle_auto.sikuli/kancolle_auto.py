@@ -256,11 +256,12 @@ def get_config():
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
     sleep_cycle = config.getint('General', 'SleepCycle')
-    if config.getboolean('General', 'ScheduledSleepEnabled'):
+    # 'Scheduled Sleep' section
+    if config.getboolean('ScheduleSleep', 'Enabled'):
         settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start_1'] = config.getint('General', 'ScheduledSleepStart1')
-        settings['scheduled_sleep_start_2'] = config.getint('General', 'ScheduledSleepStart2')
-        settings['scheduled_sleep_length'] = config.getfloat('General', 'ScheduledSleepLength')
+        settings['scheduled_sleep_start_1'] = config.getint('ScheduleSleep', 'StartTime1')
+        settings['scheduled_sleep_start_2'] = config.getint('ScheduleSleep', 'StartTIme2')
+        settings['scheduled_sleep_length'] = config.getfloat('ScheduleSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False
     # 'Expeditions' section
