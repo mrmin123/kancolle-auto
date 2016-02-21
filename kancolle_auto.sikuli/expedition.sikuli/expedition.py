@@ -22,7 +22,7 @@ class Expedition:
 
     def run_expedition(self, expedition):
         # Run expedition
-        log_msg("Let's send fleet %d for expedition %d out!" % (expedition.fleet_id, expedition.id))
+        log_msg("Let's send fleet %d out for expedition %d!" % (expedition.fleet_id, expedition.id))
         sleep(1)
         while not check_and_click(self.kc_window, expedition.name_pict):
             wait_and_click(self.kc_window, expedition.area_pict, 10)

@@ -162,7 +162,7 @@ def expedition_action_wrapper():
     global expedition_item
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
-            expedition_action(expedition.fleet_id + 1)
+            expedition_action(expedition.fleet_id)
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
