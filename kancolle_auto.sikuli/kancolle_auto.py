@@ -100,6 +100,7 @@ def check_expedition():
                 if now_time > expedition.end_time and not expedition.returned:
                     fleet_needs_resupply[expedition.fleet_id - 1] = True
                     expedition.returned = True
+                    log_msg("It's probably fleet %d that returned!" % expedition.fleet_id)
                     break
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
