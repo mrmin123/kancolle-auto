@@ -297,6 +297,8 @@ def get_config():
             settings['expedition_id_fleet_map'].pop(2, None)
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
+        if '' in settings['node_selects']:
+            settings['node_selects'].remove('')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
