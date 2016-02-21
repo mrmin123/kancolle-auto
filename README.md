@@ -1,12 +1,10 @@
 # kancolle-auto
 
-**kancolle-auto** is a Kantai Collection automation tool.
+**kancolle-auto** is a robust Kantai Collection automation tool.
 
-**Please refer to the [releases page](https://github.com/mrmin123/kancolle-auto/releases) for stable releases, or the master branch for bleeding-edge (potentially unstable and buggy).** The [Changelog](http://github.com/mrmin123/kancolle-auto/wiki/Changelog) will have information on what's different.  Please refer to the [Setup page](https://github.com/mrmin123/kancolle-auto/wiki/Setup) for instructions on setting up kancolle-auto.
+**Please refer to the [releases page](https://github.com/mrmin123/kancolle-auto/releases) for stable releases, or the master branch for bleeding-edge (potentially unstable and buggy).** The [Changelog](http://github.com/mrmin123/kancolle-auto/wiki/Changelog) will have information on the differences.  Please refer to the [Setup page](https://github.com/mrmin123/kancolle-auto/wiki/Setup) for instructions on setting up kancolle-auto.
 
 kancolle-auto is meant for educational purposes only. Actual and prolonged use of kancolle-auto may result in your account being banned. Remember that botting is against the rules!
-
-kancolle-auto was originally a fork of [these](https://github.com/amylase/kancolle-auto) [other](https://github.com/Yukariin/kancolle-auto) [projects/forks](https://github.com/kevin01523/kancolle-auto), but has since outgrown on them in scope and function. Some ideas were inspired by [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan).
 
 #### Features
 
@@ -22,6 +20,8 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 * Helpful timers and other messages in console (when using sikuli-script)
 
 For a more in-depth list of features, as well as installation/usage directions, please refer to the [kancolle-auto wiki](http://github.com/mrmin123/kancolle-auto/wiki).
+
+kancolle-auto was originally a fork of [these](https://github.com/amylase/kancolle-auto) [other](https://github.com/Yukariin/kancolle-auto) [projects/forks](https://github.com/kevin01523/kancolle-auto), but has since outgrown on them in scope and function. Some ideas were inspired by [another similiar tool](https://github.com/tantinevincent/Onegai-ooyodosan).
 
 #### Quick Start
 
