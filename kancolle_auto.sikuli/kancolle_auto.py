@@ -144,7 +144,7 @@ def resupply_action():
     global kc_window
     if global_regions['fleet_flags_main'].exists(pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact())):
         # Rework for new resupply screen
-        global_regions['fleet_flags_main'].click(kc_window.getLastMatch())
+        global_regions['fleet_flags_main'].click(global_regions['fleet_flags_main'].getLastMatch())
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")
