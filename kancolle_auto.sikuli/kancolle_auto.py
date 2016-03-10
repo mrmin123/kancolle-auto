@@ -441,6 +441,7 @@ while True:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
             if jst_convert(now_time).hour == 5 and quest_reset_skip is False:
+                idle = False
                 go_home()
                 quest_item.reset_quests()
                 quest_action(default_quest_mode, True)
@@ -452,6 +453,7 @@ while True:
             # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
             if ((jst_convert(now_time).hour == 5 and pvp_skip is False)
                 or (jst_convert(now_time).hour == 15 and pvp_skip is False)):
+                idle = False
                 pvp_action()
                 pvp_skip = True # Let's not keep checking for PvP after the initial check
             # Reset the pvp_skip variable in preparation for the next pvp check
@@ -497,7 +499,7 @@ while True:
                 temp_need_to_check = False # Disable need to check after checking
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
-        if idle == False:
+        if not idle:
             check_soonest()
             log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
             idle = True

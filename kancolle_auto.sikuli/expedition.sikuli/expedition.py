@@ -77,7 +77,8 @@ class Ensei:
         self.area_pict = area_pict
         self.duration = duration
         self.fleet_id = fleet_id
-        self.returned = True
+        self.returned = False
+        self.end_time = datetime.datetime.now()
 
     def __str__(self):
         return "Expedition %d (ETA %s)" % (self.id, self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
