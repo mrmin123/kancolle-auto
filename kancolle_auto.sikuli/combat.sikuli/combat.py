@@ -130,7 +130,7 @@ class Combat:
         if self.port_check:
             if self.kc_window.exists('combat_start_warning_shipsfull.png'):
                 log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
-                self.next_sortie_time_set(0, 15)
+                self.next_sortie_time_set(0, 15, 5)
                 return self.damage_counts
         wait_and_click(self.kc_window, 'decision.png')
         sleep(1)
@@ -139,7 +139,7 @@ class Combat:
         if self.area_num == 'E':
             if self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
                 log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
-                self.next_sortie_time_set(0, 15)
+                self.next_sortie_time_set(0, 15, 5)
                 return self.damage_counts
         if self.combined_fleet:
             # If combined fleet, check damage and morale on both pages
@@ -235,7 +235,7 @@ class Combat:
                 # We ran a node, so increase the counter
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or additional nodes
-                self.next_sortie_time_set(0, randint(1, 2))
+                self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
                     log_msg("Ran the required number of nodes. Falling back!")
@@ -253,13 +253,13 @@ class Combat:
         else:
             if self.kc_window.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
-                self.next_sortie_time_set(0, randint(5, 10))
+                self.next_sortie_time_set(0, 5, 5)
                 # Expand on this so it goes to repair menu and recheck?
             elif self.kc_window.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
             elif self.area_num == 'E' and self.kc_window.exists('combat_start_warning_shipsfull_event.png'):
                 log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
-                self.next_sortie_time_set(0, 15)
+                self.next_sortie_time_set(0, 15, 5)
         return self.damage_counts
 
     def loop_pre_combat(self, nodes_run):
@@ -405,7 +405,7 @@ class Combat:
                 # If switch_subs() returns True (all ships being repaired are switched out)
                 # empty repair_timers and set a fast next sortie time
                 self.repair_timers = []
-                self.next_sortie_time_set(0, randint(1, 2))
+                self.next_sortie_time_set(0, 0, 2, True)
 
     def switch_sub(self):
         # See if it's possible to switch any submarines out
@@ -502,13 +502,16 @@ class Combat:
 
     # Set next sortie time; if the proposed time is longer than the previously
     # stored time, replace. Otherwise, keep the older (longer) one
-    def next_sortie_time_set(self, hours=-1, minutes=-1):
+    def next_sortie_time_set(self, hours=-1, minutes=-1, flex=0, override=False):
         if hours == -1 and minutes == -1:
             self.next_sortie_time = self.repair_timers[0]
         else:
-            proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
-            if proposed_time > self.next_sortie_time:
+            proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes + randint(0, flex))
+            if override:
                 self.next_sortie_time = proposed_time
+            else:
+                if proposed_time > self.next_sortie_time:
+                    self.next_sortie_time = proposed_time
 
     def timer_end(self, hours, minutes):
         return datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
