@@ -90,9 +90,9 @@ def go_home(refresh=False):
 def check_expedition():
     global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
     log_msg("Are there returning expeditions to receive?")
-    if check_and_click(kc_window, 'expedition_finish.png', expand_areas('expedition_finish')):
+    if check_and_click(global_regions['expedition_flag'], 'expedition_finish.png', expand_areas('expedition_finish')):
         sleep(3)
-        wait_and_click(kc_window, 'next.png', WAITLONG, expand_areas('next'))
+        wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
         log_success("Yes, an expedition has returned!")
         # Guesstimate which expedition came back
         if settings['expeditions_enabled'] == True and expedition_item is not None:
@@ -107,7 +107,7 @@ def check_expedition():
         if settings['quests_enabled'] == True:
             quest_item.done_expeditions += 1
         while not kc_window.exists('menu_main_sortie.png'):
-            check_and_click(kc_window, 'next.png', expand_areas('next'))
+            check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(2)
         check_expedition()
@@ -130,7 +130,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     sleep(1)
-                    kc_window.click(pattern_generator(kc_window, fleet_name))
+                    global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name))
                     sleep(1)
                 resupply_action()
         log_success("Done resupplying!")
@@ -142,9 +142,9 @@ def resupply():
 # Actions involved in resupplying a fleet
 def resupply_action():
     global kc_window
-    if kc_window.exists(pattern_generator(kc_window, Pattern('resupply_all.png').exact())):
+    if global_regions['fleet_flags_main'].exists(pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact())):
         # Rework for new resupply screen
-        kc_window.click(kc_window.getLastMatch())
+        global_regions['fleet_flags_main'].click(kc_window.getLastMatch())
         sleep(2)
     else:
         log_msg("Fleet is already resupplied!")

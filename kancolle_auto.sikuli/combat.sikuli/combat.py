@@ -70,10 +70,10 @@ class Combat:
 
     def fatigue_check(self):
         log_msg("Checking fleet morale!")
-        if self.kc_window.exists(Pattern('fatigue_high.png').similar(0.98)):
+        if global_regions['check_morale'].exists(Pattern('fatigue_high.png').similar(0.98)):
             log_warning("Ship(s) with high fatigue found!")
             return 24
-        elif self.kc_window.exists(Pattern('fatigue_med.png').similar(0.98)):
+        elif global_regions['check_morale'].exists(Pattern('fatigue_med.png').similar(0.98)):
             log_warning("Ship(s) with medium fatigue found!")
             return 12
         else:
@@ -84,7 +84,7 @@ class Combat:
         # Tally damages
         self.tally_damages(add)
         # Check for resupply needs
-        if (self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png')):
+        if (global_regions['check_resupply'].exists('resupply_alert.png') or global_regions['check_resupply'].exists('resupply_red_alert.png')):
             log_warning("Fleet needs resupply!")
             return False
         # Check fleet morale, if necessary
@@ -145,11 +145,11 @@ class Combat:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():
                 return self.damage_counts
-            check_and_click(self.kc_window, 'fleet_2.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
             wait(2)
             if not self.pre_sortie_check(True):
                 return self.damage_counts
-            check_and_click(self.kc_window, 'fleet_1.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
             sleep(1)
         else:
             # If not combined fleet, check damage and morale only on Fleet 1
@@ -173,7 +173,7 @@ class Combat:
                 # battle prompt, or post-battle report screen
                 self.loop_pre_combat(nodes_run)
                 # Ended on resource nodes. Leave sortie.
-                if check_and_click(self.kc_window, 'next_alt.png', expand_areas('next')):
+                if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
                     log_success("Sortie complete!")
                     sortie_underway = False
                     return self.damage_counts
@@ -183,23 +183,23 @@ class Combat:
                         # Commence and sleep through night battle
                         log_success("Commencing night battle!")
                         check_and_click(self.kc_window, 'combat_nb_fight.png')
-                        while not self.kc_window.exists('next.png'):
+                        while not global_regions['next'].exists('next.png'):
                             sleep(10)
                     else:
                         # Decline night battle
                         log_msg("Declining night battle!")
                         check_and_click(self.kc_window, 'combat_nb_retreat.png')
                 # Click through post-battle report
-                wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+                wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 # Tally damages at post-battle report screen
                 self.tally_damages()
-                wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+                wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
                     self.tally_damages(True)
-                    wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+                    wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                     sleep(5)
                     if self.kc_window.exists('fcf_check.png'):
                         # Only bother to retreat via FCF if only one ship is critically damaged,
@@ -217,9 +217,9 @@ class Combat:
                 if not self.kc_window.exists('combat_retreat.png'):
                     sleep(3)
                     if not (self.kc_window.exists('menu_main_sortie.png') or self.kc_window.exists('combat_flagship_dmg.png')):
-                        wait_and_click(self.kc_window, 'next_alt.png', 20, expand_areas('next'))
+                        wait_and_click(global_regions['next'], 'next_alt.png', 20, expand_areas('next'))
                         sleep(5)
-                        if check_and_click(self.kc_window, 'next_alt.png', expand_areas('next')):
+                        if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
                             sleep(3)
                 if check_and_click(self.kc_window, 'combat_flagship_dmg.png'):
                     sleep(3)
@@ -289,7 +289,7 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             # If formation select, select formation based on user config
-            elif check_and_click(self.kc_window, Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
+            elif check_and_click(global_regions['formations'], Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
                 sleep(10)
@@ -301,8 +301,8 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             elif (self.kc_window.exists('combat_nb_retreat.png')
-                or self.kc_window.exists('next.png')
-                or self.kc_window.exists('next_alt.png')
+                or global_regions['next'].exists('next.png')
+                or global_regions['next'].exists('next_alt.png')
                 or self.kc_window.exists('catbomb.png')):
                 loop_pre_combat_stop = True
                 break
@@ -312,8 +312,8 @@ class Combat:
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
-            or self.kc_window.exists('next.png')
-            or self.kc_window.exists('next_alt.png')
+            or global_regions['next'].exists('next.png')
+            or global_regions['next'].exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
             sleep(2)
         # Check for catbomb
@@ -537,17 +537,17 @@ class PvP:
         wait_and_click(self.kc_window, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
         rejigger_mouse(self.kc_window, 50, 350, 0, 180)
-        wait_and_click(self.kc_window, 'formation_line_ahead.png', 30)
+        wait_and_click(global_regions['formations'], 'formation_line_ahead.png', 30)
         rejigger_mouse(self.kc_window, 50, 750, 0, 180)
-        while not (self.kc_window.exists('next.png')
+        while not (global_regions['next'].exists('next.png')
             or self.kc_window.exists('combat_nb_fight.png')):
             sleep(10)
         check_and_click(self.kc_window, 'combat_nb_fight.png')
         sleep(3)
-        while not check_and_click(self.kc_window, 'next.png', expand_areas('next')):
+        while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
             sleep(10)
         sleep(3)
-        wait_and_click(self.kc_window, 'next.png', 30, expand_areas('next'))
+        wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
         log_msg("PvP complete!")
         return True
 

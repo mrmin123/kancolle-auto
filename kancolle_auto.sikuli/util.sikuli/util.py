@@ -6,6 +6,7 @@ from re import match
 
 Settings.OcrTextRead = True
 util_settings = {}
+global_regions = {}
 
 def get_util_config():
     """Load the settings related to the util module"""
@@ -112,8 +113,18 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['screen_y'] = temp_screen.height
     if find_position:
         temp_game = kc_window.getLastMatch()
+        # Define upper-left corner of game screen
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
+        # Define global regions
+        global_regions['next'] = Region(util_settings['game_x'] + 700, util_settings['game_y'] + 380, 100, 100)
+        global_regions['expedition_flag'] = Region(util_settings['game_x'] + 490, util_settings['game_y'] + 0, 60, 55)
+        global_regions['fleet_flags_main'] = Region(util_settings['game_x'] + 80, util_settings['game_y'] + 100, 200, 35)
+        global_regions['fleet_flags_sec'] = Region(util_settings['game_x'] + 340, util_settings['game_y'] + 100, 140, 35)
+        global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
+        global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
+        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
+        global_regions['formations'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 150, 380, 220)
 
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:

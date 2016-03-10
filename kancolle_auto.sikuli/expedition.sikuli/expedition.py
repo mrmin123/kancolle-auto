@@ -49,12 +49,12 @@ class Expedition:
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:
             fleet_name = 'fleet_%s.png' % expedition.fleet_id
-            wait_and_click(self.kc_window, fleet_name)
+            wait_and_click(global_regions['fleet_flags_sec'], fleet_name)
             sleep(1)
         # Make sure that the fleet is ready to go
         if not self.kc_window.exists('fleet_busy.png'):
             log_msg("Checking expedition fleet status!")
-            if self.kc_window.exists('resupply_alert.png') or self.kc_window.exists('resupply_red_alert.png'):
+            if global_regions['check_resupply'].exists('resupply_alert.png') or global_regions['check_resupply'].exists('resupply_red_alert.png'):
                 log_warning("Fleet %s needs resupply!" % expedition.fleet_id)
                 return True
             wait_and_click(self.kc_window, 'ensei_start.png')
