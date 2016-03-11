@@ -24,10 +24,11 @@ pvp_item = None
 fleetcomp_switcher = None
 quest_reset_skip = False
 default_quest_mode = 'pvp'
-pvp_skip = False
 kc_window = None
 next_action = ''
 next_sleep_time = None
+next_pvp_time = None
+pvp_timer_skip = False
 idle = False
 last_refresh = ''
 
@@ -483,16 +484,17 @@ while True:
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
-            # Go PvP at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
-            if ((jst_convert(now_time).hour == 5 and pvp_skip is False)
-                or (jst_convert(now_time).hour == 15 and pvp_skip is False)):
+            # Set the next PvP time at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
+            if ((jst_convert(now_time).hour == 5 and pvp_timer_skip is False)
+                or (jst_convert(now_time).hour == 15 and pvp_timer_skip is False)):
+                idle = False
+                next_pvp_time = datetime.datetime.now() + datetime.timedelta(hours=randint(0,1), minutes=randint(0,60))
+                pvp_timer_skip = True # Let's not keep reseting the next pvp time
+            now_time = datetime.datetime.now()
+            if now_time > next_pvp_time and pvp_timer_skip:
                 idle = False
                 pvp_action()
-                pvp_skip = True # Let's not keep checking for PvP after the initial check
-            # Reset the pvp_skip variable in preparation for the next pvp check
-            if ((jst_convert(now_time).hour == 6 and pvp_skip is True)
-                or (jst_convert(now_time).hour == 16 and pvp_skip is True)):
-                pvp_skip = False
+                pvp_timer_skip = False # Now that we've PvPed, reset the timer skip
         # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
