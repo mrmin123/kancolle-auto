@@ -117,6 +117,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
         # Define global regions
+        global_regions['game'] = Region(util_settings['game_x'], util_settings['game_y'], 800, 480)
         global_regions['next'] = Region(util_settings['game_x'] + 700, util_settings['game_y'] + 380, 100, 100)
         global_regions['expedition_flag'] = Region(util_settings['game_x'] + 490, util_settings['game_y'] + 0, 60, 55)
         global_regions['fleet_flags_main'] = Region(util_settings['game_x'] + 80, util_settings['game_y'] + 100, 200, 35)
@@ -124,7 +125,8 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
         global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
         global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
-        global_regions['formations'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 150, 380, 220)
+        #global_regions['formations'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 150, 380, 220)
+        global_regions['formations'] = Region(util_settings['game_x'] + 350, util_settings['game_y'] + 150, 450, 330)
 
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
@@ -418,37 +420,37 @@ def rnavigation_chooser(options, exclude):
     """
     return choice([i for i in options if i not in exclude])
 
-def check_and_click(kc_window, pic, expand=[]):
+def check_and_click(region, pic, expand=[]):
     """
     Common sikuli action to click a pattern if it exists.
 
-    kc_window - Sikuli window
+    region - Sikuli region
     pic - image name (str) or Pattern object; thing to match
     expand - expand parameter to pass to rclick (see rclick's expand parameter
         for more details). Defaults to [].
     """
-    if kc_window.exists(pic):
-        kc_window.click(pattern_generator(kc_window, pic, expand, 'prematched'))
+    if region.exists(pic):
+        region.click(pattern_generator(region, pic, expand, 'prematched'))
         return True
     return False
 
-def wait_and_click(kc_window, pic, time=5, expand=[]):
+def wait_and_click(region, pic, time=5, expand=[]):
     """
     Common sikuli action to wait for a pattern until it exists, then click it.
 
-    kc_window - Sikuli window
+    region - Sikuli region
     pic - image name (str) or Pattern object; thing to match
     time - seconds (int); max time to wait for pic to show up. Defaults to 5.
     expand - expand parameter to pass to rclick (see rclick's expand parameter
         for more details). Defaults to [].
     """
     if time:
-        kc_window.wait(pattern_generator(kc_window, pic, expand), time)
+        region.wait(pattern_generator(region, pic, expand), time)
     else:
-        kc_window.wait(pattern_generator(kc_window, pic, expand))
-    kc_window.click(kc_window.getLastMatch())
+        region.wait(pattern_generator(region, pic, expand))
+    region.click(region.getLastMatch())
 
-def pattern_generator(kc_window, pic, expand=[], mod=''):
+def pattern_generator(region, pic, expand=[], mod=''):
     """
     Function for generating Sikuli Pattern with randomized click locations.
     If expand is not provided the click location will be within the
@@ -466,7 +468,7 @@ def pattern_generator(kc_window, pic, expand=[], mod=''):
         # This slows down the click actions, but it looks for the pattern and
         # finds the size of the image from the resulting Pattern object.
         if mod == 'prematched':
-            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_window.getLastMatch()))
+            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(region.getLastMatch()))
         else:
             m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
         if m:
