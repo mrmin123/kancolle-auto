@@ -437,6 +437,20 @@ while True:
             log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
             sleep(settings['scheduled_sleep_length'] * 3600, 600)
     try:
+        if settings['expeditions_enabled']:
+            # If expedition timers are up, check for their arrival
+            for expedition in expedition_item.expedition_list:
+                now_time = datetime.datetime.now()
+                if now_time > expedition.end_time and not expedition.returned:
+                    idle = False
+                    log_msg("Checking for return of expedition %s" % expedition.id)
+                    go_home(True)
+                    # Set the fleet returned flag to True for the expected fleet to force
+                    # a refresh on its status, even if it wasn't received by the script
+                    fleet_needs_resupply[expedition.fleet_id - 1] = True
+                    expedition.returned = True
+            # If there are fleets ready to go, go start their assigned expeditions
+            expedition_action_wrapper()
         if settings['quests_enabled']:
             # Reset and check quests at 0500 JST
             now_time = datetime.datetime.now()
@@ -460,20 +474,6 @@ while True:
             if ((jst_convert(now_time).hour == 6 and pvp_skip is True)
                 or (jst_convert(now_time).hour == 16 and pvp_skip is True)):
                 pvp_skip = False
-        if settings['expeditions_enabled']:
-            # If expedition timers are up, check for their arrival
-            for expedition in expedition_item.expedition_list:
-                now_time = datetime.datetime.now()
-                if now_time > expedition.end_time and not expedition.returned:
-                    idle = False
-                    log_msg("Checking for return of expedition %s" % expedition.id)
-                    go_home(True)
-                    # Set the fleet returned flag to True for the expected fleet to force
-                    # a refresh on its status, even if it wasn't received by the script
-                    fleet_needs_resupply[expedition.fleet_id - 1] = True
-                    expedition.returned = True
-            # If there are fleets ready to go, go start their assigned expeditions
-            expedition_action_wrapper()
         # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
