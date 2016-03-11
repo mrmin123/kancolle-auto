@@ -25,7 +25,6 @@ fleetcomp_switcher = None
 quest_reset_skip = False
 default_quest_mode = 'pvp'
 kc_window = None
-next_action = ''
 next_sleep_time = None
 next_pvp_time = None
 pvp_timer_skip = False
@@ -232,18 +231,26 @@ def fleetcomp_switch_action(fleetcomp):
         fleetcomp_switcher.switch_fleetcomp(fleetcomp)
         current_fleetcomp = fleetcomp
 
-# Determine when the next automated action will be, whether it's a sortie or
-# expedition action (currently disregards quests and PvP)
-def check_soonest():
-    global expedition_item, combat_item, next_action, settings
-    next_action = combat_item.next_sortie_time if settings['combat_enabled'] == True else ''
+# Display upcoming timers
+def display_timers():
+    global expedition_item, combat_item, next_pvp_time, next_sleep_time, settings
+    log_success("-----")
     if settings['expeditions_enabled']:
+        temp_time = ''
         for expedition in expedition_item.expedition_list:
-            if next_action == '':
-                next_action = expedition.end_time
+            if temp_time == '':
+                temp_time = expedition.end_time
             else:
-                if expedition.end_time < next_action:
-                    next_action = expedition.end_time
+                if expedition.end_time < temp_time:
+                    temp_time = expedition.end_time
+        log_success("Next expedition action at %s" % temp_time.strftime("%Y-%m-%d %H:%M:%S"))
+    if settings['combat_enabled']:
+        log_success("Next combat action at %s" % combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+    if settings['pvp_enabled']:
+        log_success("Next PvP action at %s" % next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"))
+    if settings['scheduled_sleep_enabled']:
+        log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
+    log_success("-----")
 
 # Function to set the next sleep time
 def reset_next_sleep_time(next_day = False):
@@ -521,8 +528,7 @@ while True:
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
         if not idle:
-            check_soonest()
-            log_msg("Next action at %s" % next_action.strftime("%Y-%m-%d %H:%M:%S"))
+            display_timers()
             idle = True
         sleep(sleep_cycle)
     except FindFailed, e:
