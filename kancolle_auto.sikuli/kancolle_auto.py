@@ -27,6 +27,7 @@ default_quest_mode = 'pvp'
 pvp_skip = False
 kc_window = None
 next_action = ''
+next_sleep_time = None
 idle = False
 last_refresh = ''
 
@@ -243,6 +244,14 @@ def check_soonest():
                 if expedition.end_time < next_action:
                     next_action = expedition.end_time
 
+# Function to set the next sleep time
+def reset_next_sleep_time(next_day = False):
+    global next_sleep_time, settings
+    next_sleep_time = datetime.datetime.now().replace(hour=int(settings['scheduled_sleep_start'][0:2]), minute=int(settings['scheduled_sleep_start'][2:4]), second=0, microsecond=0)
+    next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1,30))
+    if next_day:
+        next_sleep_time = next_sleep_time + datetime.timedelta(days=1)
+
 # Load the config.ini file
 def get_config():
     global settings, sleep_cycle
@@ -261,8 +270,7 @@ def get_config():
     # 'Scheduled Sleep' section
     if config.getboolean('ScheduledSleep', 'Enabled'):
         settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start_1'] = config.getint('ScheduledSleep', 'StartTime1')
-        settings['scheduled_sleep_start_2'] = config.getint('ScheduledSleep', 'StartTIme2')
+        settings['scheduled_sleep_start'] = "%04d"%config.getint('ScheduledSleep', 'StartTime')
         settings['scheduled_sleep_length'] = config.getfloat('ScheduledSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False
@@ -433,7 +441,18 @@ log_msg("Initial checks and commands complete. Starting loop.")
 while True:
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
-        if settings['scheduled_sleep_start_1'] <= now_time.hour * 100 + now_time.minute <= settings['scheduled_sleep_start_2']:
+        # If just starting script, set a sleep start time
+        if next_sleep_time is None:
+            if now_time.hour * 100 + now_time.minute > int(settings['scheduled_sleep_start']):
+                # If the schedule sleep start time for the day has passed, set it for the next day
+                reset_next_sleep_time(True)
+            else:
+                # Otherwise, set it for later in the day
+                reset_next_sleep_time()
+        if now_time > next_sleep_time:
+            # If it's time to sleep, set the next sleep start time...
+            reset_next_sleep_time(True)
+            # ... and go to sleep
             log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
             sleep(settings['scheduled_sleep_length'] * 3600, 600)
     try:
