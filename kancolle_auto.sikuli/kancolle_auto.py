@@ -491,6 +491,10 @@ while True:
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
+            if next_pvp_time is None:
+                next_pvp_time = datetime.datetime.now()
+                if 3 <= jst_convert(next_pvp_time).hour < 5:
+                    next_pvp_time = next_pvp_time.replace(hour=next_pvp_time.hour + 2)
             # Set the next PvP time at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
             if ((jst_convert(now_time).hour == 5 and pvp_timer_skip is False)
                 or (jst_convert(now_time).hour == 15 and pvp_timer_skip is False)):
