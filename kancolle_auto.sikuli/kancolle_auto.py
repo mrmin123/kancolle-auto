@@ -27,7 +27,6 @@ default_quest_mode = 'pvp'
 kc_window = None
 next_sleep_time = None
 next_pvp_time = None
-pvp_timer_skip = False
 idle = False
 last_refresh = ''
 
@@ -186,6 +185,7 @@ def expedition_action(fleet_id):
 # Actions involved in conducting PvPs
 def pvp_action():
     global kc_window, pvp_item, settings
+    reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
     if settings['quests_enabled']:
@@ -231,6 +231,29 @@ def fleetcomp_switch_action(fleetcomp):
         fleetcomp_switcher.switch_fleetcomp(fleetcomp)
         current_fleetcomp = fleetcomp
 
+# Function to set the next pvp time
+def reset_next_pvp_time(next_cycle = False):
+    global next_pvp_time
+    next_pvp_time = datetime.datetime.now() + datetime.timedelta(minutes=randint(1,50))
+    if next_cycle:
+        if jst_convert(next_pvp_time).hour < 5:
+            next_pvp_time = next_pvp_time + datetime.timedelta(hours=(5 - jst_convert(next_pvp_time).hour))
+        elif jst_convert(next_pvp_time).hour < 15:
+            next_pvp_time = next_pvp_time + datetime.timedelta(hours=(15 - jst_convert(next_pvp_time).hour))
+        else:
+            next_pvp_time = next_pvp_time + datetime.timedelta(hours=(29 - jst_convert(next_pvp_time).hour))
+    else:
+        if 3 <= jst_convert(next_pvp_time).hour < 5:
+            next_pvp_time = next_pvp_time.replace(hour=next_pvp_time.hour + 2)
+
+# Function to set the next sleep time
+def reset_next_sleep_time(next_day = False):
+    global next_sleep_time, settings
+    next_sleep_time = datetime.datetime.now().replace(hour=int(settings['scheduled_sleep_start'][0:2]), minute=int(settings['scheduled_sleep_start'][2:4]), second=0, microsecond=0)
+    next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1,30))
+    if next_day:
+        next_sleep_time = next_sleep_time + datetime.timedelta(days=1)
+
 # Display upcoming timers
 def display_timers():
     global expedition_item, combat_item, next_pvp_time, next_sleep_time, settings
@@ -251,14 +274,6 @@ def display_timers():
     if settings['scheduled_sleep_enabled']:
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
-
-# Function to set the next sleep time
-def reset_next_sleep_time(next_day = False):
-    global next_sleep_time, settings
-    next_sleep_time = datetime.datetime.now().replace(hour=int(settings['scheduled_sleep_start'][0:2]), minute=int(settings['scheduled_sleep_start'][2:4]), second=0, microsecond=0)
-    next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1,30))
-    if next_day:
-        next_sleep_time = next_sleep_time + datetime.timedelta(days=1)
 
 # Load the config.ini file
 def get_config():
@@ -492,20 +507,10 @@ while True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
             if next_pvp_time is None:
-                next_pvp_time = datetime.datetime.now()
-                if 3 <= jst_convert(next_pvp_time).hour < 5:
-                    next_pvp_time = next_pvp_time.replace(hour=next_pvp_time.hour + 2)
-            # Set the next PvP time at 0500 JST (after daily quest reset) and 1500 JST (second daily PvP reset)
-            if ((jst_convert(now_time).hour == 5 and pvp_timer_skip is False)
-                or (jst_convert(now_time).hour == 15 and pvp_timer_skip is False)):
-                idle = False
-                next_pvp_time = datetime.datetime.now() + datetime.timedelta(hours=randint(0,1), minutes=randint(0,60))
-                pvp_timer_skip = True # Let's not keep reseting the next pvp time
-            now_time = datetime.datetime.now()
-            if now_time > next_pvp_time and pvp_timer_skip:
+                reset_next_pvp_time()
+            if now_time > next_pvp_time:
                 idle = False
                 pvp_action()
-                pvp_timer_skip = False # Now that we've PvPed, reset the timer skip
         # If combat timer is up, go do sortie-related stuff
         if settings['combat_enabled']:
             # If there are ships that still need repair, go take care of them
