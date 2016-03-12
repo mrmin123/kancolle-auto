@@ -30,25 +30,30 @@ class Combat:
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
-    def tally_damages(self, add=False):
+    def tally_damages(self, add=False, combat=False):
         log_msg("Checking fleet condition...")
         if not add:
             self.damage_counts = [0, 0, 0]
-        # Tally light damages (in different fatigue states, as well)
+        # Define region to check damages for
+        if combat:
+            tally_damage_region = global_regions['check_damage_combat']
+        else:
+            tally_damage_region = global_regions['check_damage']
+        # Tally light damages
         try:
-            for i in self.kc_region.findAll(Pattern('dmg_light.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_light.png').similar(self.dmg_similarity)):
                 self.damage_counts[0] += 1
         except:
             pass
-        # Tally moderate damages (in different fatigue states, as well)
+        # Tally moderate damages
         try:
-            for i in self.kc_region.findAll(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
                 self.damage_counts[1] += 1
         except:
             pass
-        # Tally critical damages (in different fatigue states, as well)
+        # Tally critical damages
         try:
-            for i in self.kc_region.findAll(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
                 self.damage_counts[2] += 1
         except:
             pass
@@ -82,7 +87,7 @@ class Combat:
 
     def pre_sortie_check(self, add=False):
         # Tally damages
-        self.tally_damages(add)
+        self.tally_damages(add=add)
         # Check for resupply needs
         if (global_regions['check_resupply'].exists('resupply_alert.png') or global_regions['check_resupply'].exists('resupply_red_alert.png')):
             log_warning("Fleet needs resupply!")
@@ -192,12 +197,12 @@ class Combat:
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 # Tally damages at post-battle report screen
-                self.tally_damages()
+                self.tally_damages(combat=True)
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
-                    self.tally_damages(True)
+                    self.tally_damages(add=True, combat=True)
                     wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                     sleep(3)
                     if self.kc_region.exists('fcf_check.png'):

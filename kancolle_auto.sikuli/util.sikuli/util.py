@@ -126,14 +126,16 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         # Define global regions
         global_regions['game'] = Region(util_settings['game_x'], util_settings['game_y'], 800, 480)
         global_regions['next'] = Region(util_settings['game_x'] + 700, util_settings['game_y'] + 380, 100, 100)
-        global_regions['expedition_flag'] = Region(util_settings['game_x'] + 490, util_settings['game_y'] + 0, 60, 55)
+        global_regions['expedition_flag'] = Region(util_settings['game_x'] + 490, util_settings['game_y'], 60, 55)
         global_regions['fleet_flags_main'] = Region(util_settings['game_x'] + 80, util_settings['game_y'] + 100, 200, 35)
         global_regions['fleet_flags_sec'] = Region(util_settings['game_x'] + 340, util_settings['game_y'] + 100, 140, 35)
         global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
         global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
         global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
-        #global_regions['formations'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 150, 380, 220)
-        global_regions['formations'] = Region(util_settings['game_x'] + 350, util_settings['game_y'] + 150, 450, 330)
+        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 265)
+        global_regions['formations'] = Region(util_settings['game_x'] + 350, util_settings['game_y'] + 150, 450, 230)
+        global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
+        global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:

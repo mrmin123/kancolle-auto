@@ -115,7 +115,7 @@ class Quests:
             self.finish_quests(page_backtrack)
             self.filter_quests(disable)
             for quest_type in quest_types:
-                if self.kc_region.exists(quest_type + '.png'):
+                if global_regions['quest_category'].exists(quest_type + '.png'):
                     skip_page = False
                     break
             if skip_page:
@@ -170,7 +170,7 @@ class Quests:
         log_msg("Filtering out quests...")
         try:
             # Check if enabled quests on the page are ones to be disabled
-            for i in self.kc_region.findAll('quest_in_progress.png'):
+            for i in global_regions['quest_status'].findAll('quest_in_progress.png'):
                 quest_check_area = i.left(570)
                 # If they are, disable them
                 if quest_check_area.exists(disable + '.png'):
@@ -187,7 +187,7 @@ class Quests:
         Method containing actions for turning in a complete quest and receiving
         rewards.
         """
-        while check_and_click(self.kc_region, 'quest_completed.png', expand_areas('quest_completed')):
+        while check_and_click(global_regions['quest_status'], 'quest_completed.png', expand_areas('quest_completed')):
             log_success("Completed quest found!")
             while check_and_click(self.kc_region, 'quest_reward_accept.png'):
                 sleep(2)
