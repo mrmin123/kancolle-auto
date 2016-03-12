@@ -7,8 +7,8 @@ class Quests:
     """
     Quest module to hold relevant variables and data.
     """
-    def __init__(self, kc_window, settings):
-        self.kc_window = kc_window
+    def __init__(self, kc_region, settings):
+        self.kc_region = kc_region
         self.quest_check_schedule = settings['quests_check_schedule']
         self.combat_enabled = settings['combat_enabled']
         if self.combat_enabled:
@@ -79,7 +79,7 @@ class Quests:
         Method for going through quests page(s), turning in completed quests,
         and starting up quests as needed.
         """
-        rnavigation(self.kc_window, 'quests', 2)
+        rnavigation(self.kc_region, 'quests', 2)
         sleep(1)
         start_check = True
         temp_list = []
@@ -88,7 +88,7 @@ class Quests:
         if mode == 'sortie':
             # Enable Sortie quests, disable PvP quests
             # Start from last page and move forward so PvP quests are disabled first
-            check_and_click(self.kc_window, 'quests_last_page.png', expand_areas('quests_navigation'))
+            check_and_click(self.kc_region, 'quests_last_page.png', expand_areas('quests_navigation'))
             sleep(1)
             page_continue = 'quests_prev_page.png'
             page_backtrack = None
@@ -115,23 +115,23 @@ class Quests:
             self.finish_quests(page_backtrack)
             self.filter_quests(disable)
             for quest_type in quest_types:
-                if self.kc_window.exists(quest_type + '.png'):
+                if self.kc_region.exists(quest_type + '.png'):
                     skip_page = False
                     break
             if skip_page:
-                if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
+                if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     start_check = False
                     break
                 else:
                     continue
             for quest in toggled_quests:
-                if self.kc_window.exists(Pattern(quest + '.png').similar(0.999)):
-                    quest_check_area = self.kc_window.getLastMatch().below(1).above(60).right(255)
+                if self.kc_region.exists(Pattern(quest + '.png').similar(0.999)):
+                    quest_check_area = self.kc_region.getLastMatch().below(1).above(60).right(255)
                     if quest_check_area.exists('quest_in_progress.png'):
                         log_msg("Quest %s already active!" % quest)
                     else:
                         log_msg("Attempting to start quest %s!" % quest)
-                        check_and_click(self.kc_window, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar'))
+                        check_and_click(self.kc_region, Pattern(quest + '.png').similar(0.999), expand_areas('quest_bar'))
                         sleep(3)
                         if not quest_check_area.exists('quest_in_progress.png'):
                             log_warning("Couldn't activate quest. Queue must be at maximum!")
@@ -157,7 +157,7 @@ class Quests:
                         self.activated_pvp_quests.append(quest)
                         self.activated_pvp_quests = list(set(self.activated_pvp_quests))
             self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(started_quests))
-            if not check_and_click(self.kc_window, page_continue, expand_areas('quests_navigation')):
+            if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 start_check = False
         if first_run:
             self.quests_checklist_queue = temp_list
@@ -170,12 +170,12 @@ class Quests:
         log_msg("Filtering out quests...")
         try:
             # Check if enabled quests on the page are ones to be disabled
-            for i in self.kc_window.findAll('quest_in_progress.png'):
+            for i in self.kc_region.findAll('quest_in_progress.png'):
                 quest_check_area = i.left(570)
                 # If they are, disable them
                 if quest_check_area.exists(disable + '.png'):
                     log_msg("Disabling quest!")
-                    self.kc_window.click(quest_check_area)
+                    self.kc_region.click(quest_check_area)
                     sleep(3)
                 else:
                     self.active_quests += 1
@@ -187,12 +187,12 @@ class Quests:
         Method containing actions for turning in a complete quest and receiving
         rewards.
         """
-        while check_and_click(self.kc_window, 'quest_completed.png', expand_areas('quest_completed')):
+        while check_and_click(self.kc_region, 'quest_completed.png', expand_areas('quest_completed')):
             log_success("Completed quest found!")
-            while check_and_click(self.kc_window, 'quest_reward_accept.png'):
+            while check_and_click(self.kc_region, 'quest_reward_accept.png'):
                 sleep(2)
             if page_backtrack:
-                if check_and_click(self.kc_window, page_backtrack, expand_areas('quests_navigation')):
+                if check_and_click(self.kc_region, page_backtrack, expand_areas('quests_navigation')):
                     sleep(2)
 
     def define_quest_tree(self):

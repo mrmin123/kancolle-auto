@@ -60,11 +60,10 @@ def focus_window():
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
 # returning expeditions
 def go_home(refresh=False):
-    global kc_window
     # Focus on KanColle
     focus_window()
     # Check if we're already at home screen
-    if kc_window.exists('menu_main_sortie.png'):
+    if global_regions['game'].exists('menu_main_sortie.png'):
         log_success("At Home!")
         log_msg("Checking for returning expeditions!")
         # We are, so check for expeditions
@@ -74,12 +73,12 @@ def go_home(refresh=False):
             resupply()
         elif refresh:
             # We're at home, but if we're due for a refresh, refresh
-            rnavigation(kc_window, 'refresh_home')
+            rnavigation(global_regions['game'], 'refresh_home')
             # Check for completed expeditions. Resupply them if there are.
             if check_expedition():
                 resupply()
     else:
-        rnavigation(kc_window, 'home')
+        rnavigation(global_regions['game'], 'home')
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -105,7 +104,7 @@ def check_expedition():
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
             quest_item.done_expeditions += 1
-        while not kc_window.exists('menu_main_sortie.png'):
+        while not global_regions['game'].exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(1)
@@ -121,8 +120,8 @@ def resupply():
     log_msg("Lets resupply fleets!")
     if True in fleet_needs_resupply:
         # Check if we're already at resupply screen
-        if not kc_window.exists('resupply_screen.png'):
-            rnavigation(kc_window, 'resupply')
+        if not global_regions['game'].exists('resupply_screen.png'):
+            rnavigation(global_regions['game'], 'resupply')
         for fleet_id, returned in enumerate(fleet_needs_resupply):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
@@ -140,7 +139,7 @@ def resupply():
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
-    global kc_window, quest_item
+    global quest_item
     go_home()
     quest_item.go_quests(mode, first_run)
     quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
@@ -155,7 +154,7 @@ def expedition_action_wrapper():
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
-    global kc_window, fleet_needs_resupply, expedition_item, settings
+    global fleet_needs_resupply, expedition_item, settings
     go_home()
     expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
@@ -166,14 +165,14 @@ def expedition_action(fleet_id):
                 continue
         while expedition_item.run_expedition(expedition):
             fleet_needs_resupply[expedition.fleet_id - 1] = True
-            check_and_click(kc_window, 'menu_side_resupply.png')
+            check_and_click(global_regions['game'], 'menu_side_resupply.png')
             resupply()
             expedition_item.go_expedition()
         fleet_needs_resupply[expedition.fleet_id - 1] = False
 
 # Actions involved in conducting PvPs
 def pvp_action():
-    global kc_window, pvp_item, settings
+    global pvp_item, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
@@ -193,7 +192,7 @@ def pvp_action():
 
 # Actions involved in conducting sorties
 def sortie_action():
-    global kc_window, fleet_needs_resupply, combat_item, settings
+    global fleet_needs_resupply, combat_item, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     go_home()
     combat_item.go_sortie()
@@ -212,7 +211,7 @@ def sortie_action():
 
 # Actions that check and switch fleet comps
 def fleetcomp_switch_action(fleetcomp):
-    global kc_window, current_fleetcomp, fleetcomp_switcher, settings
+    global current_fleetcomp, fleetcomp_switcher, settings
     if fleetcomp_switcher and fleetcomp != current_fleetcomp:
         # fleetcomp_switcher is defined (aka necessary) AND the needed fleetcomp
         # is different from the current fleetcomp, go home then switch fleets
@@ -395,7 +394,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global kc_window, fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -405,16 +404,16 @@ def init():
         log_msg("Defining module items!")
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
-            quest_item = quest_module.Quests(kc_window, settings)
+            quest_item = quest_module.Quests(global_regions['game'], settings)
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
-            expedition_item = expedition_module.Expedition(kc_window, settings)
+            expedition_item = expedition_module.Expedition(global_regions['game'], settings)
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
-            pvp_item = combat_module.PvP(kc_window, settings)
+            pvp_item = combat_module.PvP(global_regions['game'], settings)
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
-            combat_item = combat_module.Combat(kc_window, settings)
+            combat_item = combat_module.Combat(global_regions['game'], settings)
             default_quest_mode = 'sortie'
         if settings['pvp_enabled'] and settings['combat_enabled']:
             if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
@@ -424,7 +423,7 @@ def init():
             elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
                 # Define fleet comp switcher module if both pvp and combat modules are enabled
                 # and they have different fleet comps assigned
-                fleetcomp_switcher = combat_module.FleetcompSwitcher(kc_window, settings)
+                fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
         # Go home
         go_home(True)
         if settings['quests_enabled']:

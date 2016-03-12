@@ -7,8 +7,8 @@ Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
 class Expedition:
-    def __init__(self, kc_window, settings):
-        self.kc_window = kc_window
+    def __init__(self, kc_region, settings):
+        self.kc_region = kc_region
         #self.running_expedition_list = {}
         self.expedition_id_fleet_map = settings['expedition_id_fleet_map']
         # Populate expedition_list with Ensei objects on init
@@ -18,33 +18,33 @@ class Expedition:
 
     def go_expedition(self):
         # Navigate to Expedition menu
-        rnavigation(self.kc_window, 'expedition', 2)
+        rnavigation(self.kc_region, 'expedition', 2)
 
     def run_expedition(self, expedition):
         # Run expedition
         log_msg("Let's send fleet %d out for expedition %d!" % (expedition.fleet_id, expedition.id))
         sleep(1)
-        while not check_and_click(self.kc_window, expedition.name_pict):
-            wait_and_click(self.kc_window, expedition.area_pict, 10)
+        while not check_and_click(self.kc_region, expedition.name_pict):
+            wait_and_click(self.kc_region, expedition.area_pict, 10)
             sleep_fast()
         sleep_fast()
         # If the expedition can't be selected, it's either running or just returned
-        if not check_and_click(self.kc_window, 'decision.png'):
-            if self.kc_window.exists('expedition_time_complete.png'):
+        if not check_and_click(self.kc_region, 'decision.png'):
+            if self.kc_region.exists('expedition_time_complete.png'):
                 # Expedition just returned
                 expedition.check_later(0, -1) # set the check_later time to now
                 expedition.returned = False
                 log_warning("Expedition just returned:  %s" % expedition)
             else:
                 # Expedition is already running
-                expedition_timer = check_timer(self.kc_window, 'expedition_timer.png', 'r', 80)
+                expedition_timer = check_timer(self.kc_region, 'expedition_timer.png', 'r', 80)
                 # Set expedition's end time as determined via OCR
                 expedition.check_later(int(expedition_timer[0:2]), int(expedition_timer[3:5]) - 1)
                 expedition.returned = False
                 log_warning("Expedition is already running: %s" % expedition)
             return False
         sleep(1)
-        rejigger_mouse(self.kc_window, 100, 750, 0, 300)
+        rejigger_mouse(self.kc_region, 100, 750, 0, 300)
         log_msg("Trying to send out fleet %s for expedition %s" % (expedition.fleet_id, expedition.id))
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:
@@ -52,12 +52,12 @@ class Expedition:
             wait_and_click(global_regions['fleet_flags_sec'], fleet_name)
             sleep_fast()
         # Make sure that the fleet is ready to go
-        if not self.kc_window.exists('fleet_busy.png'):
+        if not self.kc_region.exists('fleet_busy.png'):
             log_msg("Checking expedition fleet status!")
             if global_regions['check_resupply'].exists('resupply_alert.png') or global_regions['check_resupply'].exists('resupply_red_alert.png'):
                 log_warning("Fleet %s needs resupply!" % expedition.fleet_id)
                 return True
-            wait_and_click(self.kc_window, 'ensei_start.png')
+            wait_and_click(self.kc_region, 'ensei_start.png')
             expedition.start()
             expedition.returned = False
             log_success("Expedition sent!: %s" % expedition)
@@ -67,7 +67,7 @@ class Expedition:
             # Fleet's being used for some reason... check back later
             log_error("Fleet not available. Check back later!")
             expedition.check_later(0, 10)
-            check_and_click(self.kc_window, 'ensei_area_01.png')
+            check_and_click(self.kc_region, 'ensei_area_01.png')
             return False
 
 class Ensei:
