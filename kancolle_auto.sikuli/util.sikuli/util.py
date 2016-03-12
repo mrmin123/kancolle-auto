@@ -1,6 +1,6 @@
 import ConfigParser, datetime
 from sikuli import *
-from random import randint, choice
+from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
 
@@ -22,6 +22,13 @@ def get_util_config():
     util_settings['paranoia'] = 0 if config.getint('General', 'Paranoia') < 0 else config.getint('General', 'Paranoia')
     util_settings['sleep_mod'] = 0 if config.getint('General', 'SleepModifier') < 0 else config.getint('General', 'SleepModifier')
     util_settings['jst_offset'] = config.getint('General', 'JSTOffset')
+
+def sleep_fast():
+    """
+    Function for sleeping for a very short period of time. For use mainly between
+    a succession of mouseclick events.
+    """
+    tsleep(uniform(0.2, 0.5))
 
 def sleep(base, flex=-1):
     """

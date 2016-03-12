@@ -145,11 +145,11 @@ class Combat:
             if not self.pre_sortie_check():
                 return self.damage_counts
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
-            sleep(1)
+            sleep_fast()
             if not self.pre_sortie_check(True):
                 return self.damage_counts
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
-            sleep(1)
+            sleep_fast()
         else:
             # If not combined fleet, check damage and morale only on Fleet 1
             if not self.pre_sortie_check():
@@ -394,7 +394,7 @@ class Combat:
                             empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
-                    sleep(1)
+                    sleep_fast()
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
         if self.submarine_switch:
@@ -428,12 +428,12 @@ class Combat:
                     rejigger_mouse(self.kc_window, 50, 100, 50, 100)
                     target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_window.wait('fleetcomp_shiplist_sort_arrow.png')
-                    sleep(1)
+                    sleep_fast()
                     # Make sure the sort order is correct
                     log_msg("Checking shiplist sort order and moving to first page if necessary!")
                     while not self.kc_window.exists('fleetcomp_shiplist_sort_type.png'):
                         check_and_click(self.kc_window, 'fleetcomp_shiplist_sort_arrow.png')
-                        sleep(1)
+                        sleep_fast()
                     if shiplist_page == 1:
                         check_and_click(self.kc_window, 'fleetcomp_shiplist_first_page.png')
                     rejigger_mouse(self.kc_window, 50, 100, 50, 100)
@@ -478,7 +478,7 @@ class Combat:
                             shiplist_page += 1
                             if shiplist_page < 12:
                                 if check_and_click(self.kc_window, 'fleetcomp_shiplist_pg' + str(shiplist_page) + '.png'):
-                                    sleep(1)
+                                    sleep_fast()
                                     continue
                             # If we do not have any more available pages, we do not have any more available submarines
                             log_msg("No more ships to look at, moving on!")

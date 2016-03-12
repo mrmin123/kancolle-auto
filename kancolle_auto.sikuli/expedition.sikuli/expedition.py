@@ -26,6 +26,8 @@ class Expedition:
         sleep(1)
         while not check_and_click(self.kc_window, expedition.name_pict):
             wait_and_click(self.kc_window, expedition.area_pict, 10)
+            sleep_fast()
+        sleep_fast()
         # If the expedition can't be selected, it's either running or just returned
         if not check_and_click(self.kc_window, 'decision.png'):
             if self.kc_window.exists('expedition_time_complete.png'):
@@ -48,6 +50,7 @@ class Expedition:
         if expedition.fleet_id != 2:
             fleet_name = 'fleet_%s.png' % expedition.fleet_id
             wait_and_click(global_regions['fleet_flags_sec'], fleet_name)
+            sleep_fast()
         # Make sure that the fleet is ready to go
         if not self.kc_window.exists('fleet_busy.png'):
             log_msg("Checking expedition fleet status!")
