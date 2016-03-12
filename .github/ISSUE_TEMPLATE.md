@@ -12,7 +12,7 @@ Is the issue consistent (can be reproduced consistently) or is it transient (onl
 - [ ] Consistent
 - [ ] Transient
 
-[description of issue here]
+[description of issue here, along with any screenshots and/or videos]
 
 ####Console log (if applicable)
 ```
