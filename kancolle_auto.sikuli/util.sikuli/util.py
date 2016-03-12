@@ -1,11 +1,12 @@
 import ConfigParser, datetime
 from sikuli import *
-from random import randint, choice
+from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
 
 Settings.OcrTextRead = True
 util_settings = {}
+global_regions = {}
 
 def get_util_config():
     """Load the settings related to the util module"""
@@ -22,6 +23,13 @@ def get_util_config():
     util_settings['sleep_mod'] = 0 if config.getint('General', 'SleepModifier') < 0 else config.getint('General', 'SleepModifier')
     util_settings['jst_offset'] = config.getint('General', 'JSTOffset')
 
+def sleep_fast():
+    """
+    Function for sleeping for a very short period of time. For use mainly between
+    a succession of mouseclick events.
+    """
+    tsleep(uniform(0.2, 0.5))
+
 def sleep(base, flex=-1):
     """
     Function for setting a random sleep time. Sleep length set by this function
@@ -36,13 +44,13 @@ def sleep(base, flex=-1):
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
-def check_timer(kc_window, timer_ref, dir, width, attempt_limit=0):
+def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
     Attempts to fix erroneous OCR reads and repeats readings until a valid
     timer value is returned. Returns timer string in ##:##:## format.
 
-    kc_window - Sikuli window
+    kc_region - Sikuli region
     timer_ref - image name (str) or reference Match object (returned by findAll, for example)
     dir - 'l' or 'r'; direction to search for text
     width - positive int; width (in pixels) of area where the timer text should be
@@ -112,8 +120,22 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['screen_y'] = temp_screen.height
     if find_position:
         temp_game = kc_window.getLastMatch()
+        # Define upper-left corner of game screen
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
+        # Define global regions
+        global_regions['game'] = Region(util_settings['game_x'], util_settings['game_y'], 800, 480)
+        global_regions['next'] = Region(util_settings['game_x'] + 700, util_settings['game_y'] + 380, 100, 100)
+        global_regions['expedition_flag'] = Region(util_settings['game_x'] + 490, util_settings['game_y'], 60, 55)
+        global_regions['fleet_flags_main'] = Region(util_settings['game_x'] + 80, util_settings['game_y'] + 100, 200, 35)
+        global_regions['fleet_flags_sec'] = Region(util_settings['game_x'] + 340, util_settings['game_y'] + 100, 140, 35)
+        global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
+        global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
+        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
+        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 265)
+        global_regions['formations'] = Region(util_settings['game_x'] + 350, util_settings['game_y'] + 150, 450, 230)
+        global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
+        global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
@@ -157,14 +179,14 @@ def expand_areas(target):
     elif target == 'quest_completed':
         return [-580, 25, -25, 25]
     elif target == 'pvp_row':
-        return [-500, 50, -10, 40]
+        return [-495, 45, -5, 35]
 
-def rnavigation(kc_window, destination, max=0):
+def rnavigation(kc_region, destination, max=0):
     """
     Random navigation function. Randomly wanders through menu items a number
     of times before reaching its destination.
 
-    kc_window - Sikuli window
+    kc_region - Sikuli region
     destination - 'home', 'refresh_home', 'fleetcomp', 'resupply', 'equip',
         'repair', 'development'; valid final destinations
     max - custom # of side-steps. Defaults to 0 to default to Paranoia setting
@@ -174,7 +196,7 @@ def rnavigation(kc_window, destination, max=0):
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
         'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
     menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
-        'menu_top_furniture.png', 'menu_top_shop.png', 'menu_top_quests.png']
+        'menu_top_furniture.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
         'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
@@ -193,16 +215,16 @@ def rnavigation(kc_window, destination, max=0):
     evade_count = randint(0, max)
     # Figure out where we are
     current_location = ''
-    if kc_window.exists('menu_main_sortie.png'):
+    if kc_region.exists('menu_main_sortie.png'):
         current_location = 'home'
-    elif kc_window.exists('menu_side_home.png'):
+    elif kc_region.exists('menu_side_home.png'):
         current_location = 'sidemenu'
-    elif kc_window.exists('menu_top_home.png'):
+    elif kc_region.exists('menu_top_home.png'):
         current_location = 'topmenu'
     else:
         current_location = 'other'
     # Random navigations, depending on where we are, and where we want to go
-    rejigger_mouse(kc_window, 370, 770, 100, 400)
+    rejigger_mouse(kc_region, 370, 770, 100, 400)
     if current_location == 'home':
         # Starting from home screen
         if destination == 'home':
@@ -212,7 +234,7 @@ def rnavigation(kc_window, destination, max=0):
             # Refresh home
             log_msg("Refreshing home with %d or less sidestep(s)!" % (evade_count))
             rchoice = rnavigation_chooser(menu_top_options + menu_main_options, [])
-            wait_and_click(kc_window, rchoice)
+            wait_and_click(kc_region, rchoice)
             sleep(2)
             evade_count -= 1
             if rchoice.startswith('menu_top'):
@@ -225,30 +247,30 @@ def rnavigation(kc_window, destination, max=0):
                     rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + rchoice[10:]])
                     while evade_count > 0:
                         rchoice = rnavigation_chooser(menu_side_options, [rchoice])
-                        wait_and_click(kc_window, rchoice)
+                        wait_and_click(kc_region, rchoice)
                         sleep(2)
                         evade_count -= 1
                     final_target = 'menu_side_home.png'
         elif destination in ['combat', 'expedition', 'pvp']:
             # Go to a sortie menu screen
             log_msg("Navigating to %s menu with %d sidestep(s)!" % (destination, evade_count))
-            wait_and_click(kc_window, 'menu_main_sortie.png')
-            rejigger_mouse(kc_window, 50, 750, 0, 100)
+            wait_and_click(kc_region, 'menu_main_sortie.png')
+            rejigger_mouse(kc_region, 50, 750, 0, 100)
             sleep(2)
             if evade_count == 0:
                 final_target = 'sortie_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_sortie_options, ['sortie_' + destination + '.png'])
-                wait_and_click(kc_window, rchoice)
+                wait_and_click(kc_region, rchoice)
                 sleep(2)
-                rejigger_mouse(kc_window, 50, 750, 0, 100)
+                rejigger_mouse(kc_region, 50, 750, 0, 100)
                 evade_count -= 1
                 while evade_count > 0:
                     if rchoice.startswith('sortie_top'):
                         rchoice = rnavigation_chooser(menu_sortie_top_options, [rchoice, 'sortie_top_' + destination + '.png'])
                     else:
                         rchoice = rnavigation_chooser(menu_sortie_top_options, ['sortie_top_' + rchoice[7:], 'sortie_top_' + destination + '.png'])
-                    wait_and_click(kc_window, rchoice)
+                    wait_and_click(kc_region, rchoice)
                     sleep(2)
                     evade_count -= 1
                 final_target = 'sortie_top_' + destination + '.png'
@@ -259,7 +281,7 @@ def rnavigation(kc_window, destination, max=0):
                 final_target = 'menu_top_quests.png'
             else:
                 rchoice = rnavigation_chooser(menu_main_options + ['menu_top_profile.png', 'menu_top_inventory.png'], [])
-                wait_and_click(kc_window, rchoice)
+                wait_and_click(kc_region, rchoice)
                 sleep(2)
                 evade_count -= 1
                 while evade_count > 0:
@@ -269,7 +291,7 @@ def rnavigation(kc_window, destination, max=0):
                         evade_count = 0
                     else:
                         rchoice = rnavigation_chooser(menu_side_options, [])
-                        wait_and_click(kc_window, rchoice)
+                        wait_and_click(kc_region, rchoice)
                         sleep(2)
                         evade_count -= 1
                 final_target = 'menu_top_quests.png'
@@ -280,7 +302,7 @@ def rnavigation(kc_window, destination, max=0):
                 final_target = 'menu_main_' + destination + '.png'
             else:
                 rchoice = rnavigation_chooser(menu_main_options, ['menu_main_' + destination + '.png'])
-                wait_and_click(kc_window, rchoice)
+                wait_and_click(kc_region, rchoice)
                 sleep(2)
                 evade_count -= 1
                 while evade_count > 0:
@@ -288,7 +310,7 @@ def rnavigation(kc_window, destination, max=0):
                         rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + rchoice[10:], 'sortie_top_' + destination + '.png'])
                     else:
                         rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'sortie_top_' + destination + '.png'])
-                    wait_and_click(kc_window, rchoice)
+                    wait_and_click(kc_region, rchoice)
                     sleep(2)
                     evade_count -= 1
                 final_target = 'menu_side_' + destination + '.png'
@@ -303,7 +325,7 @@ def rnavigation(kc_window, destination, max=0):
                 rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [])
                 while evade_count > 0:
                     rchoice = rnavigation_chooser(menu_top_options + menu_side_options, [rchoice])
-                    wait_and_click(kc_window, rchoice)
+                    wait_and_click(kc_region, rchoice)
                     sleep(2)
                     evade_count -= 1
                     if rchoice.startswith('menu_top'):
@@ -323,7 +345,7 @@ def rnavigation(kc_window, destination, max=0):
                 final_target = 'menu_top_quests.png'
             else:
                 rchoice = rnavigation_chooser(menu_top_options + menu_side_options, ['menu_top_quests.png', 'menu_top_shop.png'])
-                wait_and_click(kc_window, rchoice)
+                wait_and_click(kc_region, rchoice)
                 sleep(2)
                 evade_count -= 1
                 while evade_count > 0:
@@ -333,10 +355,18 @@ def rnavigation(kc_window, destination, max=0):
                         evade_count = 0
                     else:
                         rchoice = rnavigation_chooser(menu_side_options + ['menu_top_profile.png', 'menu_top_inventory.png'], [])
-                        wait_and_click(kc_window, rchoice)
+                        wait_and_click(kc_region, rchoice)
                         sleep(2)
                         evade_count -= 1
                 final_target = 'menu_top_quests.png'
+        elif destination in ['combat', 'expedition', 'pvp']:
+            # These are unreachable from here... unless we're already at sortie screen
+            if kc_region.exists('sortie_top_combat.png') or kc_region.exists('sortie_top_pvp.png') or kc_region.exists('sortie_top_expedition.png'):
+                # If we're already at sortie screen, ignore evades
+                final_target = 'sortie_top_' + destination + '.png'
+            else:
+                log_error("Unreachable destination %s from current location!" % destination)
+                raise
         else:
             # Go to another main menu item screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))
@@ -346,7 +376,7 @@ def rnavigation(kc_window, destination, max=0):
                 rchoice = rnavigation_chooser(menu_side_options, ['menu_side_' + destination + '.png'])
                 while evade_count > 0:
                     rchoice = rnavigation_chooser(menu_side_options, [rchoice, 'menu_side_' + destination + '.png'])
-                    wait_and_click(kc_window, rchoice)
+                    wait_and_click(kc_region, rchoice)
                     evade_count -= 1
                     sleep(2)
                 final_target = 'menu_side_' + destination + '.png'
@@ -360,27 +390,27 @@ def rnavigation(kc_window, destination, max=0):
     while final_target != '':
         # In while loop so that if the button has to be pressed again for some
         # reason, it'll do it. Only works for certain destinations.
-        wait_and_click(kc_window, final_target)
+        wait_and_click(kc_region, final_target)
         sleep(2)
         # Always reset mouse after reaching destination
-        rejigger_mouse(kc_window, 50, 500, 0, 100)
+        rejigger_mouse(kc_region, 50, 500, 0, 100)
         # If one of these targets, check to see if we're actually there.
         if final_target in ['menu_top_home.png', 'menu_side_home.png']:
-            if kc_window.exists('menu_main_sortie.png'):
+            if kc_region.exists('menu_main_sortie.png'):
                 final_target = ''
         elif final_target in ['sortie_expedition.png', 'sortie_top_expedition.png']:
-            if kc_window.exists('expedition_screen_ready.png'):
+            if kc_region.exists('expedition_screen_ready.png'):
                 final_target = ''
         elif final_target in ['menu_main_resupply.png', 'menu_side_resupply.png']:
-            if kc_window.exists('resupply_screen.png'):
+            if kc_region.exists('resupply_screen.png'):
                 final_target = ''
         elif final_target in ['menu_main_repair.png', 'menu_side_repair.png']:
-            if kc_window.exists('repair_screen_check.png'):
+            if kc_region.exists('repair_screen_check.png'):
                 final_target = ''
         elif final_target in ['menu_top_quests.png']:
-            if kc_window.exists('quests_screen_check.png'):
-                wait_and_click(kc_window, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
-                sleep(1)
+            if kc_region.exists('quests_screen_check.png'):
+                wait_and_click(kc_region, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
+                sleep_fast()
                 final_target = ''
         else:
             final_target = ''
@@ -407,37 +437,37 @@ def rnavigation_chooser(options, exclude):
     """
     return choice([i for i in options if i not in exclude])
 
-def check_and_click(kc_window, pic, expand=[]):
+def check_and_click(kc_region, pic, expand=[]):
     """
     Common sikuli action to click a pattern if it exists.
 
-    kc_window - Sikuli window
+    kc_region - Sikuli region
     pic - image name (str) or Pattern object; thing to match
     expand - expand parameter to pass to rclick (see rclick's expand parameter
         for more details). Defaults to [].
     """
-    if kc_window.exists(pic):
-        kc_window.click(pattern_generator(kc_window, pic, expand, 'prematched'))
+    if kc_region.exists(pic):
+        kc_region.click(pattern_generator(kc_region, pic, expand, 'prematched'))
         return True
     return False
 
-def wait_and_click(kc_window, pic, time=5, expand=[]):
+def wait_and_click(kc_region, pic, time=5, expand=[]):
     """
     Common sikuli action to wait for a pattern until it exists, then click it.
 
-    kc_window - Sikuli window
+    kc_region - Sikuli region
     pic - image name (str) or Pattern object; thing to match
     time - seconds (int); max time to wait for pic to show up. Defaults to 5.
     expand - expand parameter to pass to rclick (see rclick's expand parameter
         for more details). Defaults to [].
     """
     if time:
-        kc_window.wait(pattern_generator(kc_window, pic, expand), time)
+        kc_region.wait(pattern_generator(kc_region, pic, expand), time)
     else:
-        kc_window.wait(pattern_generator(kc_window, pic, expand))
-    kc_window.click(kc_window.getLastMatch())
+        kc_region.wait(pattern_generator(kc_region, pic, expand))
+    kc_region.click(kc_region.getLastMatch())
 
-def pattern_generator(kc_window, pic, expand=[], mod=''):
+def pattern_generator(kc_region, pic, expand=[], mod=''):
     """
     Function for generating Sikuli Pattern with randomized click locations.
     If expand is not provided the click location will be within the
@@ -455,7 +485,7 @@ def pattern_generator(kc_window, pic, expand=[], mod=''):
         # This slows down the click actions, but it looks for the pattern and
         # finds the size of the image from the resulting Pattern object.
         if mod == 'prematched':
-            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_window.getLastMatch()))
+            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_region.getLastMatch()))
         else:
             m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
         if m:
