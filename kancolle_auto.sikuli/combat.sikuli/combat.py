@@ -103,7 +103,6 @@ class Combat:
         sleep(2)
         wait_and_click(self.kc_window, self.area_pict)
         rejigger_mouse(self.kc_window, 50, 750, 0, 100)
-        sleep(2)
         if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, int(self.subarea_num[0])):
@@ -146,7 +145,7 @@ class Combat:
             if not self.pre_sortie_check():
                 return self.damage_counts
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
-            wait(2)
+            sleep(1)
             if not self.pre_sortie_check(True):
                 return self.damage_counts
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
@@ -184,7 +183,7 @@ class Combat:
                         log_success("Commencing night battle!")
                         check_and_click(self.kc_window, 'combat_nb_fight.png')
                         while not global_regions['next'].exists('next.png'):
-                            sleep(10)
+                            pass
                     else:
                         # Decline night battle
                         log_msg("Declining night battle!")
@@ -200,7 +199,7 @@ class Combat:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
                     self.tally_damages(True)
                     wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
-                    sleep(5)
+                    sleep(3)
                     if self.kc_window.exists('fcf_check.png'):
                         # Only bother to retreat via FCF if only one ship is critically damaged,
                         # otherwise, continue with FCF and retreat normally
@@ -274,7 +273,7 @@ class Combat:
                 log_msg("Spinning compass!")
                 rejigger_mouse(self.kc_window, 50, 350, 0, 150)
                 # Restart this loop in case there's another compass coming up
-                sleep(6)
+                sleep(3)
                 self.loop_pre_combat(nodes_run)
                 loop_pre_combat_stop = True
                 break
@@ -284,7 +283,7 @@ class Combat:
                 for node in self.node_selects:
                     check_and_click(self.kc_window, Pattern('%s.png' % node), expand_areas('node_select'))
                 # Assume that the node was selected...
-                sleep(5)
+                sleep(3)
                 self.loop_pre_combat(nodes_run)
                 loop_pre_combat_stop = True
                 break
@@ -292,11 +291,11 @@ class Combat:
             elif check_and_click(global_regions['formations'], Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
-                sleep(10)
+                sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
                 rejigger_mouse(self.kc_window, 50, 750, 0, 150)
-                sleep(10)
+                sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
                 break
@@ -308,14 +307,13 @@ class Combat:
                 break
             elif self.kc_window.exists('catbomb.png'):
                 raise FindFailed('Catbombed during sortie :(')
-            sleep(2)
 
     def loop_post_formation(self):
         while not (self.kc_window.exists('combat_nb_retreat.png')
             or global_regions['next'].exists('next.png')
             or global_regions['next'].exists('next_alt.png')
             or self.kc_window.exists('catbomb.png')):
-            sleep(2)
+            pass
         # Check for catbomb
         if self.kc_window.exists('catbomb.png'):
             raise FindFailed('Catbombed during sortie :(')
@@ -375,7 +373,7 @@ class Combat:
                         self.kc_window.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
                         if self.count_damage_above_limit('repair') > 0:
-                            sleep(10)
+                            sleep(8)
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
                         repair_timer = check_timer(self.kc_window, 'repair_timer.png', 'r', 80, 5)
@@ -385,7 +383,7 @@ class Combat:
                             self.kc_window.click('repair_bucket_switch.png')
                             self.next_sortie_time_set(0, 0)
                             if self.count_damage_above_limit('repair') > 0:
-                                sleep(10)
+                                sleep(8)
                         else:
                             # Try setting next sortie time according to repair timer
                             timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
@@ -396,7 +394,7 @@ class Combat:
                             empty_docks -= 1
                     wait_and_click(self.kc_window, 'repair_start.png', 10)
                     wait_and_click(self.kc_window, 'repair_start_confirm.png', 10)
-                    sleep(2)
+                    sleep(1)
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
         if self.submarine_switch:
@@ -422,7 +420,7 @@ class Combat:
                 ships_under_repair += 1
                 # Check if the ship is a submarine by checking its stats
                 target_region.click('fleetcomp_ship_stats_button.png')
-                wait(2)
+                sleep(2)
                 if self.kc_window.exists(Pattern('fleetcomp_ship_stats_submarine.png').exact()):
                     log_msg("Ship under repair is a submarine!")
                     # If the ship is a sub, back out of stats screen and go to ship switch list
@@ -430,12 +428,12 @@ class Combat:
                     rejigger_mouse(self.kc_window, 50, 100, 50, 100)
                     target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_window.wait('fleetcomp_shiplist_sort_arrow.png')
-                    wait(1)
+                    sleep(1)
                     # Make sure the sort order is correct
                     log_msg("Checking shiplist sort order and moving to first page if necessary!")
                     while not self.kc_window.exists('fleetcomp_shiplist_sort_type.png'):
                         check_and_click(self.kc_window, 'fleetcomp_shiplist_sort_arrow.png')
-                        wait (1)
+                        sleep(1)
                     if shiplist_page == 1:
                         check_and_click(self.kc_window, 'fleetcomp_shiplist_first_page.png')
                     rejigger_mouse(self.kc_window, 50, 100, 50, 100)
@@ -542,12 +540,10 @@ class PvP:
         rejigger_mouse(self.kc_window, 50, 750, 0, 180)
         while not (global_regions['next'].exists('next.png')
             or self.kc_window.exists('combat_nb_fight.png')):
-            sleep(10)
+            pass
         check_and_click(self.kc_window, 'combat_nb_fight.png')
-        sleep(3)
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
-            sleep(10)
-        sleep(3)
+            pass
         wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
         log_msg("PvP complete!")
         return True
