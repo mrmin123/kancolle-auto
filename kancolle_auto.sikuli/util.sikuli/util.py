@@ -361,7 +361,7 @@ def rnavigation(kc_region, destination, max=0):
                 final_target = 'menu_top_quests.png'
         elif destination in ['combat', 'expedition', 'pvp']:
             # These are unreachable from here... unless we're already at sortie screen
-            if kc_region.exists('sortie_top_combat.png') or kc_region.exists('sortie_top_pvp.png'):
+            if kc_region.exists('sortie_top_combat.png') or kc_region.exists('sortie_top_pvp.png') or kc_region.exists('sortie_top_expedition.png'):
                 # If we're already at sortie screen, ignore evades
                 final_target = 'sortie_top_' + destination + '.png'
             else:

@@ -27,7 +27,7 @@ default_quest_mode = 'pvp'
 kc_window = None
 next_sleep_time = None
 next_pvp_time = None
-idle = False
+idle = True
 last_refresh = ''
 
 # Focus on the defined KanColle app
