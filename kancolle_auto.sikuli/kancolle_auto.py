@@ -91,7 +91,6 @@ def check_expedition():
     global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(global_regions['expedition_flag'], 'expedition_finish.png', expand_areas('expedition_finish')):
-        sleep(3)
         wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
         log_success("Yes, an expedition has returned!")
         # Guesstimate which expedition came back
@@ -109,7 +108,7 @@ def check_expedition():
         while not kc_window.exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
-            sleep(2)
+            sleep(1)
         check_expedition()
         return True
     else:
@@ -129,25 +128,13 @@ def resupply():
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
-                    sleep(1)
                     global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name))
-                    sleep(1)
-                resupply_action()
+                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()))
         log_success("Done resupplying!")
     else:
         log_msg("No fleets need resupplying!")
     # Always go back home after resupplying
     go_home()
-
-# Actions involved in resupplying a fleet
-def resupply_action():
-    global kc_window
-    if global_regions['fleet_flags_main'].exists(pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact())):
-        # Rework for new resupply screen
-        global_regions['fleet_flags_main'].click(global_regions['fleet_flags_main'].getLastMatch())
-        sleep(2)
-    else:
-        log_msg("Fleet is already resupplied!")
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
