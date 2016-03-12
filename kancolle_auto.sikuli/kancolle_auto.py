@@ -137,23 +137,13 @@ def resupply():
     # Always go back home after resupplying
     go_home()
 
-# Actions involved in checking quests
-def quest_action(mode, first_run=False):
-    global quest_item
-    go_home()
-    quest_item.go_quests(mode, first_run)
-    quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
-
 # Identify which expeditions need to be sent to expedition_action. Used for
 # sending out singular expeditions
 def expedition_action_wrapper():
     global expedition_item
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
-            print "%d returned" % expedition.fleet_id
             expedition_action(expedition.fleet_id)
-        else:
-            print "%d not returned" % expedition.fleet_id
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -191,12 +181,18 @@ def pvp_action():
         if settings['quests_enabled']:
             quest_action('pvp')
         go_home()
+        if settings['expeditions_enabled']:
+            expedition_action_wrapper()
+        rnavigation(self.kc_region, 'pvp', 2)
     fleet_needs_resupply[0] = False
 
 # Actions involved in conducting sorties
 def sortie_action():
     global fleet_needs_resupply, combat_item, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
+    if settings['expeditions_enabled']:
+        expedition_action_wrapper()
+    rnavigation(self.kc_region, 'combat', 2)
     go_home()
     combat_item.go_sortie()
     fleet_needs_resupply[0] = True
@@ -211,6 +207,18 @@ def sortie_action():
     if settings['combined_fleet']:
         fleet_needs_resupply[1] = False
     log_success("Next sortie!: %s" % combat_item)
+
+# Actions involved in checking quests
+def quest_action(mode, first_run=False):
+    global quest_item
+    go_home()
+    if settings['expeditions_enabled']:
+        expedition_action_wrapper()
+        rnavigation(self.kc_region, 'quests', 0)
+    else:
+        rnavigation(self.kc_region, 'quests', 2)
+    quest_item.go_quests(mode, first_run)
+    quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
 
 # Actions that check and switch fleet comps
 def fleetcomp_switch_action(fleetcomp):
@@ -429,6 +437,15 @@ def init():
                 fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
         # Go home
         go_home(True)
+        if settings['scheduled_sleep_enabled']:
+            # If just starting script, set a sleep start time
+            now_time = datetime.datetime.now()
+            if now_time.hour * 100 + now_time.minute > int(settings['scheduled_sleep_start']):
+                # If the schedule sleep start time for the day has passed, set it for the next day
+                reset_next_sleep_time(True)
+            else:
+                # Otherwise, set it for later in the day
+                reset_next_sleep_time()
         if settings['quests_enabled']:
             # Run through quests defined in quests item
             quest_action(default_quest_mode, True)
@@ -436,6 +453,7 @@ def init():
             # Run expeditions defined in expedition item
             expedition_action('all')
         if settings['pvp_enabled']:
+            reset_next_pvp_time()
             now_time = datetime.datetime.now()
             if not 3 <= jst_convert(now_time).hour < 5:
                 # Run PvP, but not between the time when PvP resets but quests do not!
@@ -446,6 +464,7 @@ def init():
             # Let the Quests module know, if it's enabled
             if settings['quests_enabled']:
                 quest_item.done_sorties += 1
+        display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
 
@@ -455,14 +474,6 @@ log_msg("Initial checks and commands complete. Starting loop.")
 while True:
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
-        # If just starting script, set a sleep start time
-        if next_sleep_time is None:
-            if now_time.hour * 100 + now_time.minute > int(settings['scheduled_sleep_start']):
-                # If the schedule sleep start time for the day has passed, set it for the next day
-                reset_next_sleep_time(True)
-            else:
-                # Otherwise, set it for later in the day
-                reset_next_sleep_time()
         if now_time > next_sleep_time:
             # If it's time to sleep, set the next sleep start time...
             reset_next_sleep_time(True)
@@ -497,8 +508,6 @@ while True:
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
-            if next_pvp_time is None:
-                reset_next_pvp_time()
             if now_time > next_pvp_time:
                 idle = False
                 pvp_action()

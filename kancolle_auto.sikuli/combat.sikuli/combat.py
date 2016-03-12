@@ -103,7 +103,6 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
-        rnavigation(self.kc_region, 'combat', 2)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         sleep(2)
         wait_and_click(self.kc_region, self.area_pict)
@@ -371,14 +370,14 @@ class Combat:
                         repair_start = True
                 if repair_start:
                     repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
-                    sleep(2)
+                    sleep(1)
+                    bucket_use = False
                     if self.repair_time_limit == 0:
                         # If set to use buckets for all repairs, no need to check timer
                         log_success("Using bucket for all repairs!")
                         self.kc_region.click('repair_bucket_switch.png')
                         self.next_sortie_time_set(0, 0)
-                        if self.count_damage_above_limit('repair') > 0:
-                            sleep(8)
+                        bucket_use = True
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
                         repair_timer = check_timer(self.kc_region, 'repair_timer.png', 'r', 80, 5)
@@ -387,8 +386,7 @@ class Combat:
                             log_success("Repair time too long... using bucket!")
                             self.kc_region.click('repair_bucket_switch.png')
                             self.next_sortie_time_set(0, 0)
-                            if self.count_damage_above_limit('repair') > 0:
-                                sleep(8)
+                            bucket_use = True
                         else:
                             # Try setting next sortie time according to repair timer
                             timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
@@ -399,6 +397,8 @@ class Combat:
                             empty_docks -= 1
                     wait_and_click(self.kc_region, 'repair_start.png', 10)
                     wait_and_click(self.kc_region, 'repair_start_confirm.png', 10)
+                    if bucket_use and self.count_damage_above_limit('repair') > 0:
+                        sleep(8)
                     sleep_fast()
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
@@ -524,7 +524,6 @@ class PvP:
         self.kc_region = kc_region
 
     def go_pvp(self):
-        rnavigation(self.kc_region, 'pvp', 2)
         # Select random pvp opponent
         random_choices = ['pvp_row_1.png', 'pvp_row_2.png']
         random_choice_one = choice(random_choices)

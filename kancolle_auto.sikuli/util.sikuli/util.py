@@ -359,6 +359,14 @@ def rnavigation(kc_region, destination, max=0):
                         sleep(2)
                         evade_count -= 1
                 final_target = 'menu_top_quests.png'
+        elif destination in ['combat', 'expedition', 'pvp']:
+            # These are unreachable from here... unless we're already at sortie screen
+            if kc_region.exists('sortie_top_combat.png') or kc_region.exists('sortie_top_pvp.png'):
+                # If we're already at sortie screen, ignore evades
+                final_target = 'sortie_top_' + destination + '.png'
+            else:
+                log_error("Unreachable destination %s from current location!" % destination)
+                raise
         else:
             # Go to another main menu item screen
             log_msg("Navigating to %s screen with %d sidestep(s)!" % (destination, evade_count))

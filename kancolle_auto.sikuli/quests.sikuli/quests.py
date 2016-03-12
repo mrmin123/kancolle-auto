@@ -79,7 +79,6 @@ class Quests:
         Method for going through quests page(s), turning in completed quests,
         and starting up quests as needed.
         """
-        rnavigation(self.kc_region, 'quests', 2)
         sleep(1)
         start_check = True
         temp_list = []
