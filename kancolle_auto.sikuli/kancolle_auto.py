@@ -27,7 +27,7 @@ default_quest_mode = 'pvp'
 kc_window = None
 next_sleep_time = None
 next_pvp_time = None
-idle = True
+idle = False
 last_refresh = ''
 
 # Focus on the defined KanColle app
@@ -526,7 +526,7 @@ while True:
                 if settings['quests_enabled']:
                     quest_item.done_sorties += 1
         if settings['quests_enabled']:
-            if idle == False:
+            if not idle:
                 # Expedition or Combat event occured. Loop 'increases'
                 quest_item.schedule_loop += 1
                 temp_need_to_check = quest_item.need_to_check()
