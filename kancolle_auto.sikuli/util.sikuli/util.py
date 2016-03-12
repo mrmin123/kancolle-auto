@@ -400,7 +400,7 @@ def rnavigation(kc_window, destination, max=0):
         elif final_target in ['menu_top_quests.png']:
             if kc_window.exists('quests_screen_check.png'):
                 wait_and_click(kc_window, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
-                sleep(1)
+                sleep_fast()
                 final_target = ''
         else:
             final_target = ''
