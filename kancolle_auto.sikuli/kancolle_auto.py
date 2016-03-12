@@ -195,19 +195,23 @@ def sortie_action():
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     rnavigation(global_regions['game'], 'combat', 2)
-    combat_item.go_sortie()
-    fleet_needs_resupply[0] = True
-    if settings['combined_fleet']:
-        fleet_needs_resupply[1] = True
-    # Check home, repair if needed, and resupply
-    go_home()
-    if combat_item.count_damage_above_limit('repair') > 0:
-        combat_item.go_repair()
-    resupply()
-    fleet_needs_resupply[0] = False
-    if settings['combined_fleet']:
-        fleet_needs_resupply[1] = False
-    log_success("Next sortie!: %s" % combat_item)
+    if combat_item.go_sortie():
+        fleet_needs_resupply[0] = True
+        if settings['combined_fleet']:
+            fleet_needs_resupply[1] = True
+        # Check home, repair if needed, and resupply
+        go_home()
+        if combat_item.count_damage_above_limit('repair') > 0:
+            combat_item.go_repair()
+        resupply()
+        fleet_needs_resupply[0] = False
+        if settings['combined_fleet']:
+            fleet_needs_resupply[1] = False
+        log_success("Next sortie!: %s" % combat_item)
+    else:
+        go_home()
+        settings['combat_enabled'] = False
+        log_success("Medal obtained! Stopping combat module!")
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
@@ -343,6 +347,7 @@ def get_config():
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
+        settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False

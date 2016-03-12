@@ -27,6 +27,7 @@ class Combat:
         self.repair_timers = []
         self.check_fatigue = settings['check_fatigue']
         self.port_check = settings['port_check']
+        self.medal_stop = settings['medal_stop']
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
@@ -103,6 +104,7 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
+        continue_combat = True
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         sleep(2)
         wait_and_click(self.kc_region, self.area_pict)
@@ -197,6 +199,10 @@ class Combat:
                 sleep(3)
                 # Tally damages at post-battle report screen
                 self.tally_damages(combat=True)
+                # Check for medal reward, if enabled
+                if self.medal_stop:
+                    if self.kc_region.exists('medal.png'):
+                        continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 if self.combined_fleet:
@@ -263,7 +269,7 @@ class Combat:
             elif self.area_num == 'E' and self.kc_region.exists('combat_start_warning_shipsfull_event.png'):
                 log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15, 5)
-        return self.damage_counts
+        return continue_combat
 
     def loop_pre_combat(self, nodes_run):
         # Check for compass, formation select, night battle prompt, or post-battle report
