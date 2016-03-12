@@ -150,7 +150,10 @@ def expedition_action_wrapper():
     global expedition_item
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
+            print "%d returned" % expedition.fleet_id
             expedition_action(expedition.fleet_id)
+        else:
+            print "%d not returned" % expedition.fleet_id
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):

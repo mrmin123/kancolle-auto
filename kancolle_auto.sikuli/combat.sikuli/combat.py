@@ -549,6 +549,7 @@ class PvP:
         check_and_click(self.kc_region, 'combat_nb_fight.png')
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
             pass
+        sleep_fast()
         wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
         log_msg("PvP complete!")
         return True
