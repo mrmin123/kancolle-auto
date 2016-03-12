@@ -183,7 +183,7 @@ def pvp_action():
         go_home()
         if settings['expeditions_enabled']:
             expedition_action_wrapper()
-        rnavigation(self.kc_region, 'pvp', 2)
+        rnavigation(global_regions['game'], 'pvp', 2)
     fleet_needs_resupply[0] = False
 
 # Actions involved in conducting sorties
@@ -192,7 +192,7 @@ def sortie_action():
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
-    rnavigation(self.kc_region, 'combat', 2)
+    rnavigation(global_regions['game'], 'combat', 2)
     go_home()
     combat_item.go_sortie()
     fleet_needs_resupply[0] = True
@@ -214,9 +214,9 @@ def quest_action(mode, first_run=False):
     go_home()
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
-        rnavigation(self.kc_region, 'quests', 0)
+        rnavigation(global_regions['game'], 'quests', 0)
     else:
-        rnavigation(self.kc_region, 'quests', 2)
+        rnavigation(global_regions['game'], 'quests', 2)
     quest_item.go_quests(mode, first_run)
     quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
 
