@@ -172,6 +172,7 @@ def pvp_action():
     if settings['quests_enabled']:
         quest_action('pvp')
     go_home()
+    rnavigation(global_regions['game'], 'pvp', 2)
     while pvp_item.go_pvp():
         fleet_needs_resupply[0] = True
         go_home()
