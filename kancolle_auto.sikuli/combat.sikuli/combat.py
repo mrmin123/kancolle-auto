@@ -201,7 +201,9 @@ class Combat:
                 self.tally_damages(combat=True)
                 # Check for medal reward, if enabled
                 if self.medal_stop:
+                    log_msg("Checking for medal reward!")
                     if self.kc_region.exists('medal.png'):
+                        log_msg("Medal obtained!")
                         continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
