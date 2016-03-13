@@ -141,15 +141,18 @@ def resupply():
 # sending out singular expeditions
 def expedition_action_wrapper():
     global expedition_item
+    at_expedition_screen = False
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
+            if not at_expedition_screen:
+                go_home()
+                expedition_item.go_expedition()
+                at_expedition_screen = True
             expedition_action(expedition.fleet_id)
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
     global fleet_needs_resupply, expedition_item, settings
-    go_home()
-    expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -481,6 +484,8 @@ while True:
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
         if now_time > next_sleep_time:
+            if settings['expeditions_enabled']:
+                expedition_action_wrapper()
             # If it's time to sleep, set the next sleep start time...
             reset_next_sleep_time(True)
             # ... and go to sleep
