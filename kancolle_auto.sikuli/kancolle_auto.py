@@ -460,6 +460,8 @@ def init():
             quest_action(default_quest_mode, True)
         if settings['expeditions_enabled']:
             # Run expeditions defined in expedition item
+            go_home()
+            expedition_item.go_expedition()
             expedition_action('all')
         if settings['pvp_enabled']:
             reset_next_pvp_time()
