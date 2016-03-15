@@ -545,7 +545,7 @@ while True:
                 # Expedition or Combat event occured. Loop 'increases'
                 quest_item.schedule_loop += 1
                 temp_need_to_check = quest_item.need_to_check()
-                log_msg("Quest check loop count at %s; need to check is %s with ~%s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
+                log_msg("Quest check loop count at %s; need to check is %s with %s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
             if temp_need_to_check:
                 go_home()
                 quest_action(default_quest_mode)
