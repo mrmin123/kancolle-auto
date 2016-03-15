@@ -142,9 +142,10 @@ class Quests:
                             log_warning("Couldn't activate quest. Queue must be at maximum!")
                             temp_list.extend(quest)
                             continue
+                        else:
+                            self.active_quests += 1
                     # Quest activated. Remove activated quest from queue and
                     # add children to temp queue
-                    self.active_quests += 1
                     temp_list.extend(self.quest_tree.get_children_ids(quest))
                     started_quests.append(quest)
                     waits = self.quest_tree.find(quest).wait
