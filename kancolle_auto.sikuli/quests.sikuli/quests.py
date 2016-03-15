@@ -40,6 +40,10 @@ class Quests:
         Method for resetting of tracked quests.
         """
         self.quests_checklist_queue = list(sorted(self.quests_checklist))
+        self.sortie_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'c']
+        self.sortie_quests_checklist_count = len(self.sortie_quests_checklist_queue)
+        self.pvp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'b']
+        self.pvp_quests_checklist_count = len(self.pvp_quests_checklist_queue)
         log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
         self.active_quests = 0
         self.activated_sortie_quests = []
@@ -93,6 +97,7 @@ class Quests:
             page_backtrack = None
             disable = 'c'
             toggled_quests = list(self.activated_sortie_quests)
+            temp_quests_checklist_queue = self.sortie_quests_checklist_queue
             print 'toggled quests sortie: %s' % toggled_quests
         elif mode == 'pvp':
             # Enable PvP quests, disable Sortie quests
@@ -100,9 +105,10 @@ class Quests:
             page_backtrack = 'quests_prev_page.png'
             disable = 'b'
             toggled_quests = list(self.activated_pvp_quests)
+            temp_quests_checklist_queue = self.pvp_quests_checklist_queue
             print 'toggled quests pvp: %s' % toggled_quests
         while start_check:
-            toggled_quests.extend([q for q in self.quests_checklist_queue if q[0] != disable])
+            toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
             print 'toggled quests main loop: %s' % toggled_quests
             quest_types = list(set([q[0] for q in toggled_quests]))
@@ -163,16 +169,32 @@ class Quests:
                         self.activated_pvp_quests.append(quest)
                         self.activated_pvp_quests = list(set(self.activated_pvp_quests))
                         print 'activated pvp quests: %s' % self.activated_pvp_quests
-            self.quests_checklist_queue = list(set(self.quests_checklist_queue) - set(started_quests))
+            temp_quests_checklist_queue = list(set(temp_quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 start_check = False
-            print 'checklist queue: %s' % self.quests_checklist_queue
+            print 'temp checklist queue: %s' % temp_quests_checklist_queue
             print 'active quests post-activation: %s' % self.active_quests
+        if mode == 'sortie':
+            if len(self.sortie_quests_checklist_queue) == self.sortie_quests_checklist_count:
+                self.sortie_quests_checklist_queue = temp_list
+            else:
+                self.sortie_quests_checklist_queue += temp_list
+            self.sortie_quests_checklist_queue.sort()
+        elif mode == 'pvp':
+            if len(self.pvp_quests_checklist_queue) == self.pvp_quests_checklist_count:
+                self.pvp_quests_checklist_queue = temp_list
+            else:
+                self.pvp_quests_checklist_queue += temp_list
+            self.pvp_quests_checklist_queue.sort()
+        """
         if first_run:
             self.quests_checklist_queue = temp_list
         else:
             self.quests_checklist_queue += temp_list
             self.quests_checklist_queue.sort()
+        """
+        self.quests_checklist_queue = list(set(self.sortie_quests_checklist_queue + self.pvp_quests_checklist_queue))
+        self.quests_checklist_queue.sort()
         log_msg("New quests to look for next time: %s" % ', '.join(self.quests_checklist_queue))
 
     def filter_quests(self, disable):
@@ -181,6 +203,7 @@ class Quests:
         try:
             # Check if enabled quests on the page are ones to be disabled
             for i in global_regions['quest_status'].findAll('quest_in_progress.png'):
+                self.active_quests += 1
                 quest_check_area = i.left(570)
                 # If they are, disable them
                 if quest_check_area.exists(disable + '.png'):
@@ -188,8 +211,6 @@ class Quests:
                     self.kc_region.click(quest_check_area)
                     removed += 1
                     sleep(3)
-                else:
-                    self.active_quests += 1
         except:
             pass
         return removed

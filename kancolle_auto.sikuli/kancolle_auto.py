@@ -470,6 +470,9 @@ def init():
                 # Run PvP, but not between the time when PvP resets but quests do not!
                 pvp_action()
         if settings['combat_enabled']:
+            if settings['quests_enabled'] and settings['pvp_enabled']:
+                # Run through quests defined in quests item
+                quest_action('sortie', True)
             # Run sortie defined in combat item
             sortie_action()
             # Let the Quests module know, if it's enabled
