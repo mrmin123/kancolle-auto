@@ -141,15 +141,18 @@ def resupply():
 # sending out singular expeditions
 def expedition_action_wrapper():
     global expedition_item
+    at_expedition_screen = False
     for expedition in expedition_item.expedition_list:
         if expedition.returned:
+            if not at_expedition_screen:
+                go_home()
+                expedition_item.go_expedition()
+                at_expedition_screen = True
             expedition_action(expedition.fleet_id)
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
     global fleet_needs_resupply, expedition_item, settings
-    go_home()
-    expedition_item.go_expedition()
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -195,19 +198,23 @@ def sortie_action():
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     rnavigation(global_regions['game'], 'combat', 2)
-    combat_item.go_sortie()
-    fleet_needs_resupply[0] = True
-    if settings['combined_fleet']:
-        fleet_needs_resupply[1] = True
-    # Check home, repair if needed, and resupply
-    go_home()
-    if combat_item.count_damage_above_limit('repair') > 0:
-        combat_item.go_repair()
-    resupply()
-    fleet_needs_resupply[0] = False
-    if settings['combined_fleet']:
-        fleet_needs_resupply[1] = False
-    log_success("Next sortie!: %s" % combat_item)
+    if combat_item.go_sortie():
+        fleet_needs_resupply[0] = True
+        if settings['combined_fleet']:
+            fleet_needs_resupply[1] = True
+        # Check home, repair if needed, and resupply
+        go_home()
+        if combat_item.count_damage_above_limit('repair') > 0:
+            combat_item.go_repair()
+        resupply()
+        fleet_needs_resupply[0] = False
+        if settings['combined_fleet']:
+            fleet_needs_resupply[1] = False
+        log_success("Next sortie!: %s" % combat_item)
+    else:
+        go_home()
+        settings['combat_enabled'] = False
+        log_success("Medal obtained! Stopping combat module!")
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
@@ -343,6 +350,7 @@ def get_config():
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
+        settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
@@ -452,6 +460,8 @@ def init():
             quest_action(default_quest_mode, True)
         if settings['expeditions_enabled']:
             # Run expeditions defined in expedition item
+            go_home()
+            expedition_item.go_expedition()
             expedition_action('all')
         if settings['pvp_enabled']:
             reset_next_pvp_time()
@@ -460,6 +470,9 @@ def init():
                 # Run PvP, but not between the time when PvP resets but quests do not!
                 pvp_action()
         if settings['combat_enabled']:
+            if settings['quests_enabled'] and settings['pvp_enabled']:
+                # Run through quests defined in quests item
+                quest_action('sortie', True)
             # Run sortie defined in combat item
             sortie_action()
             # Let the Quests module know, if it's enabled
@@ -476,6 +489,8 @@ while True:
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
         if now_time > next_sleep_time:
+            if settings['expeditions_enabled']:
+                expedition_action_wrapper()
             # If it's time to sleep, set the next sleep start time...
             reset_next_sleep_time(True)
             # ... and go to sleep
@@ -530,7 +545,7 @@ while True:
                 # Expedition or Combat event occured. Loop 'increases'
                 quest_item.schedule_loop += 1
                 temp_need_to_check = quest_item.need_to_check()
-                log_msg("Quest check loop count at %s; need to check is %s with ~%s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
+                log_msg("Quest check loop count at %s; need to check is %s with %s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
             if temp_need_to_check:
                 go_home()
                 quest_action(default_quest_mode)

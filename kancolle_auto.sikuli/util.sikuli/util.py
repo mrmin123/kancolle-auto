@@ -344,7 +344,7 @@ def rnavigation(kc_region, destination, max=0):
             if evade_count == 0:
                 final_target = 'menu_top_quests.png'
             else:
-                rchoice = rnavigation_chooser(menu_top_options + menu_side_options, ['menu_top_quests.png', 'menu_top_shop.png'])
+                rchoice = rnavigation_chooser(menu_side_options + ['menu_top_inventory.png'], [])
                 wait_and_click(kc_region, rchoice)
                 sleep(2)
                 evade_count -= 1
@@ -354,7 +354,7 @@ def rnavigation(kc_region, destination, max=0):
                         final_target = 'menu_top_quests.png'
                         evade_count = 0
                     else:
-                        rchoice = rnavigation_chooser(menu_side_options + ['menu_top_profile.png', 'menu_top_inventory.png'], [])
+                        rchoice = rnavigation_chooser(menu_side_options + ['menu_top_inventory.png'], [])
                         wait_and_click(kc_region, rchoice)
                         sleep(2)
                         evade_count -= 1

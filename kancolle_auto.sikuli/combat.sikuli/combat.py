@@ -27,6 +27,7 @@ class Combat:
         self.repair_timers = []
         self.check_fatigue = settings['check_fatigue']
         self.port_check = settings['port_check']
+        self.medal_stop = settings['medal_stop']
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
@@ -103,6 +104,7 @@ class Combat:
 
     # Navigate to Sortie menu and click through sortie!
     def go_sortie(self):
+        continue_combat = True
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         sleep(2)
         wait_and_click(self.kc_region, self.area_pict)
@@ -134,7 +136,7 @@ class Combat:
             if self.kc_region.exists('combat_start_warning_shipsfull.png'):
                 log_warning("Port is full! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15, 5)
-                return self.damage_counts
+                return continue_combat
         wait_and_click(self.kc_region, 'decision.png')
         sleep(1)
         rejigger_mouse(self.kc_region, 50, 750, 0, 400)
@@ -143,28 +145,28 @@ class Combat:
             if self.kc_region.exists('combat_start_warning_shipsfull_event.png'):
                 log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15, 5)
-                return self.damage_counts
+                return continue_combat
         if self.combined_fleet:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():
-                return self.damage_counts
+                return continue_combat
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
             sleep_fast()
             if not self.pre_sortie_check(True):
-                return self.damage_counts
+                return continue_combat
             check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
             sleep_fast()
         else:
             # If not combined fleet, check damage and morale only on Fleet 1
             if not self.pre_sortie_check():
-                return self.damage_counts
+                return continue_combat
         # Check fleet damage state
         if self.damage_counts[2] > 0:
             log_warning("Ship(s) in critical condition! Sortie cancelled!")
-            return self.damage_counts
+            return continue_combat
         if self.count_damage_above_limit('repair') > 0:
             log_warning("Ships (%d) in condition below repair threshold! Sortie cancelled!" % self.count_damage_above_limit('repair'))
-            return self.damage_counts
+            return continue_combat
         if not self.kc_region.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
             wait_and_click(self.kc_region, 'combat_start.png')
@@ -179,7 +181,7 @@ class Combat:
                 if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
                     log_success("Sortie complete!")
                     sortie_underway = False
-                    return self.damage_counts
+                    return continue_combat
                 # If night battle prompt, proceed based on node and user config
                 if self.kc_region.exists('combat_nb_retreat.png'):
                     if self.night_battles[nodes_run] == 'True':
@@ -197,6 +199,12 @@ class Combat:
                 sleep(3)
                 # Tally damages at post-battle report screen
                 self.tally_damages(combat=True)
+                # Check for medal reward, if enabled
+                if self.medal_stop:
+                    log_msg("Checking for medal reward!")
+                    if self.kc_region.exists('medal.png'):
+                        log_success("Medal obtained!")
+                        continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 if self.combined_fleet:
@@ -234,7 +242,7 @@ class Combat:
                     if fcf_retreated:
                         # If a ship was retreated using FCF, mod the damage counts properly to reflect this
                         self.damage_counts[2] += 1
-                    return self.damage_counts
+                    return continue_combat
                 # We ran a node, so increase the counter
                 nodes_run += 1
                 # Set next sortie time to soon in case we have no failures or additional nodes
@@ -244,13 +252,13 @@ class Combat:
                     log_msg("Ran the required number of nodes. Falling back!")
                     wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                     sortie_underway = False
-                    return self.damage_counts
+                    return continue_combat
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
                     log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
                     wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                     sortie_underway = False
-                    return self.damage_counts
+                    return continue_combat
                 sleep(3)
                 wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
         else:
@@ -263,7 +271,7 @@ class Combat:
             elif self.area_num == 'E' and self.kc_region.exists('combat_start_warning_shipsfull_event.png'):
                 log_warning("Port is full for event! Please make some room for new ships! Sortie cancelled!")
                 self.next_sortie_time_set(0, 15, 5)
-        return self.damage_counts
+        return continue_combat
 
     def loop_pre_combat(self, nodes_run):
         # Check for compass, formation select, night battle prompt, or post-battle report
