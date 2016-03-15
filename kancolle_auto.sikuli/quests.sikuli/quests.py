@@ -98,7 +98,6 @@ class Quests:
             disable = 'c'
             toggled_quests = list(self.activated_sortie_quests)
             temp_quests_checklist_queue = self.sortie_quests_checklist_queue
-            print 'toggled quests sortie: %s' % toggled_quests
         elif mode == 'pvp':
             # Enable PvP quests, disable Sortie quests
             page_continue = 'quests_next_page.png'
@@ -106,11 +105,9 @@ class Quests:
             disable = 'b'
             toggled_quests = list(self.activated_pvp_quests)
             temp_quests_checklist_queue = self.pvp_quests_checklist_queue
-            print 'toggled quests pvp: %s' % toggled_quests
         while start_check:
             toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
-            print 'toggled quests main loop: %s' % toggled_quests
             quest_types = list(set([q[0] for q in toggled_quests]))
             if mode == 'sortie':
                 quest_types.sort()
@@ -123,7 +120,6 @@ class Quests:
             removed_finished = self.finish_quests(page_backtrack)
             removed_filtered = self.filter_quests(disable)
             self.active_quests = self.active_quests - removed_finished - removed_filtered
-            print 'active quests pre-activation: %s' % self.active_quests
             for quest_type in quest_types:
                 if global_regions['quest_category'].exists(quest_type + '.png'):
                     skip_page = False
@@ -134,7 +130,6 @@ class Quests:
                     break
                 else:
                     continue
-            print 'start check for quests to activate'
             for quest in toggled_quests:
                 if self.kc_region.exists(Pattern(quest + '.png').similar(0.999)):
                     quest_check_area = self.kc_region.getLastMatch().below(1).above(60).right(255)
@@ -164,16 +159,12 @@ class Quests:
                     if quest[0] == 'b':
                         self.activated_sortie_quests.append(quest)
                         self.activated_sortie_quests = list(set(self.activated_sortie_quests))
-                        print 'activated sortie quests: %s' % self.activated_sortie_quests
                     elif quest[0] == 'c':
                         self.activated_pvp_quests.append(quest)
                         self.activated_pvp_quests = list(set(self.activated_pvp_quests))
-                        print 'activated pvp quests: %s' % self.activated_pvp_quests
             temp_quests_checklist_queue = list(set(temp_quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 start_check = False
-            print 'temp checklist queue: %s' % temp_quests_checklist_queue
-            print 'active quests post-activation: %s' % self.active_quests
         if mode == 'sortie':
             if len(self.sortie_quests_checklist_queue) == self.sortie_quests_checklist_count:
                 self.sortie_quests_checklist_queue = temp_list
