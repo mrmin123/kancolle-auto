@@ -421,12 +421,12 @@ class Combat:
     def switch_sub(self):
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp')
-        if self.kc_region.exists('fleetcomp_dmg_repair.png'):
+        if self.kc_region.exists(Pattern('fleetcomp_dmg_repair.png').similar(self.dmg_similarity)):
             ships_under_repair = 0
             ships_switched_out = 0
             shiplist_page = 1
             # Check each ship being repaired
-            for i in self.kc_region.findAll('fleetcomp_dmg_repair.png'):
+            for i in self.kc_region.findAll(Pattern('fleetcomp_dmg_repair.png').similar(self.dmg_similarity)):
                 rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                 log_msg("Found ship under repair!")
                 target_region = i.offset(Location(-165, 0)).right(180).below(70)
