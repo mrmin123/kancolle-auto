@@ -141,7 +141,7 @@ class Quests:
                         sleep(3)
                         if not quest_check_area.exists('quest_in_progress.png'):
                             log_warning("Couldn't activate quest. Queue must be at maximum!")
-                            temp_list.extend(quest)
+                            temp_list.append(quest)
                             continue
                         else:
                             self.active_quests += 1
