@@ -129,7 +129,7 @@ def resupply():
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
                     global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name, expand_areas('fleet_id')))
                     sleep_fast()
-                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact(), expand_areas('fleet_id')))
+                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                 sleep_fast()
         log_success("Done resupplying!")
     else:
