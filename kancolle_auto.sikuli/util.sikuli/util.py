@@ -165,7 +165,7 @@ def expand_areas(target):
     if target == 'expedition_finish':
         return [-350, 200, 0, 400]
     elif target == 'fleet_id':
-        return [3, -3, 3, -3]
+        return [-6, 6, -7, 7]
     elif target == 'next':
         return [-600, 0, -400, 0]
     elif target == 'compass':
@@ -182,6 +182,8 @@ def expand_areas(target):
         return [-580, 25, -25, 25]
     elif target == 'pvp_row':
         return [-495, 45, -5, 35]
+    elif target == 'repair_list':
+        return [-330, 40, -12, 10]
 
 def rnavigation(kc_region, destination, max=0):
     """

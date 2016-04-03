@@ -360,19 +360,19 @@ class Combat:
                 wait_and_click(self.kc_region, 'repair_empty.png', 30)
                 sleep(2)
                 log_msg("Check for critically damaged ships.")
-                if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95)):
+                if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95), expand_areas('repair_list')):
                     log_success("Starting repair on critically damaged ship!")
                     self.damage_counts[2] -= 1
                     repair_start = True
                 if not repair_start and self.repair_limit <= 1:
                     log_msg("Check for moderately-damaged ships.")
-                    if check_and_click(self.kc_region, Pattern('repair_dmg_moderate.png').similar(0.95)):
+                    if check_and_click(self.kc_region, Pattern('repair_dmg_moderate.png').similar(0.95), expand_areas('repair_list')):
                         log_success("Starting repair on moderately damaged ship!")
                         self.damage_counts[1] -= 1
                         repair_start = True
                 if not repair_start and self.repair_limit == 0:
                     log_msg("Check for lightly-damaged ships.")
-                    if check_and_click(self.kc_region, Pattern('repair_dmg_light.png').similar(0.95)):
+                    if check_and_click(self.kc_region, Pattern('repair_dmg_light.png').similar(0.95), expand_areas('repair_list')):
                         log_success("Starting repair on lightly damaged ship!")
                         self.damage_counts[0] -= 1
                         repair_start = True
