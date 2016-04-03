@@ -194,7 +194,7 @@ def pvp_action():
 def sortie_action():
     global fleet_needs_resupply, combat_item, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
-    go_home()
+    go_home(True)
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     rnavigation(global_regions['game'], 'combat', 2)
