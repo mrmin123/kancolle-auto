@@ -49,7 +49,7 @@ class Expedition:
         # Select fleet (no need if fleet is 2 as it's selected by default)
         if expedition.fleet_id != 2:
             fleet_name = 'fleet_%s.png' % expedition.fleet_id
-            wait_and_click(global_regions['fleet_flags_sec'], fleet_name)
+            wait_and_click(global_regions['fleet_flags_sec'], fleet_name, expand=expand_areas('fleet_id'))
             sleep_fast()
         # Make sure that the fleet is ready to go
         if not self.kc_region.exists('fleet_busy.png'):
