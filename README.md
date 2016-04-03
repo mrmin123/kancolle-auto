@@ -27,7 +27,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 
 1. Install [Python 2.7.x](https://www.python.org/downloads/)
 2. Install [Java JRE 7](http://www.oracle.com/technetwork/java/javase/downloads/jre7-downloads-1880261.html)
-3. Install [Sikuli 1.0.x](https://launchpad.net/sikuli/sikulix/1.0.1)
+3. Install [Sikuli 1.0.x](https://launchpad.net/sikuli/sikulix/1.0.1) (not 1.1.x!) with options 2 and 5
 4. Install kancolle-auto
 5. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs))
 6. Run Kantai Collection
