@@ -164,6 +164,8 @@ def expand_areas(target):
     """
     if target == 'expedition_finish':
         return [-350, 200, 0, 400]
+    elif target == 'fleet_id':
+        return [3, -3, 3, -3]
     elif target == 'next':
         return [-600, 0, -400, 0]
     elif target == 'compass':

@@ -150,11 +150,11 @@ class Combat:
             # If combined fleet, check damage and morale on both pages
             if not self.pre_sortie_check():
                 return continue_combat
-            check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_2.png', expand_areas('fleet_id'))
             sleep_fast()
             if not self.pre_sortie_check(True):
                 return continue_combat
-            check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png')
+            check_and_click(global_regions['fleet_flags_sec'], 'fleet_1.png', expand_areas('fleet_id'))
             sleep_fast()
         else:
             # If not combined fleet, check damage and morale only on Fleet 1

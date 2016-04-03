@@ -127,9 +127,9 @@ def resupply():
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
                     fleet_name = 'fleet_%d.png' % (fleet_id + 1)
-                    global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name))
+                    global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_name, expand_areas('fleet_id')))
                     sleep_fast()
-                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()))
+                check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact(), expand_areas('fleet_id')))
                 sleep_fast()
         log_success("Done resupplying!")
     else:
