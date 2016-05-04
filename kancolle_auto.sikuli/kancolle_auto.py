@@ -90,7 +90,7 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
+    global kc_window, expedition_item, quest_item, fleet_needs_resupply, done_expeditions, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(global_regions['expedition_flag'], 'expedition_finish.png', expand_areas('expedition_finish')):
         wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
@@ -172,7 +172,7 @@ def expedition_action(fleet_id):
 
 # Actions involved in conducting PvPs
 def pvp_action():
-    global pvp_item, settings
+    global pvp_item, done_pvp, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
@@ -268,7 +268,7 @@ def reset_next_sleep_time(next_day = False):
 
 # Display upcoming timers
 def display_timers():
-    global expedition_item, combat_item, next_pvp_time, next_sleep_time, settings
+    global expedition_item, combat_item, next_pvp_time, next_sleep_time, done_expeditions, done_sorties, done_pvp, settings
     log_success("-----")
     if settings['expeditions_enabled']:
         temp_time = ''
@@ -419,7 +419,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, done_sorties, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
