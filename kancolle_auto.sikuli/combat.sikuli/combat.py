@@ -206,6 +206,7 @@ class Combat:
                         log_success("Medal obtained!")
                         continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
@@ -245,6 +246,7 @@ class Combat:
                     return continue_combat
                 # We ran a node, so increase the counter
                 nodes_run += 1
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
