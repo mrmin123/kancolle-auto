@@ -277,6 +277,7 @@ class Combat:
         # Check for compass, formation select, night battle prompt, or post-battle report
         loop_pre_combat_stop = False
         while not loop_pre_combat_stop:
+            sleep_fast()
             # If compass, press it
             if check_and_click(self.kc_region, 'compass.png', expand_areas('compass')):
                 # Rework for new resupply screen
@@ -463,7 +464,7 @@ class Combat:
                                 # We're not seeing any more submarines in the shiplist...
                                 log_warning("No more submarines!")
                                 return False
-                        if self.kc_region.exists('fleetcomp_shiplist_submarine_available.png'):
+                        if self.kc_region.exists(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                             log_msg("We are seeing available submarines!")
                             for sub in self.kc_region.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                                 self.kc_region.click(sub)
