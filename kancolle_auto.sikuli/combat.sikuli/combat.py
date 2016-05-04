@@ -550,9 +550,10 @@ class PvP:
         wait_and_click(self.kc_region, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_region, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
-        rejigger_mouse(self.kc_region, 50, 350, 0, 180)
+        rejigger_mouse(self.kc_region, 50, 350, 0, 100)
+        sleep_fast()
         wait_and_click(global_regions['formations'], 'formation_line_ahead.png', 30)
-        rejigger_mouse(self.kc_region, 50, 750, 0, 180)
+        rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         while not (global_regions['next'].exists('next.png')
             or self.kc_region.exists('combat_nb_fight.png')):
             pass
