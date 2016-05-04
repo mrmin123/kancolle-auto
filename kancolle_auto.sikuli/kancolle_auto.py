@@ -29,6 +29,9 @@ next_sleep_time = None
 next_pvp_time = None
 idle = False
 last_refresh = ''
+done_expeditions = 0
+done_sorties = 0
+done_pvp = 0
 
 # Focus on the defined KanColle app
 def focus_window():

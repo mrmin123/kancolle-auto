@@ -62,6 +62,7 @@ class Quests:
             # No quests in queue, and no known active quests. No need to check
             # quests.
             return check
+        # Check against the waits stored from previous quest check loops
         temp_list = [i for i in self.schedule_sorties if i > self.done_sorties]
         if len(temp_list) < len(self.schedule_sorties):
             check = True
