@@ -283,7 +283,7 @@ class Combat:
                 self.kc_region.click(self.kc_region.getLastMatch())
                 # Now check for formation select, night battle prompt, or post-battle report
                 log_msg("Spinning compass!")
-                rejigger_mouse(self.kc_region, 50, 350, 0, 150)
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 # Restart this loop in case there's another compass coming up
                 sleep(3)
                 self.loop_pre_combat(nodes_run)
