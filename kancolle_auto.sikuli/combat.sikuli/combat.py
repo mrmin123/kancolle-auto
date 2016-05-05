@@ -355,7 +355,7 @@ class Combat:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
-            log_msg("Attempting to conduct repairs on %d ships!" % self.count_damage_above_limit('repair'))
+            log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
