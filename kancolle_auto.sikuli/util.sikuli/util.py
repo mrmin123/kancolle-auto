@@ -183,7 +183,7 @@ def expand_areas(target):
     elif target == 'pvp_row':
         return [-495, 45, -5, 35]
     elif target == 'repair_list':
-        return [-325, 35, -10, 8]
+        return [-325, 35, -10, 6]
 
 def rnavigation(kc_region, destination, max=0):
     """
