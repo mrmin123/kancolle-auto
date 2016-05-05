@@ -29,6 +29,9 @@ next_sleep_time = None
 next_pvp_time = None
 idle = False
 last_refresh = ''
+done_expeditions = 0
+done_sorties = 0
+done_pvp = 0
 
 # Focus on the defined KanColle app
 def focus_window():
@@ -87,7 +90,7 @@ def go_home(refresh=False):
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
 def check_expedition():
-    global kc_window, expedition_item, quest_item, fleet_needs_resupply, settings
+    global kc_window, expedition_item, quest_item, fleet_needs_resupply, done_expeditions, settings
     log_msg("Are there returning expeditions to receive?")
     if check_and_click(global_regions['expedition_flag'], 'expedition_finish.png', expand_areas('expedition_finish')):
         wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
@@ -103,6 +106,7 @@ def check_expedition():
                     break
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
+            done_expeditions += 1
             quest_item.done_expeditions += 1
         while not global_regions['game'].exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
@@ -168,7 +172,7 @@ def expedition_action(fleet_id):
 
 # Actions involved in conducting PvPs
 def pvp_action():
-    global pvp_item, settings
+    global pvp_item, done_pvp, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
     fleetcomp_switch_action(settings['pvp_fleetcomp'])
@@ -177,6 +181,7 @@ def pvp_action():
     go_home()
     rnavigation(global_regions['game'], 'pvp', 2)
     while pvp_item.go_pvp():
+        done_pvp += 1
         fleet_needs_resupply[0] = True
         go_home()
         resupply()
@@ -263,7 +268,7 @@ def reset_next_sleep_time(next_day = False):
 
 # Display upcoming timers
 def display_timers():
-    global expedition_item, combat_item, next_pvp_time, next_sleep_time, settings
+    global expedition_item, combat_item, next_pvp_time, next_sleep_time, done_expeditions, done_sorties, done_pvp, settings
     log_success("-----")
     if settings['expeditions_enabled']:
         temp_time = ''
@@ -273,11 +278,11 @@ def display_timers():
             else:
                 if expedition.end_time < temp_time:
                     temp_time = expedition.end_time
-        log_success("Next expedition action at %s" % temp_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next expedition at %s (~%s expeditions conducted)" % (temp_time.strftime("%Y-%m-%d %H:%M:%S"), done_expeditions))
     if settings['combat_enabled']:
-        log_success("Next combat action at %s" % combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next sortie at %s (~%s sorties conducted)" % (combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"), done_sorties))
     if settings['pvp_enabled']:
-        log_success("Next PvP action at %s" % next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"))
+        log_success("Next PvP at %s (~%s PvPs conducted)" % (next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"), done_pvp))
     if settings['scheduled_sleep_enabled']:
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
@@ -414,7 +419,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, done_sorties, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -478,6 +483,7 @@ def init():
             # Let the Quests module know, if it's enabled
             if settings['quests_enabled']:
                 quest_item.done_sorties += 1
+                done_sorties += 1
         display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
@@ -540,6 +546,7 @@ while True:
                 # Let the Quests module know, if it's enabled
                 if settings['quests_enabled']:
                     quest_item.done_sorties += 1
+                    done_sorties += 1
         if settings['quests_enabled']:
             if not idle:
                 # Expedition or Combat event occured. Loop 'increases'

@@ -206,6 +206,7 @@ class Combat:
                         log_success("Medal obtained!")
                         continue_combat = False
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 sleep(3)
                 if self.combined_fleet:
                     # If combined fleet, click through to the additional post-battle report screen and FCF
@@ -245,6 +246,7 @@ class Combat:
                     return continue_combat
                 # We ran a node, so increase the counter
                 nodes_run += 1
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
@@ -277,13 +279,14 @@ class Combat:
         # Check for compass, formation select, night battle prompt, or post-battle report
         loop_pre_combat_stop = False
         while not loop_pre_combat_stop:
+            sleep_fast()
             # If compass, press it
             if check_and_click(self.kc_region, 'compass.png', expand_areas('compass')):
                 # Rework for new resupply screen
                 self.kc_region.click(self.kc_region.getLastMatch())
                 # Now check for formation select, night battle prompt, or post-battle report
                 log_msg("Spinning compass!")
-                rejigger_mouse(self.kc_region, 50, 350, 0, 150)
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 # Restart this loop in case there's another compass coming up
                 sleep(3)
                 self.loop_pre_combat(nodes_run)
@@ -306,7 +309,7 @@ class Combat:
                 sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
-                rejigger_mouse(self.kc_region, 50, 750, 0, 150)
+                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
@@ -352,7 +355,7 @@ class Combat:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks != 0:
-            log_msg("Attempting to conduct repairs on %d ships!" % self.count_damage_above_limit('repair'))
+            log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
             while empty_docks > 0 and repair_queue > 0:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
@@ -463,7 +466,7 @@ class Combat:
                                 # We're not seeing any more submarines in the shiplist...
                                 log_warning("No more submarines!")
                                 return False
-                        if self.kc_region.exists('fleetcomp_shiplist_submarine_available.png'):
+                        if self.kc_region.exists(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                             log_msg("We are seeing available submarines!")
                             for sub in self.kc_region.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                                 self.kc_region.click(sub)
@@ -547,9 +550,10 @@ class PvP:
         wait_and_click(self.kc_region, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_region, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
-        rejigger_mouse(self.kc_region, 50, 350, 0, 180)
+        rejigger_mouse(self.kc_region, 50, 350, 0, 100)
+        sleep_fast()
         wait_and_click(global_regions['formations'], 'formation_line_ahead.png', 30)
-        rejigger_mouse(self.kc_region, 50, 750, 0, 180)
+        rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         while not (global_regions['next'].exists('next.png')
             or self.kc_region.exists('combat_nb_fight.png')):
             pass
