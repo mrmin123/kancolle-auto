@@ -278,11 +278,11 @@ def display_timers():
             else:
                 if expedition.end_time < temp_time:
                     temp_time = expedition.end_time
-        log_success("Next expedition action at %s (~%s expeditions conducted)" % (temp_time.strftime("%Y-%m-%d %H:%M:%S"), done_expeditions))
+        log_success("Next expedition at %s (~%s expeditions conducted)" % (temp_time.strftime("%Y-%m-%d %H:%M:%S"), done_expeditions))
     if settings['combat_enabled']:
-        log_success("Next combat action at %s (~%s sorties conducted)" % (combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"), done_sorties))
+        log_success("Next sortie at %s (~%s sorties conducted)" % (combat_item.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"), done_sorties))
     if settings['pvp_enabled']:
-        log_success("Next PvP action at %s (~%s PvPs conducted)" % (next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"), done_pvp))
+        log_success("Next PvP at %s (~%s PvPs conducted)" % (next_pvp_time.strftime("%Y-%m-%d %H:%M:%S"), done_pvp))
     if settings['scheduled_sleep_enabled']:
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
