@@ -228,11 +228,16 @@ class Combat:
                 # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
                 if not self.kc_region.exists('combat_retreat.png'):
                     sleep(3)
-                    if not (self.kc_region.exists('menu_main_sortie.png') or self.kc_region.exists('combat_flagship_dmg.png')):
-                        wait_and_click(global_regions['next'], 'next_alt.png', 20, expand_areas('next'))
-                        sleep(5)
+                    # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
+                    # click through reward(s)
+                    while not (self.kc_region.exists('menu_main_sortie.png')
+                        or self.kc_region.exists('combat_flagship_dmg.png')
+                        or self.kc_region.exists('combat_retreat.png')):
                         if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
-                            sleep(3)
+                            sleep(1)
+                        if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
+                            sleep(1)
+                # Check to see if we're at the flagship retreat screen
                 if check_and_click(self.kc_region, 'combat_flagship_dmg.png'):
                     sleep(3)
                 rejigger_mouse(self.kc_region, 370, 770, 100, 400)
