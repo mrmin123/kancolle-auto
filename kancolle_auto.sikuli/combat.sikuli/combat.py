@@ -267,6 +267,7 @@ class Combat:
                     sortie_underway = False
                     return continue_combat
                 sleep(3)
+                log_msg("Continuing on to next node...")
                 wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
         else:
             if self.kc_region.exists('combat_nogo_repair.png'):

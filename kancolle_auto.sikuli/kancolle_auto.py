@@ -132,7 +132,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_flag = 'fleet_%d.png' % (fleet_id + 1)
                     fleet_flag_selected = 'fleet_%ds.png' % (fleet_id + 1)
-                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).exact()):
+                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.95)):
                         global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
                         sleep_fast()
                 check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
@@ -347,6 +347,12 @@ def get_config():
         if '' in settings['node_selects']:
             settings['node_selects'].remove('')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
+        # Check that supplied formations are valid
+        for formation in settings['formations']:
+            if formation not in ['formation_diamond', 'formation_double_line', 'formation_echelon', 'formation_line_abreast', 'formation_line_ahead',
+                'formation_combinedfleet_1', 'formation_combinedfleet_2', 'formation_combinedfleet_3', 'formation_combinedfleet_4']:
+                log_error("%s is not a valid formation! Please check your config file." % formation)
+                exit()
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
