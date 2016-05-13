@@ -351,7 +351,7 @@ def get_config():
         for formation in settings['formations']:
             if formation not in ['formation_diamond', 'formation_double_line', 'formation_echelon', 'formation_line_abreast', 'formation_line_ahead',
                 'formation_combinedfleet_1', 'formation_combinedfleet_2', 'formation_combinedfleet_3', 'formation_combinedfleet_4']:
-                log_error("%s is not a valid formation! Please check your config file." % formation)
+                log_error("'%s' is not a valid formation! Please check your config file." % formation)
                 exit()
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
