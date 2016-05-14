@@ -132,7 +132,7 @@ def resupply():
                 if fleet_id != 0:
                     fleet_flag = 'fleet_%d.png' % (fleet_id + 1)
                     fleet_flag_selected = 'fleet_%ds.png' % (fleet_id + 1)
-                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).exact()):
+                    while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.95)):
                         global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
                         sleep_fast()
                 check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
@@ -342,13 +342,23 @@ def get_config():
             settings['expedition_id_fleet_map'].pop(2, None)
             # Disable PvP if combined fleet is enabled
             settings['pvp_enabled'] = False
+            settings_check_valid_formations = ['formation_combinedfleet_1', 'formation_combinedfleet_2', 'formation_combinedfleet_3', 'formation_combinedfleet_4']
+            settings_check_filler_formation = 'formation_combinedfleet_4'
+        else:
+            settings_check_valid_formations = ['formation_diamond', 'formation_double_line', 'formation_echelon', 'formation_line_abreast', 'formation_line_ahead']
+            settings_check_filler_formation = 'line_ahead'
         settings['nodes'] = config.getint('Combat', 'Nodes')
         settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
         if '' in settings['node_selects']:
             settings['node_selects'].remove('')
         settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
+        # Check that supplied formations are valid
+        for formation in settings['formations']:
+            if formation not in settings_check_valid_formations:
+                log_error("'%s' is not a valid formation! Please check your config file." % formation)
+                exit()
         if len(settings['formations']) < settings['nodes']:
-            settings['formations'].extend(['line_ahead'] * (settings['nodes'] - len(settings['formations'])))
+            settings['formations'].extend([settings_check_filler_formation] * (settings['nodes'] - len(settings['formations'])))
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
         if len(settings['night_battles']) < settings['nodes']:
             settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
