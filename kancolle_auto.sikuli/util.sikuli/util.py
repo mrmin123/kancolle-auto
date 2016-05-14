@@ -394,7 +394,7 @@ def rnavigation(kc_region, destination, max=0):
     while final_target != '':
         # In while loop so that if the button has to be pressed again for some
         # reason, it'll do it. Only works for certain destinations.
-        wait_and_click(kc_region, final_target)
+        wait_and_click(kc_region, final_target, 5)
         sleep(2)
         # Always reset mouse after reaching destination
         rejigger_mouse(kc_region, 50, 500, 0, 100)
