@@ -469,7 +469,7 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
         kc_region.wait(pattern_generator(kc_region, pic, expand), time)
     else:
         kc_region.wait(pattern_generator(kc_region, pic, expand))
-    kc_region.click(kc_region.getLastMatch())
+    kc_region.click(pattern_generator(kc_region, pic, expand))
 
 def pattern_generator(kc_region, pic, expand=[], mod=''):
     """
