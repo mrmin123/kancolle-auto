@@ -309,7 +309,7 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             # If formation select, select formation based on user config
-            elif check_and_click(global_regions['formations'], Pattern('formation_%s.png' % self.formations[nodes_run]).similar(0.95)):
+            elif check_and_click(global_regions['formation_' % self.formations[nodes_run]], 'formation_%s.png' % self.formations[nodes_run]):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
                 sleep(5)
@@ -558,7 +558,7 @@ class PvP:
         log_msg("Sortieing against PvP opponent!")
         rejigger_mouse(self.kc_region, 50, 350, 0, 100)
         sleep(3)
-        wait_and_click(global_regions['formations'], 'formation_line_ahead.png', 30)
+        wait_and_click(global_regions['formation_line_ahead'], 'formation_line_ahead.png', 30)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         while not (global_regions['next'].exists('next.png')
             or self.kc_region.exists('combat_nb_fight.png')):
