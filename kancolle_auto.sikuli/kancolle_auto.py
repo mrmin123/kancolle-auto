@@ -106,8 +106,8 @@ def check_expedition():
                     break
         # Let the Quests module know, if it's enabled
         if settings['quests_enabled'] == True:
-            done_expeditions += 1
             quest_item.done_expeditions += 1
+        done_expeditions += 1
         while not global_regions['game'].exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
@@ -495,7 +495,7 @@ def init():
             # Let the Quests module know, if it's enabled
             if settings['quests_enabled']:
                 quest_item.done_sorties += 1
-                done_sorties += 1
+            done_sorties += 1
         display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
@@ -558,7 +558,7 @@ while True:
                 # Let the Quests module know, if it's enabled
                 if settings['quests_enabled']:
                     quest_item.done_sorties += 1
-                    done_sorties += 1
+                done_sorties += 1
         if settings['quests_enabled']:
             if not idle:
                 # Expedition or Combat event occured. Loop 'increases'
