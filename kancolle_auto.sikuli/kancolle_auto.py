@@ -76,7 +76,7 @@ def go_home(refresh=False):
             resupply()
         elif refresh:
             # We're at home, but if we're due for a refresh, refresh
-            rnavigation(global_regions['game'], 'refresh_home')
+            rnavigation(global_regions['game'], 'refresh_home', 0)
             # Check for completed expeditions. Resupply them if there are.
             if check_expedition():
                 resupply()
@@ -203,7 +203,7 @@ def sortie_action():
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
-    rnavigation(global_regions['game'], 'refresh_home', 0)
+    go_home(True)
     rnavigation(global_regions['game'], 'combat', 2)
     if combat_item.go_sortie():
         fleet_needs_resupply[0] = True

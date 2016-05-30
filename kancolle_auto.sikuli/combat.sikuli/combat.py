@@ -304,6 +304,7 @@ class Combat:
                 for node in self.node_selects:
                     check_and_click(self.kc_region, Pattern('%s.png' % node), expand_areas('node_select'))
                 # Assume that the node was selected...
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(3)
                 self.loop_pre_combat(nodes_run)
                 loop_pre_combat_stop = True
@@ -315,7 +316,7 @@ class Combat:
                 sleep(5)
                 mouseDown(Button.LEFT) # In case of boss monologue
                 mouseUp()
-                rejigger_mouse(self.kc_region, 50, 750, 0, 100)
+                rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
