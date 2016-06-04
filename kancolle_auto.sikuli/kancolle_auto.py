@@ -199,13 +199,14 @@ def pvp_action():
 
 # Actions involved in conducting sorties
 def sortie_action():
-    global fleet_needs_resupply, combat_item, settings
+    global fleet_needs_resupply, combat_item, quest_item, done_sorties, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
     rnavigation(global_regions['game'], 'combat', 2)
-    if combat_item.go_sortie():
+    combat_results = combat_item.go_sortie()
+    if combat_results[0]:
         fleet_needs_resupply[0] = True
         if settings['combined_fleet']:
             fleet_needs_resupply[1] = True
@@ -222,6 +223,11 @@ def sortie_action():
         go_home()
         settings['combat_enabled'] = False
         log_success("Medal obtained! Stopping combat module!")
+    if combat_results[1]:
+        # If the sortie was actually conducted, let the Quests module know, if it's enabled
+        if settings['quests_enabled']:
+            quest_item.done_sorties += 1
+        done_sorties += 1
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
@@ -431,7 +437,7 @@ def refresh_kancolle(e):
         raise
 
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, done_sorties, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -492,10 +498,6 @@ def init():
                 quest_action('sortie', True)
             # Run sortie defined in combat item
             sortie_action()
-            # Let the Quests module know, if it's enabled
-            if settings['quests_enabled']:
-                quest_item.done_sorties += 1
-            done_sorties += 1
         display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
@@ -555,10 +557,6 @@ while True:
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()
-                # Let the Quests module know, if it's enabled
-                if settings['quests_enabled']:
-                    quest_item.done_sorties += 1
-                done_sorties += 1
         if settings['quests_enabled']:
             if not idle:
                 # Expedition or Combat event occured. Loop 'increases'
