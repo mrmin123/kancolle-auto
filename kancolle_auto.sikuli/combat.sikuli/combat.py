@@ -289,9 +289,6 @@ class Combat:
             sleep_fast()
             # If compass, press it
             if check_and_click(self.kc_region, 'compass.png', expand_areas('compass')):
-                # Rework for new resupply screen
-                self.kc_region.click(self.kc_region.getLastMatch())
-                # Now check for formation select, night battle prompt, or post-battle report
                 log_msg("Spinning compass!")
                 rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 # Restart this loop in case there's another compass coming up
