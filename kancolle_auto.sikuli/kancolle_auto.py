@@ -429,8 +429,13 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart
-        wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
+        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
+            sleep(2)
+        check_and_click(kc_window, 'game_start.png')
         last_refresh = datetime.datetime.now()
+        sleep(2)
+        # Re-initialize kancolle-auto post-catbomb
+        init()
     else:
         log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
         print e
