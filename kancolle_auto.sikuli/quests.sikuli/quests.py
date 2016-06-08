@@ -98,14 +98,14 @@ class Quests:
             page_backtrack = None
             disable = 'c'
             toggled_quests = list(self.activated_sortie_quests)
-            temp_quests_checklist_queue = self.sortie_quests_checklist_queue
+            temp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'c']
         elif mode == 'pvp':
             # Enable PvP quests, disable Sortie quests
             page_continue = 'quests_next_page.png'
             page_backtrack = 'quests_prev_page.png'
             disable = 'b'
             toggled_quests = list(self.activated_pvp_quests)
-            temp_quests_checklist_queue = self.pvp_quests_checklist_queue
+            temp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'b']
         while start_check:
             toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
