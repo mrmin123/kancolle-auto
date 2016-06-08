@@ -257,25 +257,26 @@ class Combat:
                 # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
-                if nodes_run >= self.nodes:
-                    if self.last_node_push:
-                        # Unless the PushLastNode flag is set, then push!
-                        log_warning("Pushing to next node...")
-                        wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
-                        wait_and_click(self.kc_region, 'next_alt.png', 30)
-                    else:
-                        log_msg("Ran the required number of nodes. Falling back!")
-                        wait_and_click(self.kc_region, 'combat_retreat.png', 30)
+                if nodes_run >= self.nodes and not self.last_node_push:
+                    log_msg("Ran the required number of nodes. Falling back!")
+                    wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                     sortie_underway = False
                     return (continue_combat, True)
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
-                    log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
-                    wait_and_click(self.kc_region, 'combat_retreat.png', 30)
-                    sortie_underway = False
-                    return (continue_combat, True)
+                    if self.last_node_push:
+                        # Unless the PushLastNode flag is set, then push!
+                        pass
+                    else:
+                        log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
+                        wait_and_click(self.kc_region, 'combat_retreat.png', 30)
+                        sortie_underway = False
+                        return (continue_combat, True)
                 sleep(3)
-                log_msg("Continuing on to next node...")
+                if nodes_run >= self.nodes and self.last_node_push:
+                    log_warning("Push to next node!")
+                else:
+                    log_msg("Continuing on to next node...")
                 wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
         else:
             if self.kc_region.exists('combat_nogo_repair.png'):
@@ -315,7 +316,7 @@ class Combat:
                 loop_pre_combat_stop = True
                 break
             # If formation select, select formation based on user config
-            elif check_and_click(global_regions['formation_%s' % self.formations[nodes_run]], 'formation_%s.png' % self.formations[nodes_run]):
+            elif nodes_run <= len(self.formations) and check_and_click(global_regions['formation_%s' % self.formations[nodes_run]], 'formation_%s.png' % self.formations[nodes_run]):
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
                 sleep(5)
