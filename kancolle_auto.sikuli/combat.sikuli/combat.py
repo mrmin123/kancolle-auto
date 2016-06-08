@@ -257,26 +257,24 @@ class Combat:
                 # Set next sortie time to soon in case we have no failures or additional nodes
                 self.next_sortie_time_set(0, 0, 2)
                 # If required number of nodes have been run, fall back
-                if nodes_run >= self.nodes and not self.last_node_push:
+                if nodes_run >= self.nodes:
+                    if self.last_node_push:
+                        log_warning("Pushing to next node...")
+                        wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
+                        wait_and_click(self.kc_region, 'next_alt.png', 30)
+                    else:
                     log_msg("Ran the required number of nodes. Falling back!")
                     wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                     sortie_underway = False
                     return (continue_combat, True)
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
-                    if nodes_run >= self.nodes and self.last_node_push:
-                        # UNLESS the LastNodePush flag is set
-                        pass
-                    else:
-                        log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
-                        wait_and_click(self.kc_region, 'combat_retreat.png', 30)
-                        sortie_underway = False
-                        return (continue_combat, True)
+                    log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
+                    wait_and_click(self.kc_region, 'combat_retreat.png', 30)
+                    sortie_underway = False
+                    return (continue_combat, True)
                 sleep(3)
-                if nodes_run >= self.nodes and self.last_node_push:
-                    log_warning("Pushing to next node...")
-                else:
-                    log_msg("Continuing on to next node...")
+                log_msg("Continuing on to next node...")
                 wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
         else:
             if self.kc_region.exists('combat_nogo_repair.png'):
