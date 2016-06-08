@@ -374,6 +374,7 @@ def get_config():
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')
+        settings['last_node_push'] = config.getboolean('Combat', 'LastNodePush')
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
