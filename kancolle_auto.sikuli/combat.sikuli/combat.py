@@ -574,7 +574,7 @@ class PvP:
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
             pass
         sleep(2)
-        while not kc_region.exists('menu_main_sortie.png'):
+        while not self.kc_region.exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             sleep_fast()
         log_msg("PvP complete!")
