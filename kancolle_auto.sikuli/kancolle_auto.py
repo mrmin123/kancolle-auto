@@ -158,7 +158,7 @@ def expedition_action_wrapper():
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
-    global fleet_needs_resupply, expedition_item, settings
+    global kc_window, fleet_needs_resupply, expedition_item, settings
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -171,6 +171,9 @@ def expedition_action(fleet_id):
             resupply()
             expedition_item.go_expedition()
         fleet_needs_resupply[expedition.fleet_id - 1] = False
+        sleep(2)
+        if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+            refresh_kancolle('Post-expedition crash')
 
 # Actions involved in conducting PvPs
 def pvp_action():
