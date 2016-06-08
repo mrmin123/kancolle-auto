@@ -259,12 +259,13 @@ class Combat:
                 # If required number of nodes have been run, fall back
                 if nodes_run >= self.nodes:
                     if self.last_node_push:
+                        # Unless the PushLastNode flag is set, then push!
                         log_warning("Pushing to next node...")
                         wait_and_click(self.kc_region, 'combat_nextnode.png', 30)
                         wait_and_click(self.kc_region, 'next_alt.png', 30)
                     else:
-                    log_msg("Ran the required number of nodes. Falling back!")
-                    wait_and_click(self.kc_region, 'combat_retreat.png', 30)
+                        log_msg("Ran the required number of nodes. Falling back!")
+                        wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                     sortie_underway = False
                     return (continue_combat, True)
                 # If fleet is damaged, fall back
