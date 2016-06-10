@@ -158,7 +158,7 @@ def expedition_action_wrapper():
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
-    global fleet_needs_resupply, expedition_item, settings
+    global kc_window, fleet_needs_resupply, expedition_item, settings
     for expedition in expedition_item.expedition_list:
         if fleet_id == 'all':
             pass
@@ -171,6 +171,9 @@ def expedition_action(fleet_id):
             resupply()
             expedition_item.go_expedition()
         fleet_needs_resupply[expedition.fleet_id - 1] = False
+        sleep(2)
+        if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+            refresh_kancolle('Post-expedition crash')
 
 # Actions involved in conducting PvPs
 def pvp_action():
@@ -199,13 +202,14 @@ def pvp_action():
 
 # Actions involved in conducting sorties
 def sortie_action():
-    global fleet_needs_resupply, combat_item, settings
+    global fleet_needs_resupply, combat_item, quest_item, done_sorties, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
     rnavigation(global_regions['game'], 'combat', 2)
-    if combat_item.go_sortie():
+    combat_results = combat_item.go_sortie()
+    if combat_results[0]:
         fleet_needs_resupply[0] = True
         if settings['combined_fleet']:
             fleet_needs_resupply[1] = True
@@ -222,6 +226,11 @@ def sortie_action():
         go_home()
         settings['combat_enabled'] = False
         log_success("Medal obtained! Stopping combat module!")
+    if combat_results[1]:
+        # If the sortie was actually conducted, let the Quests module know, if it's enabled
+        if settings['quests_enabled']:
+            quest_item.done_sorties += 1
+        done_sorties += 1
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
@@ -368,6 +377,7 @@ def get_config():
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')
+        settings['last_node_push'] = config.getboolean('Combat', 'LastNodePush')
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
@@ -423,15 +433,20 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart
-        wait_and_click(kc_window, Pattern('game_start.png').exact(), WAITLONG)
+        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
+            sleep(2)
+        check_and_click(kc_window, 'game_start.png')
         last_refresh = datetime.datetime.now()
+        sleep(2)
+        # Re-initialize kancolle-auto post-catbomb
+        init()
     else:
         log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
         print e
         raise
 
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, done_sorties, settings
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
     get_config()
     get_util_config()
     log_success("Starting kancolle_auto")
@@ -492,10 +507,6 @@ def init():
                 quest_action('sortie', True)
             # Run sortie defined in combat item
             sortie_action()
-            # Let the Quests module know, if it's enabled
-            if settings['quests_enabled']:
-                quest_item.done_sorties += 1
-            done_sorties += 1
         display_timers()
     except FindFailed, e:
         refresh_kancolle(e)
@@ -555,10 +566,6 @@ while True:
             if datetime.datetime.now() > combat_item.next_sortie_time:
                 idle = False
                 sortie_action()
-                # Let the Quests module know, if it's enabled
-                if settings['quests_enabled']:
-                    quest_item.done_sorties += 1
-                done_sorties += 1
         if settings['quests_enabled']:
             if not idle:
                 # Expedition or Combat event occured. Loop 'increases'
