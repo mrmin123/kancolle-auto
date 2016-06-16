@@ -28,7 +28,6 @@ kc_window = None
 next_sleep_time = None
 next_pvp_time = None
 idle = False
-last_refresh = ''
 done_expeditions = 0
 done_sorties = 0
 done_pvp = 0
@@ -393,13 +392,8 @@ def get_config():
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment
 def refresh_kancolle(e):
-    global kc_window, last_refresh, settings
+    global kc_window, settings
     if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
-        if last_refresh != '':
-            if last_refresh + datetime.timedelta(minutes=20) > datetime.datetime.now():
-                log_error("Last catbomb and refresh was a very short time ago! Exiting script to not spam!")
-                print e
-                raise
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
             # Assumes that 'F5' is a valid keyboard shortcut for refreshing
@@ -433,10 +427,12 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart
+        sleep(3)
+        rejigger_mouse(kc_window, 370, 770, 10, 200)
+        sleep(3)
         while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
-            sleep(2)
+            sleep(1)
         check_and_click(kc_window, 'game_start.png')
-        last_refresh = datetime.datetime.now()
         sleep(2)
         # Re-initialize kancolle-auto post-catbomb
         init()
