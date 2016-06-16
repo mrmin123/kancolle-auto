@@ -427,8 +427,11 @@ def refresh_kancolle(e):
             sleep(1)
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart
+        sleep(3)
+        rejigger_mouse(kc_window, 370, 770, 10, 200)
+        sleep(3)
         while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
-            sleep(2)
+            sleep(1)
         check_and_click(kc_window, 'game_start.png')
         sleep(2)
         # Re-initialize kancolle-auto post-catbomb
