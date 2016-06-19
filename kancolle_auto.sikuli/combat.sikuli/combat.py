@@ -453,6 +453,7 @@ class Combat:
                 if self.kc_region.exists(Pattern('fleetcomp_ship_stats_submarine.png').exact()):
                     log_msg("Ship under repair is a submarine!")
                     # If the ship is a sub, back out of stats screen and go to ship switch list
+                    sleep(2)
                     check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                     target_region.click('fleetcomp_ship_switch_button.png')
