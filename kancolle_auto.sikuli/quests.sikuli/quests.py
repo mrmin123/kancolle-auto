@@ -132,6 +132,9 @@ class Quests:
                         bauxite = check_number(quest_check_area, 'icon_bauxite.png', 'r', 33, 1)
                         quest_reward = (fuel, ammo, steel, bauxite)
                         for quest in [q for q in toggled_quests if q[0] == quest_type]:
+                            print "checking against" % quest
+                            print self.quest(tree).find(quest).rewards
+                            print quest_reward
                             if self.quest_tree.find(quest).rewards == quest_reward:
                                 log_msg("Found quest %s!" % quest)
                                 if quest_check_area.exists('quest_in_progress.png'):
