@@ -133,7 +133,7 @@ class Quests:
                         quest_reward = (fuel, ammo, steel, bauxite)
                         for quest in [q for q in toggled_quests if q[0] == quest_type]:
                             print "checking against %s" % quest
-                            print self.quest(tree).find(quest).rewards
+                            print self.quest_tree.find(quest).rewards
                             print quest_reward
                             if self.quest_tree.find(quest).rewards == quest_reward:
                                 log_msg("Found quest %s!" % quest)
@@ -149,25 +149,25 @@ class Quests:
                                         continue
                                     else:
                                         self.active_quests += 1
-                            # If we got this far, quest is activated. Remove activated quest from queue and
-                            # add children to temp queue
-                            temp_list.extend(self.quest_tree.get_children_ids(quest))
-                            started_quests.append(quest)
-                            waits = self.quest_tree.find(quest).wait
-                            if waits[0] > 0:
-                                self.schedule_sorties.append(self.done_sorties + waits[0])
-                            if waits[1] > 0:
-                                self.schedule_pvp.append(self.done_pvp + waits[1])
-                            if waits[2] > 0:
-                                self.schedule_expeditions.append(self.done_expeditions + waits[2])
-                            if quest[0] == 'b':
-                                self.activated_sortie_quests.append(quest)
-                                self.activated_sortie_quests = list(set(self.activated_sortie_quests))
-                            elif quest[0] == 'c':
-                                self.activated_pvp_quests.append(quest)
-                                self.activated_pvp_quests = list(set(self.activated_pvp_quests))
-                                break
-                            waits = self.quest_tree.find(quest).wait
+                                # If we got this far, quest is activated. Remove activated quest from queue and
+                                # add children to temp queue
+                                temp_list.extend(self.quest_tree.get_children_ids(quest))
+                                started_quests.append(quest)
+                                waits = self.quest_tree.find(quest).wait
+                                if waits[0] > 0:
+                                    self.schedule_sorties.append(self.done_sorties + waits[0])
+                                if waits[1] > 0:
+                                    self.schedule_pvp.append(self.done_pvp + waits[1])
+                                if waits[2] > 0:
+                                    self.schedule_expeditions.append(self.done_expeditions + waits[2])
+                                if quest[0] == 'b':
+                                    self.activated_sortie_quests.append(quest)
+                                    self.activated_sortie_quests = list(set(self.activated_sortie_quests))
+                                elif quest[0] == 'c':
+                                    self.activated_pvp_quests.append(quest)
+                                    self.activated_pvp_quests = list(set(self.activated_pvp_quests))
+                                    break
+                                waits = self.quest_tree.find(quest).wait
             if skip_page:
                 if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     checking_quests = False
