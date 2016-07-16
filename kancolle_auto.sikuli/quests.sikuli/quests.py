@@ -136,7 +136,6 @@ class Quests:
                                 log_msg("Found quest %s!" % quest)
                                 if quest_check_area.exists('quest_in_progress.png'):
                                     log_msg("Quest %s already active!" % quest)
-                                    self.active_quests += 1
                                 else:
                                     log_msg("Attempting to start quest %s!" % quest)
                                     self.kc_region.click(quest_check_area.nearby(-7))
