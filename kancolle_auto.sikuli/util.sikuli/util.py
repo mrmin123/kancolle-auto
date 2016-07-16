@@ -44,13 +44,13 @@ def sleep(base, flex=-1):
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
-def check_ocr(kc_region, timer_ref, dir, width):
+def check_ocr(kc_region, text_ref, dir, width):
     """
     Helper function for doing the actual OCR in check_timer and check_number.
     Returns the text it's found, after some basic character fixes/replacements.
 
     kc_region - Sikuli region
-    timer_ref - image name (str) or reference Match object (returned by findAll, for example)
+    text_ref - image name (str) or reference Match object (returned by findAll, for example)
     dir - 'l' or 'r'; direction to search for text
     width - positive int; width (in pixels) of area where the timer text should be
     """
@@ -113,14 +113,14 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
-def check_number(kc_region, timer_ref, dir, width, attempt_limit=0):
+def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing numbers from the kancolle-auto screen.
     Attempts to fix erroneous OCR reads and repeats readings until a valid
     number is returned. Returns found number value.
 
     kc_region - Sikuli region
-    timer_ref - image name (str) or reference Match object (returned by findAll, for example)
+    number_ref - image name (str) or reference Match object (returned by findAll, for example)
     dir - 'l' or 'r'; direction to search for text
     width - positive int; width (in pixels) of area where the timer text should be
     attempt_limit = how many times the OCR reads should repeat before failing
@@ -129,7 +129,7 @@ def check_number(kc_region, timer_ref, dir, width, attempt_limit=0):
     attempt = 0
     while ocr_matching:
         attempt += 1
-        number = check_ocr(kc_region, timer_ref, dir, width)
+        number = check_ocr(kc_region, number_ref, dir, width)
         m = match(r'^\d+$', number)
         if m:
             # OCR reading checks out; return number reading
