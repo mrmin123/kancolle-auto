@@ -56,7 +56,10 @@ def check_ocr(kc_region, text_ref, dir, width):
     """
     if isinstance(text_ref, str):
         if dir == 'r':
+            print kc_region
+            print kc_region.find(text_ref).right(width)
             text = kc_region.find(text_ref).right(width).text().encode('utf-8')
+            print text
         elif dir == 'l':
             text = kc_region.find(text_ref).left(width).text().encode('utf-8')
     elif isinstance(text_ref, Match):
@@ -132,13 +135,13 @@ def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
         number = check_ocr(kc_region, number_ref, dir, width)
         m = match(r'^\d+$', number)
         if m:
-            # OCR reading checks out; return number reading
+            # OCR reading checks out; return number
             ocr_matching = False
-            return number
+            return int(number)
         # If we got this far, the number reading is invalid.
-        # If an attempt_limit is set and met, raise a failstate
-            if attempt_limit != 0 and attempt == attempt_limit:
-                raise FindFailed('OCR in check_number() failed')
+        # If an attempt_limit is set and met, return 0
+        if attempt_limit != 0 and attempt == attempt_limit:
+            return 0
         # Otherwise, try again!
         log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
