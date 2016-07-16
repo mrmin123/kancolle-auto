@@ -44,6 +44,36 @@ def sleep(base, flex=-1):
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
+def check_ocr(kc_region, timer_ref, dir, width):
+    """
+    Helper function for doing the actual OCR in check_timer and check_number.
+    Returns the text it's found, after some basic character fixes/replacements.
+
+    kc_region - Sikuli region
+    timer_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for text
+    width - positive int; width (in pixels) of area where the timer text should be
+    """
+    if isinstance(text_ref, str):
+        if dir == 'r':
+            text = kc_region.find(text_ref).right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.find(text_ref).left(width).text().encode('utf-8')
+    elif isinstance(text_ref, Match):
+        if dir == 'r':
+            text = kc_region.text_ref.right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.text_ref.left(width).text().encode('utf-8')
+    # Replace characters
+    text = (
+        text.replace('O', '0').replace('o', '0').replace('D', '0')
+        .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+        .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+        .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+        .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
+    )
+    return text
+
 def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
@@ -61,24 +91,7 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     attempt = 0
     while ocr_matching:
         attempt += 1
-        if isinstance(timer_ref, str):
-            if dir == 'r':
-                timer = find(timer_ref).right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = find(timer_ref).left(width).text().encode('utf-8')
-        elif isinstance(timer_ref, Match):
-            if dir == 'r':
-                timer = timer_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = timer_ref.left(width).text().encode('utf-8')
-        # Replace characters
-        timer = (
-            timer.replace('O', '0').replace('o', '0').replace('D', '0')
-            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
-        )
+        timer = check_ocr(kc_region, timer_ref, dir, width)
         if len(timer) == 8:
             # Length checks out...
             timer = list(timer)
@@ -101,34 +114,31 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
         sleep(1)
 
 def check_number(kc_region, timer_ref, dir, width, attempt_limit=0):
+    """
+    Function for grabbing numbers from the kancolle-auto screen.
+    Attempts to fix erroneous OCR reads and repeats readings until a valid
+    number is returned. Returns found number value.
+
+    kc_region - Sikuli region
+    timer_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for text
+    width - positive int; width (in pixels) of area where the timer text should be
+    attempt_limit = how many times the OCR reads should repeat before failing
+    """
     ocr_matching = True
     attempt = 0
     while ocr_matching:
         attempt += 1
-        if isinstance(timer_ref, str):
-            if dir == 'r':
-                number = kc_region.find(timer_ref).right(width).text().encode('utf-8')
-            elif dir == 'l':
-                number = kc_region.find(timer_ref).left(width).text().encode('utf-8')
-        elif isinstance(timer_ref, Match):
-            if dir == 'r':
-                number = kc_region.timer_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
-                number = kc_region.timer_ref.left(width).text().encode('utf-8')
-        # Replace characters
-        number = (
-            timer.replace('O', '0').replace('o', '0').replace('D', '0')
-            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
-        )
+        number = check_ocr(kc_region, timer_ref, dir, width)
         m = match(r'^\d+$', number)
         if m:
-            # OCR reading checks out; return timer reading
+            # OCR reading checks out; return number reading
             ocr_matching = False
-            log_msg("Got valid number (%s)!" % number)
             return timer
+        # If we got this far, the number reading is invalid.
+        # If an attempt_limit is set and met, raise a failstate
+            if attempt_limit != 0 and attempt == attempt_limit:
+                raise FindFailed('OCR in check_number() failed')
         # Otherwise, try again!
         log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
