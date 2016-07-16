@@ -122,15 +122,33 @@ class Quests:
             removed_filtered = self.filter_quests(disable)
             self.active_quests = self.active_quests - removed_finished - removed_filtered
             for quest_type in quest_types:
-                if global_regions['quest_category'].exists(quest_type + '.png'):
-                    skip_page = False
-                    break
+                if global_regions['game'].exists(quest_type + '.png'):
+                    for quest in global_regions['game'].findAll(quest_type + '.png'):
+                        print quest
+                        quest_check_area = quest.nearby(7).right(580)
+                        print quest_check_area
+                        fuel = check_number(quest_check_area, 'icon_fuel.png', 'r', 33)
+                        ammo = check_number(quest_check_area, 'icon_ammo.png', 'r', 33)
+                        steel = check_number(quest_check_area, 'icon_steel.png', 'r', 33)
+                        bauxite = check_number(quest_check_area, 'icon_bauxite.png', 'r', 33)
+                        quest_reward = [fuel, ammo, steel, bauxite]
+                        print quest_reward
+
+
+
+
+
+                        skip_page = False
             if skip_page:
                 if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     start_check = False
                     break
                 else:
                     continue
+
+
+
+            """
             for quest in toggled_quests:
                 if self.kc_region.exists(Pattern(quest + '.png').similar(0.999)):
                     quest_check_area = self.kc_region.getLastMatch().below(1).above(60).right(255)
@@ -166,6 +184,7 @@ class Quests:
             temp_quests_checklist_queue = list(set(temp_quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 start_check = False
+        """
         if mode == 'sortie':
             if len(self.sortie_quests_checklist_queue) == self.sortie_quests_checklist_count:
                 self.sortie_quests_checklist_queue = temp_list

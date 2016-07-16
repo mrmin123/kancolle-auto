@@ -100,6 +100,39 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
+def check_number(kc_region, timer_ref, dir, width, attempt_limit=0):
+    ocr_matching = True
+    attempt = 0
+    while ocr_matching:
+        attempt += 1
+        if isinstance(timer_ref, str):
+            if dir == 'r':
+                number = kc_region.find(timer_ref).right(width).text().encode('utf-8')
+            elif dir == 'l':
+                number = kc_region.find(timer_ref).left(width).text().encode('utf-8')
+        elif isinstance(timer_ref, Match):
+            if dir == 'r':
+                number = kc_region.timer_ref.right(width).text().encode('utf-8')
+            elif dir == 'l':
+                number = kc_region.timer_ref.left(width).text().encode('utf-8')
+        # Replace characters
+        number = (
+            timer.replace('O', '0').replace('o', '0').replace('D', '0')
+            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
+        )
+        m = match(r'^\d+$', number)
+        if m:
+            # OCR reading checks out; return timer reading
+            ocr_matching = False
+            log_msg("Got valid number (%s)!" % number)
+            return timer
+        # Otherwise, try again!
+        log_warning("Got invalid number (%s)... trying again!" % number)
+        sleep(1)
+
 def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
     """
     Function for rejiggering the mouse position when required, usually to wake
@@ -142,7 +175,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['formation_combinedfleet_2'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 150, 160, 50)
         global_regions['formation_combinedfleet_3'] = Region(util_settings['game_x'] + 420, util_settings['game_y'] + 280, 160, 50)
         global_regions['formation_combinedfleet_4'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 280, 160, 50)
-        global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
+        #global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
     # Generate random coordinates
