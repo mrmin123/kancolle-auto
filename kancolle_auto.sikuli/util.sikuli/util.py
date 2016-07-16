@@ -121,8 +121,8 @@ def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
 
     kc_region - Sikuli region
     number_ref - image name (str) or reference Match object (returned by findAll, for example)
-    dir - 'l' or 'r'; direction to search for text
-    width - positive int; width (in pixels) of area where the timer text should be
+    dir - 'l' or 'r'; direction to search for number
+    width - positive int; width (in pixels) of area where the number should be
     attempt_limit = how many times the OCR reads should repeat before failing
     """
     ocr_matching = True
@@ -134,7 +134,7 @@ def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
         if m:
             # OCR reading checks out; return number reading
             ocr_matching = False
-            return timer
+            return number
         # If we got this far, the number reading is invalid.
         # If an attempt_limit is set and met, raise a failstate
             if attempt_limit != 0 and attempt == attempt_limit:
