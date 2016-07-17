@@ -123,15 +123,22 @@ class Quests:
             self.active_quests = self.active_quests - removed_finished - removed_filtered
             for quest_type in quest_types:
                 if self.kc_region.exists(quest_type + '.png'):
+                    # Found quest(s) of desired category
                     skip_page = False
                     for quest_bar in self.kc_region.findAll(quest_type + '.png'):
+                        # Loop through all found quests of that desired category; expand the region to fit the entire quest bar
                         quest_check_area = quest_bar.nearby(7).right(580)
+                        if quest_check_area.exists('flag_once.png') or quest_check_area.exists('flag_others.png'):
+                            # If the quest is of the 'Once' or 'Others' category, skip it
+                            continue
+                        # Figure out what the quest's rewards are
                         fuel = check_number(quest_check_area, 'icon_fuel.png', 'r', 33, 1)
                         ammo = check_number(quest_check_area, 'icon_ammo.png', 'r', 33, 1)
                         steel = check_number(quest_check_area, 'icon_steel.png', 'r', 33, 1)
                         bauxite = check_number(quest_check_area, 'icon_bauxite.png', 'r', 33, 1)
                         quest_reward = (fuel, ammo, steel, bauxite)
                         for quest in [q for q in toggled_quests if q[0] == quest_type]:
+                            # Loop through every quest to search for, and compare their rewards with the quest we're looking at now
                             if self.quest_tree.find(quest).rewards == quest_reward:
                                 log_msg("Found quest %s!" % quest)
                                 if quest_check_area.exists('quest_in_progress.png'):
