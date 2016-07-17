@@ -23,6 +23,13 @@ def get_config(settings, sleep_cycle):
         settings['scheduled_sleep_length'] = config.getfloat('ScheduledSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False
+    # 'Scheduled Stop' section
+    if config.getboolean('ScheduledStop', 'Enabled'):
+        settings['scheduled_stop_enabled'] = True
+        settings['scheduled_stop_type'] = config.get('ScheduledStop', 'Type')
+        settings['scheduled_stop_count'] = config.getint('ScheduledStop', 'Count')
+    else:
+        settings['scheduled_stop_enabled'] = False
     # 'Expeditions' section
     if config.getboolean('Expeditions', 'Enabled'):
         settings['expeditions_enabled'] = True
