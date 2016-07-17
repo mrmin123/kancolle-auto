@@ -340,6 +340,9 @@ def init():
             else:
                 # Otherwise, set it for later in the day
                 reset_next_sleep_time()
+        if settings['scheduled_stop_enabled'] and settings['scheduled_stop_mode'] == 'time':
+            # If ScheduledStop is enabled and its mode is 'time', set the stop time on script start
+            settings['scheduled_stop_time'] = datetime.datetime.now() + datetime.timedelta(hours=settings['scheduled_stop_count'])
         if settings['quests_enabled']:
             # Run through quests defined in quests item
             quest_action(default_quest_mode, True)
@@ -368,16 +371,6 @@ def init():
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
 while True:
-    if settings['scheduled_sleep_enabled']:
-        now_time = datetime.datetime.now()
-        if now_time > next_sleep_time:
-            if settings['expeditions_enabled']:
-                expedition_action_wrapper()
-            # If it's time to sleep, set the next sleep start time...
-            reset_next_sleep_time(True)
-            # ... and go to sleep
-            log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
-            sleep(settings['scheduled_sleep_length'] * 3600, 600)
     try:
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
@@ -434,6 +427,39 @@ while True:
         if not idle:
             display_timers()
             idle = True
-        sleep(sleep_cycle)
     except FindFailed, e:
         refresh_kancolle(e)
+    # Check to see if we need to begin scheduled sleep
+    if settings['scheduled_sleep_enabled']:
+        now_time = datetime.datetime.now()
+        if now_time > next_sleep_time:
+            if settings['expeditions_enabled']:
+                expedition_action_wrapper()
+            # If it's time to sleep, set the next sleep start time...
+            reset_next_sleep_time(True)
+            # ... and go to sleep
+            log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
+            sleep(settings['scheduled_sleep_length'] * 3600, 600)
+    # Check to see if we need to do a scheduled stop
+    if settings['scheduled_stop_enabled']:
+        stop_flag = False
+        if settings['scheduled_stop_mode'] == 'time':
+            now_time = datetime.datetime.now()
+            if now_time > settings['scheduled_stop_time']:
+                log_success("kancolle-auto has ran for the desired %s hours! Shutting down now!" % settings['scheduled_stop_count'])
+                stop_flag = True
+        elif settings['scheduled_stop_mode'] == 'expedition':
+            if done_expeditions >= settings['scheduled_stop_count']
+                log_success("kancolle-auto has ran the desired %s expeditions! Shutting down now!" % settings['scheduled_stop_count'])
+                stop_flag = True
+        elif settings['scheduled_stop_mode'] == 'sortie':
+            if done_expeditions >= settings['scheduled_stop_count']
+                log_success("kancolle-auto has ran for the desired %s sorties! Shutting down now!" % settings['scheduled_stop_count'])
+                stop_flag = True
+        elif settings['scheduled_stop_mode'] == 'pvp':
+            if done_expeditions >= settings['scheduled_stop_count']
+                log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
+                stop_flag = True
+        if stop_flag:
+            sys.exit("stopping kancolle-auto")
+    sleep(sleep_cycle)
