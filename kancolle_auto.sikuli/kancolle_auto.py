@@ -370,7 +370,9 @@ def init():
 # initialize kancolle_auto
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
-while True:
+main_loop = True
+start_scheduled_sleep = False
+while main_loop:
     try:
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
@@ -429,17 +431,14 @@ while True:
             idle = True
     except FindFailed, e:
         refresh_kancolle(e)
-    # Check to see if we need to begin scheduled sleep
+    # Check to see if we need to begin scheduled sleep, but don't actually start the
+    # scheduled sleep until after we've checked for scheduled stop
     if settings['scheduled_sleep_enabled']:
         now_time = datetime.datetime.now()
         if now_time > next_sleep_time:
             if settings['expeditions_enabled']:
                 expedition_action_wrapper()
-            # If it's time to sleep, set the next sleep start time...
-            reset_next_sleep_time(True)
-            # ... and go to sleep
-            log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
-            sleep(settings['scheduled_sleep_length'] * 3600, 600)
+            start_scheduled_sleep = True
     # Check to see if we need to do a scheduled stop
     if settings['scheduled_stop_enabled']:
         stop_flag = False
@@ -461,5 +460,15 @@ while True:
                 log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
                 stop_flag = True
         if stop_flag:
-            sys.exit("stopping kancolle-auto")
-    sleep(sleep_cycle)
+            # Turn the main loop off
+            main_loop = False
+    if start_scheduled_sleep:
+        # If it's time to sleep, set the next sleep start time...
+        reset_next_sleep_time(True)
+        # ... and go to sleep
+        log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
+        sleep(settings['scheduled_sleep_length'] * 3600, 600)
+        start_scheduled_sleep = False
+    else:
+        # Otherwise, just sleep for the sleep cycle length
+        sleep(sleep_cycle)
