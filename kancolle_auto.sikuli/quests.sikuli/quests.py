@@ -109,6 +109,7 @@ class Quests:
         while checking_quests:
             toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
+            toggled_quests.sort()
             quest_types = list(set([q[0] for q in toggled_quests]))
             if mode == 'sortie':
                 quest_types.sort()
@@ -137,6 +138,8 @@ class Quests:
                         steel = check_number(quest_check_area, 'icon_steel.png', 'r', 33, 1)
                         bauxite = check_number(quest_check_area, 'icon_bauxite.png', 'r', 33, 1)
                         quest_reward = (fuel, ammo, steel, bauxite)
+                        print quest_reward
+                        print [q for q in toggled_quests if q[0] == quest_type]
                         for quest in [q for q in toggled_quests if q[0] == quest_type]:
                             # Loop through every quest to search for, and compare their rewards with the quest we're looking at now
                             if self.quest_tree.find(quest).rewards == quest_reward:
