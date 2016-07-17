@@ -44,6 +44,36 @@ def sleep(base, flex=-1):
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
 
+def check_ocr(kc_region, text_ref, dir, width):
+    """
+    Helper function for doing the actual OCR in check_timer and check_number.
+    Returns the text it's found, after some basic character fixes/replacements.
+
+    kc_region - Sikuli region
+    text_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for text
+    width - positive int; width (in pixels) of area where the timer text should be
+    """
+    if isinstance(text_ref, str):
+        if dir == 'r':
+            text = kc_region.find(text_ref).right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.find(text_ref).left(width).text().encode('utf-8')
+    elif isinstance(text_ref, Match):
+        if dir == 'r':
+            text = kc_region.text_ref.right(width).text().encode('utf-8')
+        elif dir == 'l':
+            text = kc_region.text_ref.left(width).text().encode('utf-8')
+    # Replace characters
+    text = (
+        text.replace('O', '0').replace('o', '0').replace('D', '0')
+        .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
+        .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
+        .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
+        .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
+    )
+    return text
+
 def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing valid Kancolle timer readings (##:##:## format).
@@ -61,24 +91,7 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     attempt = 0
     while ocr_matching:
         attempt += 1
-        if isinstance(timer_ref, str):
-            if dir == 'r':
-                timer = find(timer_ref).right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = find(timer_ref).left(width).text().encode('utf-8')
-        elif isinstance(timer_ref, Match):
-            if dir == 'r':
-                timer = timer_ref.right(width).text().encode('utf-8')
-            elif dir == 'l':
-                timer = timer_ref.left(width).text().encode('utf-8')
-        # Replace characters
-        timer = (
-            timer.replace('O', '0').replace('o', '0').replace('D', '0')
-            .replace('Q', '0').replace('@', '0').replace('l', '1').replace('I', '1')
-            .replace('[', '1').replace(']', '1').replace('|', '1').replace('!', '1')
-            .replace('Z', '2').replace('S', '5').replace('s', '5').replace('$', '5')
-            .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
-        )
+        timer = check_ocr(kc_region, timer_ref, dir, width)
         if len(timer) == 8:
             # Length checks out...
             timer = list(timer)
@@ -98,6 +111,36 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
             return '95:00:00'
         # Otherwise, try again!
         log_warning("Got invalid timer (%s)... trying again!" % timer)
+        sleep(1)
+
+def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
+    """
+    Function for grabbing numbers from the kancolle-auto screen.
+    Attempts to fix erroneous OCR reads and repeats readings until a valid
+    number is returned. Returns found number value.
+
+    kc_region - Sikuli region
+    number_ref - image name (str) or reference Match object (returned by findAll, for example)
+    dir - 'l' or 'r'; direction to search for number
+    width - positive int; width (in pixels) of area where the number should be
+    attempt_limit = how many times the OCR reads should repeat before failing
+    """
+    ocr_matching = True
+    attempt = 0
+    while ocr_matching:
+        attempt += 1
+        number = check_ocr(kc_region, number_ref, dir, width)
+        m = match(r'^\d+$', number)
+        if m:
+            # OCR reading checks out; return number
+            ocr_matching = False
+            return int(number)
+        # If we got this far, the number reading is invalid.
+        # If an attempt_limit is set and met, return 0
+        if attempt_limit != 0 and attempt == attempt_limit:
+            return 0
+        # Otherwise, try again!
+        log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
 
 def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
@@ -142,7 +185,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['formation_combinedfleet_2'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 150, 160, 50)
         global_regions['formation_combinedfleet_3'] = Region(util_settings['game_x'] + 420, util_settings['game_y'] + 280, 160, 50)
         global_regions['formation_combinedfleet_4'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 280, 160, 50)
-        global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
+        #global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
     # Generate random coordinates
