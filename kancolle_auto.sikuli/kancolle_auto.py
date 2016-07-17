@@ -1,5 +1,6 @@
-import datetime, os, sys, ConfigParser
+import datetime, os, sys
 sys.path.append(os.getcwd())
+import config_reader as config_reader
 import expedition as expedition_module
 import combat as combat_module
 import quests as quest_module
@@ -297,153 +298,9 @@ def display_timers():
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
 
-# Load the config.ini file
-def get_config():
-    global settings, sleep_cycle
-    log_msg("Reading config file")
-    # Change paths and read config.ini
-    os.chdir(getBundlePath())
-    os.chdir('..')
-    config = ConfigParser.ConfigParser()
-    config.read('config.ini')
-    # Set user settings
-    # 'General' section
-    settings['program'] = config.get('General', 'Program')
-    settings['recovery_method'] = config.get('General', 'RecoveryMethod')
-    settings['jst_offset'] = config.getint('General', 'JSTOffset')
-    sleep_cycle = config.getint('General', 'SleepCycle')
-    # 'Scheduled Sleep' section
-    if config.getboolean('ScheduledSleep', 'Enabled'):
-        settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start'] = "%04d"%config.getint('ScheduledSleep', 'StartTime')
-        settings['scheduled_sleep_length'] = config.getfloat('ScheduledSleep', 'SleepLength')
-    else:
-        settings['scheduled_sleep_enabled'] = False
-    # 'Expeditions' section
-    if config.getboolean('Expeditions', 'Enabled'):
-        settings['expeditions_enabled'] = True
-        if config.get('Expeditions', 'Fleet2'):
-            settings['expedition_id_fleet_map'][2] = config.getint('Expeditions', 'Fleet2')
-        if config.get('Expeditions', 'Fleet3'):
-            settings['expedition_id_fleet_map'][3] = config.getint('Expeditions', 'Fleet3')
-        if config.get('Expeditions', 'Fleet4'):
-            settings['expedition_id_fleet_map'][4] = config.getint('Expeditions', 'Fleet4')
-        log_success("Expeditions (%s) enabled!" % (', '.join('fleet %s: %s' % (key, settings['expedition_id_fleet_map'][key]) for key in sorted(settings['expedition_id_fleet_map'].keys()))))
-    else:
-        settings['expeditions_enabled'] = False
-    # 'PvP' section
-    if config.getboolean('PvP', 'Enabled'):
-        settings['pvp_enabled'] = True
-        settings['pvp_fleetcomp'] = config.getint('PvP', 'FleetComp')
-    else:
-        settings['pvp_enabled'] = False
-    # 'Combat' section
-    if config.getboolean('Combat', 'Enabled'):
-        settings['combat_enabled'] = True
-        settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
-        settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
-        settings['combat_area'] = config.get('Combat', 'Area')
-        settings['combat_subarea'] = config.get('Combat', 'Subarea')
-        settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
-        if settings['combined_fleet']:
-            # Remove fleet 2 from expedition list if combined fleet is enabled
-            settings['expedition_id_fleet_map'].pop(2, None)
-            # Disable PvP if combined fleet is enabled
-            settings['pvp_enabled'] = False
-            settings_check_valid_formations = ['combinedfleet_1', 'combinedfleet_2', 'combinedfleet_3', 'combinedfleet_4']
-            settings_check_filler_formation = 'combinedfleet_4'
-        else:
-            settings_check_valid_formations = ['line_ahead', 'double_line', 'diamond', 'echelon', 'line_abreast', ]
-            settings_check_filler_formation = 'line_ahead'
-        settings['nodes'] = config.getint('Combat', 'Nodes')
-        settings['node_selects'] = config.get('Combat', 'NodeSelects').replace(' ', '').split(',')
-        if '' in settings['node_selects']:
-            settings['node_selects'].remove('')
-        settings['formations'] = config.get('Combat', 'Formations').replace(' ', '').split(',')
-        # Check that supplied formations are valid
-        for formation in settings['formations']:
-            if formation not in settings_check_valid_formations:
-                log_error("'%s' is not a valid formation! Please check your config file." % formation)
-                exit()
-        if len(settings['formations']) < settings['nodes']:
-            settings['formations'].extend([settings_check_filler_formation] * (settings['nodes'] - len(settings['formations'])))
-        settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
-        if len(settings['night_battles']) < settings['nodes']:
-            settings['night_battles'].extend(['True'] * (settings['nodes'] - len(settings['night_battles'])))
-        settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
-        settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
-        settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
-        settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
-        settings['port_check'] = config.getboolean('Combat', 'PortCheck')
-        settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')
-        settings['last_node_push'] = config.getboolean('Combat', 'LastNodePush')
-        log_success("Combat enabled!")
-    else:
-        settings['combat_enabled'] = False
-    # 'Quests' section
-    settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
-    settings['active_quests'].sort()
-    if config.getboolean('Quests', 'Enabled') and len(settings['active_quests']) > 0:
-        settings['quests_enabled'] = True
-        settings['quests_check_schedule'] = config.getint('Quests', 'CheckSchedule')
-    else:
-        settings['quests_enabled'] = False
-    log_success("Config loaded!")
-
-# Refresh kancolle. Only supports catbomb situations and browers at the moment
-def refresh_kancolle(e):
-    global kc_window, settings
-    if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
-        if settings['recovery_method'] == 'Browser':
-            # Recovery steps if using a webbrowser with no other plugins
-            # Assumes that 'F5' is a valid keyboard shortcut for refreshing
-            type(Key.F5)
-        elif settings['recovery_method'] == 'KC3':
-            # Recovery steps if using KC3 in Chrome
-            type(Key.F5)
-            sleep(1)
-            type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
-            sleep(1)
-            type(Key.TAB) # Tab over to 'Start Anyway' button
-            sleep(1)
-            type(Key.SPACE)
-        elif settings['recovery_method'] == 'KCV':
-            # Recovery steps if using KanColleViewer
-            type(Key.F5)
-        elif settings['recovery_method'] == 'KCT':
-            # Recovery steps if using KanColleTool; refreshes via 'Get API Link' option
-            type(Key.ALT)
-            sleep(1)
-            type(Key.DOWN)
-            sleep(1)
-            type(Key.DOWN)
-            sleep(1)
-            type(Key.ENTER)
-        elif settings['recovery_method'] == 'EO':
-            # Recovery steps if using Electronic Observer
-            type(Key.F5)
-            sleep(1)
-            type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
-            sleep(1)
-            type(Key.SPACE)
-        # The Game Start button is there and active, so click it to restart
-        sleep(3)
-        rejigger_mouse(kc_window, 370, 770, 10, 200)
-        sleep(3)
-        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
-            sleep(1)
-        check_and_click(kc_window, 'game_start.png')
-        sleep(2)
-        # Re-initialize kancolle-auto post-catbomb
-        init()
-    else:
-        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
-        print e
-        raise
-
 def init():
-    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, settings
-    get_config()
+    global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, sleep_cycle, settings
+    settings, sleep_cycle = config_reader.get_config(settings, sleep_cycle)
     get_util_config()
     log_success("Starting kancolle_auto")
     try:

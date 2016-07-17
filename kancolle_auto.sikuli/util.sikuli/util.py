@@ -558,6 +558,57 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
             pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
     return pic
 
+# Refresh kancolle. Only supports catbomb situations and browers at the moment
+def refresh_kancolle(e):
+    global kc_window, settings
+    if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+        if settings['recovery_method'] == 'Browser':
+            # Recovery steps if using a webbrowser with no other plugins
+            # Assumes that 'F5' is a valid keyboard shortcut for refreshing
+            type(Key.F5)
+        elif settings['recovery_method'] == 'KC3':
+            # Recovery steps if using KC3 in Chrome
+            type(Key.F5)
+            sleep(1)
+            type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
+            sleep(1)
+            type(Key.TAB) # Tab over to 'Start Anyway' button
+            sleep(1)
+            type(Key.SPACE)
+        elif settings['recovery_method'] == 'KCV':
+            # Recovery steps if using KanColleViewer
+            type(Key.F5)
+        elif settings['recovery_method'] == 'KCT':
+            # Recovery steps if using KanColleTool; refreshes via 'Get API Link' option
+            type(Key.ALT)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.DOWN)
+            sleep(1)
+            type(Key.ENTER)
+        elif settings['recovery_method'] == 'EO':
+            # Recovery steps if using Electronic Observer
+            type(Key.F5)
+            sleep(1)
+            type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
+            sleep(1)
+            type(Key.SPACE)
+        # The Game Start button is there and active, so click it to restart
+        sleep(3)
+        rejigger_mouse(kc_window, 370, 770, 10, 200)
+        sleep(3)
+        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
+            sleep(1)
+        check_and_click(kc_window, 'game_start.png')
+        sleep(2)
+        # Re-initialize kancolle-auto post-catbomb
+        init()
+    else:
+        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
+        print e
+        raise
+
 class color:
     """
     Log colors
