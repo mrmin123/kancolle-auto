@@ -29,7 +29,7 @@ def get_config(settings, sleep_cycle):
         settings['scheduled_stop_mode'] = config.get('ScheduledStop', 'Mode').lower()
         if (settings['scheduled_stop_mode'] not in ['time', 'expedition', 'sortie', 'pvp']):
             log_error("'%s' is not a scheduled stop mode! Please check your config file." % settings['scheduled_stop_mode'])
-                sys.exit()
+            sys.exit()
         settings['scheduled_stop_count'] = config.getint('ScheduledStop', 'Count')
     else:
         settings['scheduled_stop_enabled'] = False
