@@ -1,4 +1,4 @@
-import ConfigParser, datetime
+import ConfigParser, sys
 from sikuli import *
 from util import *
 
@@ -27,6 +27,9 @@ def get_config(settings, sleep_cycle):
     if config.getboolean('ScheduledStop', 'Enabled'):
         settings['scheduled_stop_enabled'] = True
         settings['scheduled_stop_mode'] = config.get('ScheduledStop', 'Mode').lower()
+        if (settings['scheduled_stop_mode'] not in ['time', 'expedition', 'sortie', 'pvp']):
+            log_error("'%s' is not a scheduled stop mode! Please check your config file." % settings['scheduled_stop_mode'])
+                sys.exit()
         settings['scheduled_stop_count'] = config.getint('ScheduledStop', 'Count')
     else:
         settings['scheduled_stop_enabled'] = False
@@ -75,7 +78,7 @@ def get_config(settings, sleep_cycle):
         for formation in settings['formations']:
             if formation not in settings_check_valid_formations:
                 log_error("'%s' is not a valid formation! Please check your config file." % formation)
-                exit()
+                sys.exit()
         if len(settings['formations']) < settings['nodes']:
             settings['formations'].extend([settings_check_filler_formation] * (settings['nodes'] - len(settings['formations'])))
         settings['night_battles'] = config.get('Combat', 'NightBattles').replace(' ', '').split(',')
