@@ -449,15 +449,15 @@ while True:
                 log_success("kancolle-auto has ran for the desired %s hours! Shutting down now!" % settings['scheduled_stop_count'])
                 stop_flag = True
         elif settings['scheduled_stop_mode'] == 'expedition':
-            if done_expeditions >= settings['scheduled_stop_count']
+            if done_expeditions >= settings['scheduled_stop_count']:
                 log_success("kancolle-auto has ran the desired %s expeditions! Shutting down now!" % settings['scheduled_stop_count'])
                 stop_flag = True
         elif settings['scheduled_stop_mode'] == 'sortie':
-            if done_expeditions >= settings['scheduled_stop_count']
+            if done_expeditions >= settings['scheduled_stop_count']:
                 log_success("kancolle-auto has ran for the desired %s sorties! Shutting down now!" % settings['scheduled_stop_count'])
                 stop_flag = True
         elif settings['scheduled_stop_mode'] == 'pvp':
-            if done_expeditions >= settings['scheduled_stop_count']
+            if done_expeditions >= settings['scheduled_stop_count']:
                 log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
                 stop_flag = True
         if stop_flag:
