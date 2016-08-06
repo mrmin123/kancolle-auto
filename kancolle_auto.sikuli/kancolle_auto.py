@@ -173,7 +173,7 @@ def expedition_action(fleet_id):
         fleet_needs_resupply[expedition.fleet_id - 1] = False
         sleep(2)
         if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
-            refresh_kancolle('Post-expedition crash')
+            refresh_kancolle(kc_window, settings, 'Post-expedition crash')
 
 # Actions involved in conducting PvPs
 def pvp_action():
@@ -365,7 +365,7 @@ def init():
             sortie_action()
         display_timers()
     except FindFailed, e:
-        refresh_kancolle(e)
+        refresh_kancolle(kc_window, settings, e)
 
 # initialize kancolle_auto
 init()
@@ -430,7 +430,7 @@ while main_loop:
             display_timers()
             idle = True
     except FindFailed, e:
-        refresh_kancolle(e)
+        refresh_kancolle(kc_window, settings, e)
     # Check to see if we need to begin scheduled sleep, but don't actually start the
     # scheduled sleep until after we've checked for scheduled stop
     if settings['scheduled_sleep_enabled']:
