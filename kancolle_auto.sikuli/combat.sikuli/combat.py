@@ -300,7 +300,7 @@ class Combat:
                 log_msg("Spinning compass!")
                 rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 # Restart this loop in case there's another compass coming up
-                sleep(3)
+                sleep(5)
                 self.loop_pre_combat(nodes_run)
                 loop_pre_combat_stop = True
                 break
