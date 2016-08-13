@@ -559,8 +559,7 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
     return pic
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment
-def refresh_kancolle(e):
-    global kc_window, settings
+def refresh_kancolle(kc_window, settings, e):
     if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
