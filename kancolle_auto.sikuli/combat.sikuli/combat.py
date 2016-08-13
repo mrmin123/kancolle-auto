@@ -320,11 +320,19 @@ class Combat:
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
                 sleep(5)
+                # Check for boss dialog after formation selection
                 check_and_click(self.kc_region, 'event_pre_boss_dialog.png')
+                log_msg("Hit boss node!")
                 rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
+                break
+            # Check for pre-boss dialog before formation selection
+            elif check_and_click(self.kc_region, 'event_pre_boss_dialog.png'):
+                log_msg("Hit boss node!")
+                sleep(3)
+                self.loop_pre_combat(nodes_run)
                 break
             elif (self.kc_region.exists('combat_nb_retreat.png') or
                   global_regions['next'].exists('next.png') or
