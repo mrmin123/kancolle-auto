@@ -19,7 +19,7 @@ def get_config(settings, sleep_cycle):
     # 'Scheduled Sleep' section
     if config.getboolean('ScheduledSleep', 'Enabled'):
         settings['scheduled_sleep_enabled'] = True
-        settings['scheduled_sleep_start'] = "%04d"%config.getint('ScheduledSleep', 'StartTime')
+        settings['scheduled_sleep_start'] = "%04d" % config.getint('ScheduledSleep', 'StartTime')
         settings['scheduled_sleep_length'] = config.getfloat('ScheduledSleep', 'SleepLength')
     else:
         settings['scheduled_sleep_enabled'] = False

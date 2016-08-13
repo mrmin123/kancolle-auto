@@ -9,7 +9,7 @@ Settings.MinSimilarity = 0.8
 class Expedition:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
-        #self.running_expedition_list = {}
+        # self.running_expedition_list = {}
         self.expedition_id_fleet_map = settings['expedition_id_fleet_map']
         # Populate expedition_list with Ensei objects on init
         self.expedition_list = []
@@ -32,7 +32,7 @@ class Expedition:
         if not check_and_click(self.kc_region, 'decision.png'):
             if self.kc_region.exists('expedition_time_complete.png'):
                 # Expedition just returned
-                expedition.check_later(0, -1) # set the check_later time to now
+                expedition.check_later(0, -1)  # set the check_later time to now
                 expedition.returned = False
                 log_warning("Expedition just returned:  %s" % expedition)
             else:

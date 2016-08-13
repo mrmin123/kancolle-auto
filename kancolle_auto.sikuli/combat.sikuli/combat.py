@@ -232,9 +232,9 @@ class Combat:
                     sleep(3)
                     # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
                     # click through reward(s)
-                    while not (self.kc_region.exists('menu_main_sortie.png')
-                        or self.kc_region.exists('combat_flagship_dmg.png')
-                        or self.kc_region.exists('combat_retreat.png')):
+                    while not (self.kc_region.exists('menu_main_sortie.png') or
+                               self.kc_region.exists('combat_flagship_dmg.png') or
+                               self.kc_region.exists('combat_retreat.png')):
                         if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
                             sleep(1)
                         if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
@@ -320,27 +320,26 @@ class Combat:
                 # Now check for night battle prompt or post-battle report
                 log_msg("Selecting fleet formation!")
                 sleep(5)
-                mouseDown(Button.LEFT) # In case of boss monologue
-                mouseUp()
+                check_and_click(self.kc_region, 'event_pre_boss_dialog.png')
                 rejigger_mouse(self.kc_region, 50, 350, 0, 100)
                 sleep(5)
                 self.loop_post_formation()
                 loop_pre_combat_stop = True
                 break
-            elif (self.kc_region.exists('combat_nb_retreat.png')
-                or global_regions['next'].exists('next.png')
-                or global_regions['next'].exists('next_alt.png')
-                or self.kc_region.exists('catbomb.png')):
+            elif (self.kc_region.exists('combat_nb_retreat.png') or
+                  global_regions['next'].exists('next.png') or
+                  global_regions['next'].exists('next_alt.png') or
+                  self.kc_region.exists('catbomb.png')):
                 loop_pre_combat_stop = True
                 break
             elif self.kc_region.exists('catbomb.png'):
                 raise FindFailed('Catbombed during sortie :(')
 
     def loop_post_formation(self):
-        while not (self.kc_region.exists('combat_nb_retreat.png')
-            or global_regions['next'].exists('next.png')
-            or global_regions['next'].exists('next_alt.png')
-            or self.kc_region.exists('catbomb.png')):
+        while not (self.kc_region.exists('combat_nb_retreat.png') or
+                   global_regions['next'].exists('next.png') or
+                   global_regions['next'].exists('next_alt.png') or
+                   self.kc_region.exists('catbomb.png')):
             pass
         # Check for catbomb
         if self.kc_region.exists('catbomb.png'):
@@ -485,12 +484,12 @@ class Combat:
                             log_msg("We are seeing available submarines!")
                             for sub in self.kc_region.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
                                 self.kc_region.click(sub)
-                                if (self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact())
-                                    and self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact())
-                                    and not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity))
-                                    or self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity))
-                                    or self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity))
-                                    or self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)))):
+                                if (self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()) and
+                                    self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact()) and not
+                                    (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
+                                     self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
+                                     self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
+                                     self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)))):
                                     # Submarine available. Switch it in!
                                     log_msg("Swapping submarines!")
                                     check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
@@ -569,8 +568,8 @@ class PvP:
         sleep(3)
         wait_and_click(global_regions['formation_line_ahead'], 'formation_line_ahead.png', 30)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
-        while not (global_regions['next'].exists('next.png')
-            or self.kc_region.exists('combat_nb_fight.png')):
+        while not (global_regions['next'].exists('next.png') or
+                   self.kc_region.exists('combat_nb_fight.png')):
             pass
         check_and_click(self.kc_region, 'combat_nb_fight.png')
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
