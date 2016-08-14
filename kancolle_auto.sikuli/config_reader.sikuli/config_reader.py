@@ -94,6 +94,25 @@ def get_config(settings, sleep_cycle):
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
+    # LBAS section
+    if config.getboolean('LBAS', 'Enabled'):
+        settings['lbas_enabled'] = True
+        settings['lbas_groups'] = config.get('LBAS', 'EnabledGroups').replace(' ', '').split(',')
+        if (len(settings['lbas_groups']) < 1):
+            log_error("If LBAS is enabled, you must specify at least one active LBAS group")
+            sys.exit()
+        settings['lbas_group_1_nodes'] = config.get('LBAS', 'Group1Nodes').replace(' ', '').split(',')
+        if ("1" in settings['lbas_groups'] and len(settings['lbas_group_1_nodes']) != 2):
+            log_error("You must specify two (2) nodes for active LBAS group 1!")
+            sys.exit()
+        settings['lbas_group_2_nodes'] = config.get('LBAS', 'Group2Nodes').replace(' ', '').split(',')
+        if ("2" in settings['lbas_groups'] and len(settings['lbas_group_2_nodes']) != 2):
+            log_error("You must specify two (2) nodes for active LBAS group 2!")
+            sys.exit()
+        settings['lbas_group_3_nodes'] = config.get('LBAS', 'Group3Nodes').replace(' ', '').split(',')
+        if ("3" in settings['lbas_groups'] and len(settings['lbas_group_3_nodes']) != 2):
+            log_error("You must specify two (2) nodes for active LBAS group 3!")
+            sys.exit()
     # 'Quests' section
     settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
     settings['active_quests'].sort()

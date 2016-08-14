@@ -29,7 +29,7 @@ class Quests:
         # but I'm doing this in a hurry right now...
         invalid_quests = []
         for quest in self.quests_checklist:
-            if self.quest_tree.find(quest) == None:
+            if self.quest_tree.find(quest) is None:
                 invalid_quests.append(quest)
         self.quests_checklist = list(set(self.quests_checklist) - set(invalid_quests))
         # Reset quests

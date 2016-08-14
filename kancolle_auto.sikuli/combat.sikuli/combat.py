@@ -29,6 +29,13 @@ class Combat:
         self.port_check = settings['port_check']
         self.medal_stop = settings['medal_stop']
         self.last_node_push = settings['last_node_push']
+        self.lbas_enabled = settings['lbas_enabled']
+        if self.lbas_enabled:
+            self.lbas_groups = settings['lbas_groups']
+            self.lbas_nodes = {}
+            self.lbas_nodes[1] = settings['lbas_group_1_nodes']
+            self.lbas_nodes[2] = settings['lbas_group_2_nodes']
+            self.lbas_nodes[3] = settings['lbas_group_3_nodes']
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
@@ -363,11 +370,11 @@ class Combat:
     def lbas_resupply(self):
         check_and_click(self.kc_region, 'lbas_resupply_menu.png')
         sleep(2)
-        for active_group in self.lbas_active_groups:
+        for lbas_group in self.lbas_groups:
             # Loop through active air support groups
-            if active_group > 1:
+            if lbas_group > 1:
                 # Ony click the tab if it's not the first group
-                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % active_group)
+                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % lbas_group)
                 sleep(1)
             check_and_click(self.kc_region, 'lbas_resupply_button_1.png')
             sleep(2)
@@ -378,20 +385,19 @@ class Combat:
 
     # Sends air groups out to desired nodes at beginning of sortie
     def lbas_sortie(self):
-        for active_group in self.lbas_active_groups:
+        for lbas_group in self.lbas_groups:
             # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
-            if not self.kc_region.exists(self.lbas_nodes[active_group][0]):
+            if not self.kc_region.exists(self.lbas_nodes[lbas_group][0]):
                 self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                 sleep(4)
-            check_and_click(self.kc_region, self.lbas_nodes[active_group][0])
+            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0])
             # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
-            if not self.kc_region.exists(self.lbas_nodes[active_group][1]):
+            if not self.kc_region.exists(self.lbas_nodes[lbas_group][1]):
                 self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                 sleep(4)
-            check_and_click(self.kc_region, self.lbas_nodes[active_group][1])
+            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1])
             sleep(2)
             check_and_click(self.kc_region, 'lbas_assign_nodes.png')
-
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
