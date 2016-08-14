@@ -379,13 +379,14 @@ class Combat:
     # Sends air groups out to desired nodes at beginning of sortie
     def lbas_sortie(self):
         for active_group in self.lbas_active_groups:
-            # Check to see if the node exists on screen... because the LBAS screen might be covering it
+            # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
             if not self.kc_region.exists(self.lbas_nodes[active_group][0]):
-                # hover switch action
+                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                 sleep(4)
             check_and_click(self.kc_region, self.lbas_nodes[active_group][0])
+            # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
             if not self.kc_region.exists(self.lbas_nodes[active_group][1]):
-                # hover switch action
+                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                 sleep(4)
             check_and_click(self.kc_region, self.lbas_nodes[active_group][1])
             sleep(2)
