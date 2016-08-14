@@ -125,6 +125,9 @@ class Combat:
         sleep(2)
         wait_and_click(self.kc_region, self.area_pict)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
+        if self.lbas_enabled:
+            # If LBAS is enabled, resupply here
+            this.lbas_resupply()
         if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, int(self.subarea_num[0])):
@@ -185,7 +188,14 @@ class Combat:
             return (continue_combat, False)
         if not self.kc_region.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
-            wait_and_click(self.kc_region, 'combat_start.png')
+            if self.lbas_enabled:
+                # If LBAS is enabled, use the special LBAS combat start button and
+                # assign LBAS groups to their assigned nodes
+                wait_and_click(self.kc_region, 'combat_start_lbas.png')
+                sleep(6)
+                this.lbas_sortie()
+            else:
+                wait_and_click(self.kc_region, 'combat_start.png')
             sortie_underway = True
             nodes_run = 0
             fcf_retreated = False
@@ -376,10 +386,10 @@ class Combat:
                 # Ony click the tab if it's not the first group
                 check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % lbas_group)
                 sleep(1)
-            check_and_click(self.kc_region, 'lbas_resupply_button_1.png')
-            sleep(2)
-            check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
-            sleep(2)
+            if check_and_click(self.kc_region, 'lbas_resupply_button_1.png'):
+                sleep(2)
+                check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
+                sleep(2)
         # Done resupplying
         check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
 
