@@ -363,11 +363,11 @@ class Combat:
     def lbas_resupply(self):
         check_and_click(self.kc_region, 'lbas_resupply_menu.png')
         sleep(2)
-        for as_group in self.active_as_groups:
+        for active_group in self.lbas_active_groups:
             # Loop through active air support groups
-            if as_group > 1:
+            if active_group > 1:
                 # Ony click the tab if it's not the first group
-                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % as_group)
+                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % active_group)
                 sleep(1)
             check_and_click(self.kc_region, 'lbas_resupply_button_1.png')
             sleep(2)
@@ -378,7 +378,19 @@ class Combat:
 
     # Sends air groups out to desired nodes at beginning of sortie
     def lbas_sortie(self):
-        pass
+        for active_group in self.lbas_active_groups:
+            # Check to see if the node exists on screen... because the LBAS screen might be covering it
+            if not self.kc_region.exists(self.lbas_nodes[active_group][0]):
+                # hover switch action
+                sleep(4)
+            check_and_click(self.kc_region, self.lbas_nodes[active_group][0])
+            if not self.kc_region.exists(self.lbas_nodes[active_group][1]):
+                # hover switch action
+                sleep(4)
+            check_and_click(self.kc_region, self.lbas_nodes[active_group][1])
+            sleep(2)
+            check_and_click(self.kc_region, 'lbas_assign_nodes.png')
+
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
