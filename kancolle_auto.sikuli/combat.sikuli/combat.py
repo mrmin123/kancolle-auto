@@ -32,6 +32,9 @@ class Combat:
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
+    # Tally and return number of ships of each damage state. Supports combined
+    # fleets (add=True) as well as pre-sortie and post-sortie screens
+    # (combat=False/True)
     def tally_damages(self, add=False, combat=False):
         log_msg("Checking fleet condition...")
         if not add:
@@ -75,6 +78,9 @@ class Combat:
                 count += dmg_count
         return count
 
+    # Checks whether or not ships are fatigued before sortieing. If they are,
+    # the method returns the number of minutes kancolle-auto should wait before
+    # attempting to sortie again
     def fatigue_check(self):
         log_msg("Checking fleet morale!")
         if global_regions['check_morale'].exists(Pattern('fatigue_high.png').similar(0.98)):
@@ -87,6 +93,7 @@ class Combat:
             log_success("Ships have good morale!")
             return None
 
+    # Wrapper method that calls on pre-sortie check methods
     def pre_sortie_check(self, add=False):
         # Tally damages
         self.tally_damages(add=add)
@@ -290,6 +297,9 @@ class Combat:
                 self.next_sortie_time_set(0, 15, 5)
         return (continue_combat, True)
 
+    # Main master loop that occurs between all nodes. Handles compass spinning,
+    # node selections, formation selections, as well as handling of whether or
+    # not to proceed to next node or not
     def loop_pre_combat(self, nodes_run):
         # Check for compass, formation select, night battle prompt, or post-battle report
         loop_pre_combat_stop = False
@@ -336,6 +346,8 @@ class Combat:
             elif self.kc_region.exists('catbomb.png'):
                 raise FindFailed('Catbombed during sortie :(')
 
+    # Loop that runs after formation has been selected, indicating combat.
+    # This loop runs until combat has concluded
     def loop_post_formation(self):
         while not (self.kc_region.exists('combat_nb_retreat.png') or
                    global_regions['next'].exists('next.png') or
@@ -345,6 +357,28 @@ class Combat:
         # Check for catbomb
         if self.kc_region.exists('catbomb.png'):
             raise FindFailed('Catbombed during sortie :(')
+
+    # On event map selection screen, segues into LBAS resupply interface and
+    # resupplies desired air groups
+    def lbas_resupply(self):
+        check_and_click(self.kc_region, 'lbas_resupply_menu.png')
+        sleep(2)
+        for as_group in self.active_as_groups:
+            # Loop through active air support groups
+            if as_group > 1:
+                # Ony click the tab if it's not the first group
+                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % as_group)
+                sleep(1)
+            check_and_click(self.kc_region, 'lbas_resupply_button_1.png')
+            sleep(2)
+            check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
+            sleep(2)
+        # Done resupplying
+        check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
+
+    # Sends air groups out to desired nodes at beginning of sortie
+    def lbas_sortie(self):
+        pass
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
