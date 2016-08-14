@@ -114,7 +114,7 @@ class Quests:
             if mode == 'sortie':
                 quest_types.sort()
             elif mode == 'pvp':
-                quest_types.sort(reverse = True)
+                quest_types.sort(reverse=True)
             started_quests = []
             skip_page = True
             log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
@@ -356,7 +356,7 @@ class QuestNode(object):
         """
         For debug purposes.
         """
-        text = "\t"*depth + self.id + "\n"
+        text = "\t" * depth + self.id + "\n"
         for child in self.children:
             text += child.__repr__(depth + 1)
         return text

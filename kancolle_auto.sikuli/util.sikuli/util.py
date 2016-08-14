@@ -249,11 +249,11 @@ def rnavigation(kc_region, destination, max=0):
     global util_settings
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
-        'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
+                         'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
     menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
-        'menu_top_furniture.png', 'menu_top_quests.png']
+                        'menu_top_furniture.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
-        'menu_side_repair.png', 'menu_side_development.png']
+                         'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
     menu_sortie_top_options = ['sortie_top_combat.png', 'sortie_top_expedition.png', 'sortie_top_pvp.png']
     final_target = ''
@@ -464,7 +464,7 @@ def rnavigation(kc_region, destination, max=0):
                 final_target = ''
         elif final_target in ['menu_top_quests.png']:
             if kc_region.exists('quests_screen_check.png'):
-                wait_and_click(kc_region, 'quests_screen_check.png', expand=expand_areas('quests_screen_check')) # Go away Ooyodo
+                wait_and_click(kc_region, 'quests_screen_check.png', expand=expand_areas('quests_screen_check'))  # Go away Ooyodo
                 sleep_fast()
                 final_target = ''
         else:
@@ -569,9 +569,9 @@ def refresh_kancolle(kc_window, settings, e):
             # Recovery steps if using KC3 in Chrome
             type(Key.F5)
             sleep(1)
-            type(Key.SPACE) # In case Exit Confirmation is checked in KC3 Settings
+            type(Key.SPACE)  # In case Exit Confirmation is checked in KC3 Settings
             sleep(1)
-            type(Key.TAB) # Tab over to 'Start Anyway' button
+            type(Key.TAB)  # Tab over to 'Start Anyway' button
             sleep(1)
             type(Key.SPACE)
         elif settings['recovery_method'] == 'KCV':
@@ -590,7 +590,7 @@ def refresh_kancolle(kc_window, settings, e):
             # Recovery steps if using Electronic Observer
             type(Key.F5)
             sleep(1)
-            type(Key.TAB) # In case Exit Confirmation is checked in EO Settings
+            type(Key.TAB)  # In case Exit Confirmation is checked in EO Settings
             sleep(1)
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart

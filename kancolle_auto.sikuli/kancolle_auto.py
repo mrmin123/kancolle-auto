@@ -44,8 +44,8 @@ def focus_window():
     rejigger_mouse(kc_window, 370, 770, 100, 400)
     # Attempt to focus on window 10x until the Home (or catbomb) is found
     loop_count = 0
-    while not (kc_window.exists(Pattern('menu_main_home.png').exact())
-        or kc_window.exists('catbomb.png')) and loop_count < 10:
+    while not (kc_window.exists(Pattern('menu_main_home.png').exact()) or
+               kc_window.exists('catbomb.png')) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
         loop_count += 1
@@ -96,7 +96,7 @@ def check_expedition():
         wait_and_click(global_regions['next'], 'next.png', WAITLONG, expand_areas('next'))
         log_success("Yes, an expedition has returned!")
         # Guesstimate which expedition came back
-        if settings['expeditions_enabled'] == True and expedition_item is not None:
+        if settings['expeditions_enabled'] is True and expedition_item is not None:
             for expedition in expedition_item.expedition_list:
                 now_time = datetime.datetime.now()
                 if now_time > expedition.end_time and not expedition.returned:
@@ -105,7 +105,7 @@ def check_expedition():
                     log_msg("It's probably fleet %d that returned!" % expedition.fleet_id)
                     break
         # Let the Quests module know, if it's enabled
-        if settings['quests_enabled'] == True:
+        if settings['quests_enabled'] is True:
             quest_item.done_expeditions += 1
         done_expeditions += 1
         while not global_regions['game'].exists('menu_main_sortie.png'):
@@ -242,7 +242,7 @@ def quest_action(mode, first_run=False):
     else:
         rnavigation(global_regions['game'], 'quests', 2)
     quest_item.go_quests(mode, first_run)
-    quest_item.schedule_loop = 0 # Always reset schedule loop after running through quests
+    quest_item.schedule_loop = 0  # Always reset schedule loop after running through quests
 
 # Actions that check and switch fleet comps
 def fleetcomp_switch_action(fleetcomp):
@@ -255,9 +255,9 @@ def fleetcomp_switch_action(fleetcomp):
         current_fleetcomp = fleetcomp
 
 # Function to set the next pvp time
-def reset_next_pvp_time(next_cycle = False):
+def reset_next_pvp_time(next_cycle=False):
     global next_pvp_time
-    next_pvp_time = datetime.datetime.now() + datetime.timedelta(minutes=randint(1,50))
+    next_pvp_time = datetime.datetime.now() + datetime.timedelta(minutes=randint(1, 50))
     if next_cycle:
         if jst_convert(next_pvp_time).hour < 5:
             next_pvp_time = next_pvp_time + datetime.timedelta(hours=(5 - jst_convert(next_pvp_time).hour))
@@ -270,10 +270,10 @@ def reset_next_pvp_time(next_cycle = False):
             next_pvp_time = next_pvp_time.replace(hour=next_pvp_time.hour + 2)
 
 # Function to set the next sleep time
-def reset_next_sleep_time(next_day = False):
+def reset_next_sleep_time(next_day=False):
     global next_sleep_time, settings
     next_sleep_time = datetime.datetime.now().replace(hour=int(settings['scheduled_sleep_start'][0:2]), minute=int(settings['scheduled_sleep_start'][2:4]), second=0, microsecond=0)
-    next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1,30))
+    next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1, 30))
     if next_day:
         next_sleep_time = next_sleep_time + datetime.timedelta(days=1)
 
@@ -396,7 +396,7 @@ while main_loop:
                 go_home()
                 quest_item.reset_quests()
                 quest_action(default_quest_mode, True)
-                quest_reset_skip = True # Let's not keep resetting the quests
+                quest_reset_skip = True  # Let's not keep resetting the quests
             # Reset the quest_reset_skip variable in preparation for the next quest reset
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
@@ -423,7 +423,7 @@ while main_loop:
             if temp_need_to_check:
                 go_home()
                 quest_action(default_quest_mode)
-                temp_need_to_check = False # Disable need to check after checking
+                temp_need_to_check = False  # Disable need to check after checking
         # If fleets have been sent out and idle period is beginning, let the user
         # know when the next scripted action will occur
         if not idle:
