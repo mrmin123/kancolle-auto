@@ -29,9 +29,19 @@ class Combat:
         self.port_check = settings['port_check']
         self.medal_stop = settings['medal_stop']
         self.last_node_push = settings['last_node_push']
+        self.lbas_enabled = settings['lbas_enabled']
+        if self.lbas_enabled:
+            self.lbas_groups = settings['lbas_groups']
+            self.lbas_nodes = {}
+            self.lbas_nodes[1] = settings['lbas_group_1_nodes']
+            self.lbas_nodes[2] = settings['lbas_group_2_nodes']
+            self.lbas_nodes[3] = settings['lbas_group_3_nodes']
         self.damage_counts = [0, 0, 0]
         self.dmg_similarity = 0.75
 
+    # Tally and return number of ships of each damage state. Supports combined
+    # fleets (add=True) as well as pre-sortie and post-sortie screens
+    # (combat=False/True)
     def tally_damages(self, add=False, combat=False):
         log_msg("Checking fleet condition...")
         if not add:
@@ -75,6 +85,9 @@ class Combat:
                 count += dmg_count
         return count
 
+    # Checks whether or not ships are fatigued before sortieing. If they are,
+    # the method returns the number of minutes kancolle-auto should wait before
+    # attempting to sortie again
     def fatigue_check(self):
         log_msg("Checking fleet morale!")
         if global_regions['check_morale'].exists(Pattern('fatigue_high.png').similar(0.98)):
@@ -87,6 +100,7 @@ class Combat:
             log_success("Ships have good morale!")
             return None
 
+    # Wrapper method that calls on pre-sortie check methods
     def pre_sortie_check(self, add=False):
         # Tally damages
         self.tally_damages(add=add)
@@ -111,6 +125,9 @@ class Combat:
         sleep(2)
         wait_and_click(self.kc_region, self.area_pict)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
+        if self.lbas_enabled:
+            # If LBAS is enabled, resupply here
+            self.lbas_resupply()
         if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, int(self.subarea_num[0])):
@@ -171,7 +188,14 @@ class Combat:
             return (continue_combat, False)
         if not self.kc_region.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
-            wait_and_click(self.kc_region, 'combat_start.png')
+            if self.lbas_enabled:
+                # If LBAS is enabled, use the special LBAS combat start button and
+                # assign LBAS groups to their assigned nodes
+                wait_and_click(self.kc_region, 'combat_start_lbas.png')
+                sleep(6)
+                self.lbas_sortie()
+            else:
+                wait_and_click(self.kc_region, 'combat_start.png')
             sortie_underway = True
             nodes_run = 0
             fcf_retreated = False
@@ -290,6 +314,9 @@ class Combat:
                 self.next_sortie_time_set(0, 15, 5)
         return (continue_combat, True)
 
+    # Main master loop that occurs between all nodes. Handles compass spinning,
+    # node selections, formation selections, as well as handling of whether or
+    # not to proceed to next node or not
     def loop_pre_combat(self, nodes_run):
         # Check for compass, formation select, night battle prompt, or post-battle report
         loop_pre_combat_stop = False
@@ -336,6 +363,8 @@ class Combat:
             elif self.kc_region.exists('catbomb.png'):
                 raise FindFailed('Catbombed during sortie :(')
 
+    # Loop that runs after formation has been selected, indicating combat.
+    # This loop runs until combat has concluded
     def loop_post_formation(self):
         while not (self.kc_region.exists('combat_nb_retreat.png') or
                    global_regions['next'].exists('next.png') or
@@ -345,6 +374,40 @@ class Combat:
         # Check for catbomb
         if self.kc_region.exists('catbomb.png'):
             raise FindFailed('Catbombed during sortie :(')
+
+    # On event map selection screen, segues into LBAS resupply interface and
+    # resupplies desired air groups
+    def lbas_resupply(self):
+        check_and_click(self.kc_region, 'lbas_resupply_menu.png')
+        sleep(2)
+        for lbas_group in self.lbas_groups:
+            # Loop through active air support groups
+            if lbas_group > 1:
+                # Ony click the tab if it's not the first group
+                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % lbas_group)
+                sleep(1)
+            if check_and_click(self.kc_region, 'lbas_resupply_button_1.png'):
+                sleep(2)
+                check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
+                sleep(2)
+        # Done resupplying
+        check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
+
+    # Sends air groups out to desired nodes at beginning of sortie
+    def lbas_sortie(self):
+        for lbas_group in self.lbas_groups:
+            # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
+            if not self.kc_region.exists(self.lbas_nodes[lbas_group][0]):
+                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
+                sleep(4)
+            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0], expand_areas('node_select'))
+            # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
+            if not self.kc_region.exists(self.lbas_nodes[lbas_group][1]):
+                self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
+                sleep(4)
+            check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1], expand_areas('node_select'))
+            sleep(2)
+            check_and_click(self.kc_region, 'lbas_assign_nodes.png')
 
     # Navigate to repair menu and repair any ship above damage threshold. Sets
     # next sortie time accordingly
