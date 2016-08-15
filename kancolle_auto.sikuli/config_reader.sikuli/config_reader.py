@@ -94,8 +94,8 @@ def get_config(settings, sleep_cycle):
         log_success("Combat enabled!")
     else:
         settings['combat_enabled'] = False
-    # LBAS section
-    if config.getboolean('LBAS', 'Enabled'):
+    # 'LBAS' section
+    if config.getboolean('LBAS', 'Enabled') and settings['combat_enabled']:
         settings['lbas_enabled'] = True
         settings['lbas_groups'] = config.get('LBAS', 'EnabledGroups').replace(' ', '').split(',')
         if (len(settings['lbas_groups']) < 1):

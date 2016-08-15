@@ -127,7 +127,7 @@ class Combat:
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         if self.lbas_enabled:
             # If LBAS is enabled, resupply here
-            this.lbas_resupply()
+            self.lbas_resupply()
         if self.area_num == 'E':
             # Special logic for Event maps
             for page in range(1, int(self.subarea_num[0])):
@@ -193,7 +193,7 @@ class Combat:
                 # assign LBAS groups to their assigned nodes
                 wait_and_click(self.kc_region, 'combat_start_lbas.png')
                 sleep(6)
-                this.lbas_sortie()
+                self.lbas_sortie()
             else:
                 wait_and_click(self.kc_region, 'combat_start.png')
             sortie_underway = True
