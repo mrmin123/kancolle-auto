@@ -117,6 +117,8 @@ def get_config(settings, sleep_cycle):
         if (3 in settings['lbas_groups'] and len(settings['lbas_group_3_nodes']) != 2):
             log_error("You must specify two (2) nodes for active LBAS group 3!")
             sys.exit()
+    else:
+        settings['lbas_enabled'] = False
     # 'Quests' section
     settings['active_quests'] = config.get('Quests', 'Quests').replace(' ', '').split(',')
     settings['active_quests'].sort()
