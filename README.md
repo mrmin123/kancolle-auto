@@ -59,10 +59,13 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 #### FAQ/Commonly asked questions
 
 **Q: Can I do other stuff on the machine or play Kantai Collection while kancolle-auto is running?**
+
 A: Kinda. kancolle-auto takes control of the mouse as it runs so it will be difficult to do anything meaningful while kancolle-auto is actively running. During scheduled pauses, however, you have full control of the machine. Just make sure that Kantai Collection is not in the middle of a PvP or Sortie when the schedule pause ends. The script will crash and you will have to restart the script.
 
 **Q: kancolle-auto periodically crashes! (FindFailed errors)**
+
 A: This is 99% not a bug in the program so please do not make a ticket. Instead, try raising the `SleepModifier` field in the config to 1 or 2 or 3. If this does not reduce the number of crashes, then please create a detailed ticket.
 
 **Q: I started getting catbombed frequently after I started using kancolle-auto!**
+
 A: You're probably botting too much. Use the ScheduledSleep functionality and let the program pause itself for a few hours every day.
