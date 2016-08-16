@@ -368,7 +368,7 @@ def init():
         refresh_kancolle(kc_window, settings, e)
 
 # initialize kancolle_auto
-# debug_find('dmg_critical.png', 'Chrome')  # For debugging purposes only!
+# debug_find('dmg_critical.png', 'Chrome', 0.75)  # For debugging purposes only!
 init()
 log_msg("Initial checks and commands complete. Starting loop.")
 main_loop = True

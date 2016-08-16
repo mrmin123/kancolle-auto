@@ -608,7 +608,7 @@ def refresh_kancolle(kc_window, settings, e):
         print e
         raise
 
-def debug_find(file, target_program):
+def debug_find(file, target_program, similarity=0.8):
     """
     Debug function. Uncomment the line in kancolle_auto.py referencing this function
     to use. Finds specified file in target_program window and prints the resulting
@@ -616,10 +616,16 @@ def debug_find(file, target_program):
     for matching works properly
     """
     myApp = App.focus(target_program)
-    kc_window = myApp.focusedWindow()
-    match = kc_window.find(file)
+    target_window = myApp.focusedWindow()
+    match = target_window.find(Pattern(file).similar(similarity))
+    print ""
+    print ""
+    print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
+    print "+    with minimum similarity of %s:" % similarity
     print match
-    raise
+    print ""
+    print ""
+    raise SystemExit
 
 
 class color:
