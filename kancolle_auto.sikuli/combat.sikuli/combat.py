@@ -37,7 +37,7 @@ class Combat:
             self.lbas_nodes[2] = settings['lbas_group_2_nodes']
             self.lbas_nodes[3] = settings['lbas_group_3_nodes']
         self.damage_counts = [0, 0, 0]
-        self.dmg_similarity = 0.75
+        self.dmg_similarity = 0.65
 
     # Tally and return number of ships of each damage state. Supports combined
     # fleets (add=True) as well as pre-sortie and post-sortie screens
