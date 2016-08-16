@@ -608,6 +608,20 @@ def refresh_kancolle(kc_window, settings, e):
         print e
         raise
 
+def debug_find(file, target_program):
+    """
+    Debug function. Uncomment the line in kancolle_auto.py referencing this function
+    to use. Finds specified file in target_program window and prints the resulting
+    Sikuli match file. Useful for checking to see if an image you've generated
+    for matching works properly
+    """
+    myApp = App.focus(target_program)
+    kc_window = myApp.focusedWindow()
+    match = kc_window.find(file)
+    print match
+    raise
+
+
 class color:
     """
     Log colors
