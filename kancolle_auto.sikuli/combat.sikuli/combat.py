@@ -224,6 +224,11 @@ class Combat:
                 wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                 sleep(3)
                 # Tally damages at post-battle report screen
+                while not self.kc_region.exists('post_combat_result_screen.png'):
+                    # Additional check to make sure that we're seeing the damage states of ships,
+                    # otherwise keep hitting next button until we get there
+                    check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
+                    sleep(1)
                 self.tally_damages(combat=True)
                 # Check for medal reward, if enabled
                 if self.medal_stop:
