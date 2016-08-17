@@ -202,7 +202,7 @@ def pvp_action():
 
 # Actions involved in conducting sorties
 def sortie_action():
-    global fleet_needs_resupply, combat_item, quest_item, done_sorties, settings
+    global fleet_needs_resupply, combat_item, expedition_item, quest_item, done_sorties, settings
     fleetcomp_switch_action(settings['combat_fleetcomp'])
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
@@ -213,6 +213,12 @@ def sortie_action():
         fleet_needs_resupply[0] = True
         if settings['combined_fleet']:
             fleet_needs_resupply[1] = True
+        # Check for event-specific expeditions
+        if settings['expeditions_enabled'] is True and expedition_item is not None:
+            for expedition in expedition_item.expedition_list:
+                if expedition.id in [189, 190]:
+                    # Set event-specific expeditions to be done on sortie end
+                    expedition.check_later(0, -1)
         # Check home, repair if needed, and resupply
         go_home()
         if combat_item.count_damage_above_limit('repair') > 0:
@@ -223,6 +229,10 @@ def sortie_action():
             fleet_needs_resupply[1] = False
         log_success("Next sortie!: %s" % combat_item)
     else:
+        # Check for event-specific expeditions
+        if settings['expeditions_enabled'] is True and expedition_item is not None:
+            # If the sortie failed, disable the event-specific expeditions to not keep them going, since combat will also be disabled
+            expedition_item.expedition_list[:] = [expedition for expedition in expedition_item.expedition_list if expedition.id not in [189, 190]]
         go_home()
         settings['combat_enabled'] = False
         log_success("Medal obtained! Stopping combat module!")
