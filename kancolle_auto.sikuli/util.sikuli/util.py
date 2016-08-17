@@ -250,8 +250,7 @@ def rnavigation(kc_region, destination, max=0):
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
                          'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
-    menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
-                        'menu_top_furniture.png', 'menu_top_quests.png']
+    menu_top_options = ['menu_top_inventory.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
                          'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
