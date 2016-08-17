@@ -174,8 +174,8 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['fleet_flags_sec'] = Region(util_settings['game_x'] + 340, util_settings['game_y'] + 100, 140, 35)
         global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
         global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
-        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 320)
-        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 300)
+        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 300)
+        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 280)
         global_regions['formation_line_ahead'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 160, 120, 50)
         global_regions['formation_double_line'] = Region(util_settings['game_x'] + 520, util_settings['game_y'] + 160, 120, 50)
         global_regions['formation_diamond'] = Region(util_settings['game_x'] + 650, util_settings['game_y'] + 160, 120, 50)
@@ -222,7 +222,7 @@ def expand_areas(target):
     elif target == 'compass':
         return [-250, 400, -200, 200]
     elif target == 'node_select':
-        return[-9, 9, -9, 9]
+        return[-5, 5, -5, 5]
     elif target == 'quests_screen_check':
         return [-40, 700, -50, 300]
     elif target == 'quest_bar':
