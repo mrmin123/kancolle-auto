@@ -393,9 +393,11 @@ class Combat:
                 check_and_click(self.kc_region, Pattern('lbas_group_tab_%s.png' % lbas_group).similar(0.95))
                 sleep(1)
             if check_and_click(self.kc_region, 'lbas_resupply_button_1.png'):
-                sleep(2)
+                sleep(1)
+                rejigger_mouse(self.kc_region, 50, 100, 50, 100)
+                sleep(1)
                 check_and_click(self.kc_region, 'lbas_resupply_button_2.png')
-                sleep(2)
+                sleep(3)
         # Done resupplying
         check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
         sleep(2)
