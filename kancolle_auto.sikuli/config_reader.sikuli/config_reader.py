@@ -115,7 +115,7 @@ def get_config(settings, sleep_cycle):
             log_error("You must specify zero (0) or two (2) nodes for active LBAS group 2!")
             sys.exit()
         settings['lbas_group_3_nodes'] = config.get('LBAS', 'Group3Nodes').replace(' ', '').split(',')
-        if (3 in settings['lbas_groups'] and (len(settings['lbas_group_31_nodes']) != 0 and len(settings['lbas_group_3_nodes']) != 2)):
+        if (3 in settings['lbas_groups'] and (len(settings['lbas_group_3_nodes']) != 0 and len(settings['lbas_group_3_nodes']) != 2)):
             log_error("You must specify zero (0) or two (2) nodes for active LBAS group 3!")
             sys.exit()
     else:
