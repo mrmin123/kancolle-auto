@@ -12,14 +12,14 @@ Is the issue consistent (can be reproduced consistently) or is it transient (onl
 - [ ] Consistent
 - [ ] Transient
 
-[description of issue here, along with any screenshots and/or videos]
+[replace this line with a description of issue, along with any screenshots and/or videos. Please be descriptive as possible, describing step by step what is happening in the game]
 
 #### Console log (if applicable)
 ```
-[log goes here]
+[replace this line with ~50 lines of console log]
 ```
 
 #### Relevant config snippet (if applicable)
 ```
-[config snippet goes here]
+[replace this line with relevant portion from config with comments removed]
 ```
