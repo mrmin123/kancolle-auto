@@ -411,12 +411,13 @@ class Combat:
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
                 if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                    sleep(4)
+                    sleep(3)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
+                sleep(2)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
                 if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                    sleep(4)
+                    sleep(3)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1] + '.png', expand_areas('node_select'))
                 sleep(2)
                 check_and_click(self.kc_region, 'lbas_assign_nodes.png')
