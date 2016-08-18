@@ -218,6 +218,7 @@ def sortie_action():
             for expedition in expedition_item.expedition_list:
                 if expedition.id in [189, 190]:
                     # Set event-specific expeditions to be done on sortie end
+                    fleet_needs_resupply[expedition.fleet_id] = True
                     expedition.check_later(0, -1)
         # Check home, repair if needed, and resupply
         go_home()
