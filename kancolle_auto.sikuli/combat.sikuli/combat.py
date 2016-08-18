@@ -390,7 +390,7 @@ class Combat:
             log_msg("Resupplying LBAS group %s!" % lbas_group)
             if lbas_group > 1:
                 # Ony click the tab if it's not the first group
-                check_and_click(self.kc_region, 'lbas_group_tab_%s.png' % lbas_group)
+                check_and_click(self.kc_region, Pattern('lbas_group_tab_%s.png' % lbas_group).similar(0.95))
                 sleep(1)
             if check_and_click(self.kc_region, 'lbas_resupply_button_1.png'):
                 sleep(2)
