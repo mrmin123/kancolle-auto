@@ -10,7 +10,7 @@
 
 > I make no guarantees that you will not be caught and penalized using kancolle-auto, so be smart about it. Don't spam expeditions and sorties nonstop 24/7. Try to mimic a human as much as possible with your use of this tool! Relevant discussion can be found [here](https://github.com/mrmin123/kancolle-auto/issues/130).
 
-> In addition, if you let kancolle-auto sortie you might lose ships! It is highly unlikely (multiple checks occur to prevent this from happening) but I make no guarantees! If you're using a viewer with subtitles, please read the 1st question and answer of the [FAQ](#faqcommonly-asked-questions)! Also, if you let kancolle-auto use buckets, make sure you can spare them!
+> In addition, if you let kancolle-auto sortie you might lose ships! It is highly unlikely (multiple checks occur to prevent this from happening) but I make no guarantees! If you're using a viewer with subtitles, please read the 1st question and answer of the [FAQ](#faqcommon-issues)! Also, if you let kancolle-auto use buckets, make sure you can spare them!
 
 ***
 
@@ -56,7 +56,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 5. Run Kantai Collection
 6. Run kancolle-auto using command `java -jar <path_to_sikuli>/sikuli-script.jar -r <path_to_kancolle_auto>/kancolle_auto.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kancolle_auto>` with the correct directories for your installs)
 
-#### FAQ/Commonly asked questions
+#### FAQ/Common Issues
 
 **Q: Can I lose my ships using kancolle-auto?**
 

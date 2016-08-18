@@ -1,4 +1,4 @@
-*If you are submitting a feature request or a non-bug report, please feel free to delete this template. Also feel free to delete sections of this template you do not find relevant when submitting a bug report. Thanks!*
+*Please read the FAQ/Common Issues section of the README before opening a ticket. If you are submitting a feature request or a non-bug report, please feel free to delete this template. Also feel free to delete sections of this template you do not find relevant when submitting a bug report. Thanks!*
 
 #### Environment details
 
