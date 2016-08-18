@@ -10,7 +10,7 @@
 
 > I make no guarantees that you will not be caught and penalized using kancolle-auto, so be smart about it. Don't spam expeditions and sorties nonstop 24/7. Try to mimic a human as much as possible with your use of this tool! Relevant discussion can be found [here](https://github.com/mrmin123/kancolle-auto/issues/130).
 
-> In addition, if you let kancolle-auto sortie you might lose ships! It is highly unlikely (multiple checks occur to prevent this from happening) but I make no guarantees! Also, if you let kancolle-auto use buckets, make sure you can spare them!
+> In addition, if you let kancolle-auto sortie you might lose ships! It is highly unlikely (multiple checks occur to prevent this from happening) but I make no guarantees! If you're using a viewer with subtitles, please read the 1st question and answer of the [FAQ](#faqcommonly-asked-questions)! Also, if you let kancolle-auto use buckets, make sure you can spare them!
 
 ***
 
@@ -34,7 +34,7 @@ Please read the [**kancolle-auto wiki**](https://github.com/mrmin123/kancolle-au
 * Expedition module &mdash; automate expeditions
 * PvP module &mdash; automate PvP
 * Combat module &mdash; automate sorties, node selections, repairs, and submarine switching
-  * Supports Event maps, Combined Fleet maps, and LBAS maps
+  * Supports sorties to Event maps, Combined Fleets, LBAS, and pre-boss/boss support expeditions
 * Quests module &mdash; automate quests
 * Individual toggles for each of the above modules
 * Scheduled sleeping/pausing of script
@@ -49,7 +49,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 
 #### Quick Start
 
-1. Install [Java JRE 7](http://www.oracle.com/technetwork/java/javase/downloads/jre7-downloads-1880261.html)
+1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 2. Install [Sikuli 1.0.x](https://launchpad.net/sikuli/sikulix/1.0.1) (not 1.1.x!) with options 2 and 5
 3. Install kancolle-auto
 4. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs))
@@ -58,14 +58,20 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 
 #### FAQ/Commonly asked questions
 
-**Q: Can I do other stuff on the machine or play Kantai Collection while kancolle-auto is running?**
+**Q: Can I lose my ships using kancolle-auto?**
 
-A: Kinda. kancolle-auto takes control of the mouse as it runs so it will be difficult to do anything meaningful while kancolle-auto is actively running. During scheduled pauses, however, you have full control of the machine. Just make sure that Kantai Collection is not in the middle of a PvP or Sortie when the schedule pause ends. The script will crash and you will have to restart the script.
+A: It's highly unlikely, but I can make no guarantees. There is a caveat to 'highly unlikely', however: if you're using a viewer with subtitles and those subtitles cover up ship portraits on the post-combat results screen (typically the last ship in a fleet if the subtitles are at the bottom of the screen), it can hinder kancolle-auto's ability to accurately detect ships in danger of being sunk. Either lower the subtitle's font size so that it does not cover up the results screen (I personally use a font size of 12px on KC3Kai), or disable them entirely.
+
+You could also lose ships if you set the Combat module's LastNodePush to `True` and accidentally push into a comabt node. Hopefully the warnings in the config file will help you make the right decision regarding this flag.
+
+**Q: Can I do other stuff on the machine/play Kantai Collection while kancolle-auto is running?**
+
+A: Sometimes. kancolle-auto takes control of the mouse as it runs so it will be difficult to do anything meaningful while kancolle-auto is actively running. During scheduled pauses, however, you have full control of the machine. Just make sure that Kantai Collection is not in the middle of a PvP or Sortie when the schedule pause ends. The script will crash and you will have to restart the script.
 
 **Q: kancolle-auto periodically crashes! (FindFailed errors)**
 
-A: This is 99% not a bug in the program so please do not make a ticket. Instead, try raising the `SleepModifier` field in the config to 1 or 2 or 3. If this does not reduce the number of crashes, then please create a detailed ticket.
+A: If you are on Windows, please try disabling time synchronization on the OS level ([relevant information](https://answers.launchpad.net/sikuli/+question/194095)). If that doesn't work, try raising the `SleepModifier` field in the config to 1, 2, or 3. If this does not reduce the number of crashes, then please open a detailed issue ticket.
 
 **Q: I started getting catbombed frequently after I started using kancolle-auto!**
 
-A: You're probably botting too much. Use the ScheduledSleep functionality and let the program pause itself for a few hours every day.
+A: You probably botted too much and triggered the game's bot protection. Use the ScheduledSleep functionality and let the program pause itself for a few hours every day.
