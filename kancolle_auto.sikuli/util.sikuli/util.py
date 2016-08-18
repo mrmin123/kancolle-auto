@@ -174,8 +174,8 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         global_regions['fleet_flags_sec'] = Region(util_settings['game_x'] + 340, util_settings['game_y'] + 100, 140, 35)
         global_regions['check_resupply'] = Region(util_settings['game_x'] + 465, util_settings['game_y'] + 155, 65, 285)
         global_regions['check_morale'] = Region(util_settings['game_x'] + 500, util_settings['game_y'] + 135, 22, 290)
-        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 290)
-        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 265)
+        global_regions['check_damage'] = Region(util_settings['game_x'] + 460, util_settings['game_y'] + 135, 48, 300)
+        global_regions['check_damage_combat'] = Region(util_settings['game_x'] + 290, util_settings['game_y'] + 185, 70, 280)
         global_regions['formation_line_ahead'] = Region(util_settings['game_x'] + 390, util_settings['game_y'] + 160, 120, 50)
         global_regions['formation_double_line'] = Region(util_settings['game_x'] + 520, util_settings['game_y'] + 160, 120, 50)
         global_regions['formation_diamond'] = Region(util_settings['game_x'] + 650, util_settings['game_y'] + 160, 120, 50)
@@ -222,7 +222,7 @@ def expand_areas(target):
     elif target == 'compass':
         return [-250, 400, -200, 200]
     elif target == 'node_select':
-        return[-9, 9, -9, 9]
+        return[-5, 5, -5, 5]
     elif target == 'quests_screen_check':
         return [-40, 700, -50, 300]
     elif target == 'quest_bar':
@@ -250,8 +250,7 @@ def rnavigation(kc_region, destination, max=0):
     # Look at all the things we can click!
     menu_main_options = ['menu_main_sortie.png', 'menu_main_fleetcomp.png', 'menu_main_resupply.png',
                          'menu_main_equip.png', 'menu_main_repair.png', 'menu_main_development.png']
-    menu_top_options = ['menu_top_encyclopedia.png', 'menu_top_inventory.png',
-                        'menu_top_furniture.png', 'menu_top_quests.png']
+    menu_top_options = ['menu_top_inventory.png', 'menu_top_quests.png']
     menu_side_options = ['menu_side_fleetcomp.png', 'menu_side_resupply.png', 'menu_side_equip.png',
                          'menu_side_repair.png', 'menu_side_development.png']
     menu_sortie_options = ['sortie_combat.png', 'sortie_expedition.png', 'sortie_pvp.png']
@@ -607,6 +606,26 @@ def refresh_kancolle(kc_window, settings, e):
         log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
         print e
         raise
+
+def debug_find(file, target_program, similarity=0.8):
+    """
+    Debug function. Uncomment the line in kancolle_auto.py referencing this function
+    to use. Finds specified file in target_program window and prints the resulting
+    Sikuli match file. Useful for checking to see if an image you've generated
+    for matching works properly
+    """
+    myApp = App.focus(target_program)
+    target_window = myApp.focusedWindow()
+    match = target_window.find(Pattern(file).similar(similarity))
+    print ""
+    print ""
+    print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
+    print "+    with minimum similarity of %s:" % similarity
+    print match
+    print ""
+    print ""
+    raise SystemExit
+
 
 class color:
     """
