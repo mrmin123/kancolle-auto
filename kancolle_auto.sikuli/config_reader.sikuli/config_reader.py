@@ -105,6 +105,9 @@ def get_config(settings, sleep_cycle):
         else:
             for i, val in enumerate(settings['lbas_groups']):
                 settings['lbas_groups'][i] = int(val)
+                settings['lbas_group_1_nodes'] = []
+                settings['lbas_group_2_nodes'] = []
+                settings['lbas_group_3_nodes'] = []
         settings['lbas_groups'].sort()
         settings['lbas_group_1_nodes'] = config.get('LBAS', 'Group1Nodes').replace(' ', '').split(',')
         if (1 in settings['lbas_groups'] and (len(settings['lbas_group_1_nodes']) != 0 and len(settings['lbas_group_1_nodes']) != 2)):
