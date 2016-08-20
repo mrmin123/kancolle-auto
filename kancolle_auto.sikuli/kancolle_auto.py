@@ -216,7 +216,7 @@ def sortie_action():
         # Check for event-specific expeditions
         if settings['expeditions_enabled'] is True and expedition_item is not None:
             for expedition in expedition_item.expedition_list:
-                if expedition.id in [189, 190]:
+                if expedition.id in [9998, 9999]:
                     # Set event-specific expeditions to be done on sortie end
                     fleet_needs_resupply[expedition.fleet_id - 1] = True
                     expedition.check_later(0, -1)
@@ -233,7 +233,7 @@ def sortie_action():
         # Check for event-specific expeditions
         if settings['expeditions_enabled'] is True and expedition_item is not None:
             # If the sortie failed, disable the event-specific expeditions to not keep them going, since combat will also be disabled
-            expedition_item.expedition_list[:] = [expedition for expedition in expedition_item.expedition_list if expedition.id not in [189, 190]]
+            expedition_item.expedition_list[:] = [expedition for expedition in expedition_item.expedition_list if expedition.id not in [9998, 9999]]
         go_home()
         settings['combat_enabled'] = False
         log_success("Medal obtained! Stopping combat module!")
