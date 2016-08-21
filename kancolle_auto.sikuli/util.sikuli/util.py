@@ -11,7 +11,7 @@ global_regions = {}
 def get_util_config():
     """Load the settings related to the util module"""
     global util_settings
-    log_msg("Reading config file")
+    log_msg("Reading util config file!")
     # Change paths and read config.ini
     os.chdir(getBundlePath())
     os.chdir('..')

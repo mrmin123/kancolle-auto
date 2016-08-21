@@ -133,5 +133,4 @@ def get_config(settings, sleep_cycle):
         log_msg("Quests enabled")
     else:
         settings['quests_enabled'] = False
-    log_success("Config successfully loaded!")
     return settings, sleep_cycle

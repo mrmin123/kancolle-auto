@@ -313,7 +313,8 @@ def init():
     global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, sleep_cycle, settings
     settings, sleep_cycle = config_reader.get_config(settings, sleep_cycle)
     get_util_config()
-    log_success("Starting kancolle_auto")
+    log_success("Config successfully loaded!")
+    log_success("Starting kancolle_auto!")
     try:
         log_msg("Finding window!")
         focus_window()
