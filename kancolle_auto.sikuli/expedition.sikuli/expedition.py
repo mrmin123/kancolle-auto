@@ -168,10 +168,10 @@ def ensei_factory(ensei_id, fleet_id):
         return Ensei(39, 'ensei_name_39.png', 'ensei_area_05.png', datetime.timedelta(hours=29, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 40:
         return Ensei(40, 'ensei_name_40.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=49, seconds=15), fleet_id)
-    elif ensei_id == 189:
-        return Ensei(189, 'ensei_name_189.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
-    elif ensei_id == 190:
-        return Ensei(190, 'ensei_name_190.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
+    elif ensei_id == 9998:
+        return Ensei(9998, 'ensei_name_preboss.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
+    elif ensei_id == 9999:
+        return Ensei(9999, 'ensei_name_boss.png', 'ensei_area_e.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
     else:
         log_warning("%s is an invalid/unsupported expedition! Defaulting to expedition 2!" % ensei_id)
         return ensei_factory(2, fleet_id)

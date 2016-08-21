@@ -216,7 +216,7 @@ def sortie_action():
         # Check for event-specific expeditions
         if settings['expeditions_enabled'] is True and expedition_item is not None:
             for expedition in expedition_item.expedition_list:
-                if expedition.id in [189, 190]:
+                if expedition.id in [9998, 9999]:
                     # Set event-specific expeditions to be done on sortie end
                     fleet_needs_resupply[expedition.fleet_id - 1] = True
                     expedition.check_later(0, -1)
@@ -233,7 +233,7 @@ def sortie_action():
         # Check for event-specific expeditions
         if settings['expeditions_enabled'] is True and expedition_item is not None:
             # If the sortie failed, disable the event-specific expeditions to not keep them going, since combat will also be disabled
-            expedition_item.expedition_list[:] = [expedition for expedition in expedition_item.expedition_list if expedition.id not in [189, 190]]
+            expedition_item.expedition_list[:] = [expedition for expedition in expedition_item.expedition_list if expedition.id not in [9998, 9999]]
         go_home()
         settings['combat_enabled'] = False
         log_success("Medal obtained! Stopping combat module!")
@@ -313,7 +313,8 @@ def init():
     global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, sleep_cycle, settings
     settings, sleep_cycle = config_reader.get_config(settings, sleep_cycle)
     get_util_config()
-    log_success("Starting kancolle_auto")
+    log_success("Config successfully loaded!")
+    log_success("Starting kancolle_auto!")
     try:
         log_msg("Finding window!")
         focus_window()
@@ -321,16 +322,20 @@ def init():
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(global_regions['game'], settings)
+            log_success("Quest module started")
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(global_regions['game'], settings)
+            log_success("Expedition module started")
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(global_regions['game'], settings)
+            log_success("Combat module started (PvP mode)")
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(global_regions['game'], settings)
             default_quest_mode = 'sortie'
+            log_success("Combat module started (Sortie mode)")
         if settings['pvp_enabled'] and settings['combat_enabled']:
             if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
                 # If either of the fleetcomp values are set to 0, do not define the fleet comp
