@@ -321,16 +321,20 @@ def init():
         if settings['quests_enabled']:
             # Define quest item if quest module is enabled
             quest_item = quest_module.Quests(global_regions['game'], settings)
+            log_success("Quest module started")
         if settings['expeditions_enabled']:
             # Define expedition list if expeditions module is enabled
             expedition_item = expedition_module.Expedition(global_regions['game'], settings)
+            log_success("Expedition module started")
         if settings['pvp_enabled']:
             # Define PvP item if pvp module is enabled
             pvp_item = combat_module.PvP(global_regions['game'], settings)
+            log_success("Combat module started (PvP mode)")
         if settings['combat_enabled']:
             # Define combat item if combat module is enabled
             combat_item = combat_module.Combat(global_regions['game'], settings)
             default_quest_mode = 'sortie'
+            log_success("Combat module started (Sortie mode)")
         if settings['pvp_enabled'] and settings['combat_enabled']:
             if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
                 # If either of the fleetcomp values are set to 0, do not define the fleet comp
