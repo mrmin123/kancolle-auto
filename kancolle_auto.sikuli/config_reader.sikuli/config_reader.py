@@ -121,7 +121,7 @@ def get_config(settings, sleep_cycle):
         if (3 in settings['lbas_groups'] and (settings['lbas_group_3_nodes'] != [''] and len(settings['lbas_group_3_nodes']) != 2)):
             log_error("You must specify zero (0) or two (2) nodes for active LBAS group 3!")
             sys.exit()
-        log_msg("LBAS enabled: groups %s" % ', '.join(settings['lbas_groups']))
+        log_msg("LBAS enabled: groups %s" % ', '.join(str(group) for group in settings['lbas_groups']))
     else:
         settings['lbas_enabled'] = False
     # 'Quests' section
