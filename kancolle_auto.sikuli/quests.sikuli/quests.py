@@ -206,7 +206,7 @@ class Quests:
         self.quests_checklist_queue.sort()
         log_msg("New quests to look for next time: %s" % ', '.join(self.quests_checklist_queue))
         while_count += 1
-        while_count_checker(kc_region, self.settings, while_count)
+        while_count_checker(self.kc_region, self.settings, while_count)
 
     def filter_quests(self, disable):
         log_msg("Filtering out quests...")

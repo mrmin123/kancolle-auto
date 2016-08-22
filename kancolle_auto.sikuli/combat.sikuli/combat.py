@@ -271,7 +271,7 @@ class Combat:
                         if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
                             sleep(1)
                         while_count += 1
-                        while_count_checker(kc_region, self.settings, while_count)
+                        while_count_checker(self.kc_region, self.settings, while_count)
                 # Check to see if we're at the flagship retreat screen
                 if check_and_click(self.kc_region, 'combat_flagship_dmg.png'):
                     sleep(3)
@@ -548,7 +548,7 @@ class Combat:
                         check_and_click(self.kc_region, 'fleetcomp_shiplist_sort_arrow.png')
                         sleep_fast()
                         while_count += 1
-                        while_count_checker(kc_region, self.settings, while_count)
+                        while_count_checker(self.kc_region, self.settings, while_count)
                     if shiplist_page == 1:
                         check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
@@ -665,7 +665,7 @@ class PvP:
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             sleep_fast()
             while_count += 1
-            while_count_checker(kc_region, self.settings, while_count)
+            while_count_checker(self.kc_region, self.settings, while_count)
         log_msg("PvP complete!")
         return True
 

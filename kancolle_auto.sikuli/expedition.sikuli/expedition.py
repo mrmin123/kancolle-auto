@@ -30,7 +30,7 @@ class Expedition:
             wait_and_click(self.kc_region, expedition.area_pict, 10)
             sleep_fast()
             while_count += 1
-            while_count_checker(kc_region, self.settings, while_count)
+            while_count_checker(self.kc_region, self.settings, while_count)
         sleep_fast()
         # If the expedition can't be selected, it's either running or just returned
         if not check_and_click(self.kc_region, 'decision.png'):
