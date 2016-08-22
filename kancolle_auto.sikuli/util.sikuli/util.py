@@ -470,7 +470,8 @@ def rnavigation(kc_region, destination, settings, max=0):
         else:
             final_target = ''
         while_count += 1
-        raise FindFailed("rnavigation looping too much!")
+        if while_count > 4:
+            raise FindFailed("rnavigation looping too much!")
 
 def jst_convert(time):
     """
@@ -621,7 +622,6 @@ def while_count_checker(kc_region, settings, while_count):
 
 def esc_recovery(kc_region, settings, context="loop"):
     if settings['basic_recovery'] is True:
-        sleep(1)
         type(Key.ESC)
         if context == "recovery":
             if kc_region.exists(Pattern('menu_main_home.png').exact()):

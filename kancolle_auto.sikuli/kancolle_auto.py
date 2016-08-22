@@ -48,6 +48,7 @@ def focus_window():
                kc_window.exists('catbomb.png')) and loop_count < 10:
         myApp = App.focus(settings['program'])
         kc_window = myApp.focusedWindow()
+        esc_recovery(kc_window, settings)
         loop_count += 1
     # Check for catbomb
     if kc_window.exists('catbomb.png'):
@@ -115,7 +116,7 @@ def check_expedition():
             rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(1)
             while_count += 1
-            while_count_checker(kc_region, settings, while_count)
+            while_count_checker(kc_window, settings, while_count)
         check_expedition()
         return True
     else:
@@ -141,7 +142,7 @@ def resupply():
                         global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
                         sleep_fast()
                         while_count += 1
-                        while_count_checker(kc_region, settings, while_count)
+                        while_count_checker(kc_window, settings, while_count)
                 check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                 sleep_fast()
         log_success("Done resupplying!")
