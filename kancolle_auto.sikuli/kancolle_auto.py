@@ -63,6 +63,7 @@ def focus_window():
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
 # returning expeditions
 def go_home(refresh=False):
+    global settings
     # Focus on KanColle
     focus_window()
     # Check if we're already at home screen
@@ -76,12 +77,12 @@ def go_home(refresh=False):
             resupply()
         elif refresh:
             # We're at home, but if we're due for a refresh, refresh
-            rnavigation(global_regions['game'], 'refresh_home', 0)
+            rnavigation(global_regions['game'], 'refresh_home', settings, 0)
             # Check for completed expeditions. Resupply them if there are.
             if check_expedition():
                 resupply()
     else:
-        rnavigation(global_regions['game'], 'home')
+        rnavigation(global_regions['game'], 'home', settings)
         log_success("At Home!")
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
@@ -108,10 +109,13 @@ def check_expedition():
         if settings['quests_enabled'] is True:
             quest_item.done_expeditions += 1
         done_expeditions += 1
+        while_count = 0
         while not global_regions['game'].exists('menu_main_sortie.png'):
             check_and_click(global_regions['next'], 'next.png', expand_areas('next'))
             rejigger_mouse(kc_window, 370, 770, 100, 400)
             sleep(1)
+            while_count += 1
+            while_count_checker(kc_region, settings, while_count)
         check_expedition()
         return True
     else:
@@ -120,21 +124,24 @@ def check_expedition():
 
 # Resupply all or a specific fleet
 def resupply():
-    global fleet_needs_resupply
+    global fleet_needs_resupply, settings
     log_msg("Lets resupply fleets!")
     if True in fleet_needs_resupply:
         # Check if we're already at resupply screen
         if not global_regions['game'].exists('resupply_screen.png'):
-            rnavigation(global_regions['game'], 'resupply')
+            rnavigation(global_regions['game'], 'resupply', settings)
         for fleet_id, returned in enumerate(fleet_needs_resupply):
             if returned:
                 # If not resupplying the first fleet, navigate to correct fleet
                 if fleet_id != 0:
                     fleet_flag = 'fleet_%d.png' % (fleet_id + 1)
                     fleet_flag_selected = 'fleet_%ds.png' % (fleet_id + 1)
+                    while_count = 0
                     while not global_regions['fleet_flags_main'].exists(Pattern(fleet_flag_selected).similar(0.95)):
                         global_regions['fleet_flags_main'].click(pattern_generator(global_regions['fleet_flags_main'], fleet_flag, expand_areas('fleet_id')))
                         sleep_fast()
+                        while_count += 1
+                        while_count_checker(kc_region, settings, while_count)
                 check_and_click(global_regions['fleet_flags_main'], pattern_generator(global_regions['fleet_flags_main'], Pattern('resupply_all.png').exact()), expand_areas('fleet_id'))
                 sleep_fast()
         log_success("Done resupplying!")
@@ -184,7 +191,7 @@ def pvp_action():
     if settings['quests_enabled']:
         quest_action('pvp')
     go_home()
-    rnavigation(global_regions['game'], 'pvp', 2)
+    rnavigation(global_regions['game'], 'pvp', settings, 2)
     while pvp_item.go_pvp():
         done_pvp += 1
         fleet_needs_resupply[0] = True
@@ -197,7 +204,7 @@ def pvp_action():
         go_home()
         if settings['expeditions_enabled']:
             expedition_action_wrapper()
-        rnavigation(global_regions['game'], 'pvp', 2)
+        rnavigation(global_regions['game'], 'pvp', settings, 2)
     fleet_needs_resupply[0] = False
 
 # Actions involved in conducting sorties
@@ -207,7 +214,7 @@ def sortie_action():
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
-    rnavigation(global_regions['game'], 'combat', 2)
+    rnavigation(global_regions['game'], 'combat', settings, 2)
     combat_results = combat_item.go_sortie()
     if combat_results[0]:
         fleet_needs_resupply[0] = True
@@ -245,13 +252,13 @@ def sortie_action():
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
-    global quest_item
+    global quest_item, settings
     go_home()
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
-        rnavigation(global_regions['game'], 'quests', 0)
+        rnavigation(global_regions['game'], 'quests', settings, 0)
     else:
-        rnavigation(global_regions['game'], 'quests', 2)
+        rnavigation(global_regions['game'], 'quests', settings, 2)
     quest_item.go_quests(mode, first_run)
     quest_item.schedule_loop = 0  # Always reset schedule loop after running through quests
 
