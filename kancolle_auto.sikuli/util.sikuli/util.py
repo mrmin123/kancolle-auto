@@ -559,6 +559,13 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
 
 # Refresh kancolle. Only supports catbomb situations and browers at the moment
 def refresh_kancolle(kc_window, settings, e):
+    if settings['basic_recovery'] is True:
+        sleep(1)
+        type(Key.ESC)
+        if kc_window.exists(Pattern('menu_main_home.png').exact()):
+            sleep(1)
+            log_success("Basic recovery successful! Re-initializing kancolle-auto!")
+            return True
     if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
@@ -599,13 +606,13 @@ def refresh_kancolle(kc_window, settings, e):
         while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
             sleep(1)
         check_and_click(kc_window, 'game_start.png')
-        sleep(2)
-        # Re-initialize kancolle-auto post-catbomb
-        init()
-    else:
-        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
-        print e
-        raise
+        sleep(5)
+        log_success("Catbomb recovery successful! Re-initializing kancolle-auto!")
+        return True
+    # If we get to this point, none of the above recovery attempts worked
+    log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
+    print e
+    raise
 
 def debug_find(file, target_program, similarity=0.8):
     """

@@ -315,82 +315,80 @@ def init():
     get_util_config()
     log_success("Config successfully loaded!")
     log_success("Starting kancolle_auto!")
-    try:
-        log_msg("Finding window!")
-        focus_window()
-        log_msg("Defining module items!")
-        if settings['quests_enabled']:
-            # Define quest item if quest module is enabled
-            quest_item = quest_module.Quests(global_regions['game'], settings)
-            log_success("Quest module started")
-        if settings['expeditions_enabled']:
-            # Define expedition list if expeditions module is enabled
-            expedition_item = expedition_module.Expedition(global_regions['game'], settings)
-            log_success("Expedition module started")
-        if settings['pvp_enabled']:
-            # Define PvP item if pvp module is enabled
-            pvp_item = combat_module.PvP(global_regions['game'], settings)
-            log_success("Combat module started (PvP mode)")
-        if settings['combat_enabled']:
-            # Define combat item if combat module is enabled
-            combat_item = combat_module.Combat(global_regions['game'], settings)
-            default_quest_mode = 'sortie'
-            log_success("Combat module started (Sortie mode)")
-        if settings['pvp_enabled'] and settings['combat_enabled']:
-            if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
-                # If either of the fleetcomp values are set to 0, do not define the fleet comp
-                # switcher module
-                pass
-            elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
-                # Define fleet comp switcher module if both pvp and combat modules are enabled
-                # and they have different fleet comps assigned
-                fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
-        # Go home
-        go_home(True)
-        if settings['scheduled_sleep_enabled']:
-            # If just starting script, set a sleep start time
-            now_time = datetime.datetime.now()
-            if now_time.hour * 100 + now_time.minute > int(settings['scheduled_sleep_start']):
-                # If the schedule sleep start time for the day has passed, set it for the next day
-                reset_next_sleep_time(True)
-            else:
-                # Otherwise, set it for later in the day
-                reset_next_sleep_time()
-        if settings['scheduled_stop_enabled'] and settings['scheduled_stop_mode'] == 'time':
-            # If ScheduledStop is enabled and its mode is 'time', set the stop time on script start
-            settings['scheduled_stop_time'] = datetime.datetime.now() + datetime.timedelta(hours=settings['scheduled_stop_count'])
-        if settings['quests_enabled']:
+    log_msg("Finding window!")
+    focus_window()
+    log_msg("Defining module items!")
+    if settings['quests_enabled']:
+        # Define quest item if quest module is enabled
+        quest_item = quest_module.Quests(global_regions['game'], settings)
+        log_success("Quest module started")
+    if settings['expeditions_enabled']:
+        # Define expedition list if expeditions module is enabled
+        expedition_item = expedition_module.Expedition(global_regions['game'], settings)
+        log_success("Expedition module started")
+    if settings['pvp_enabled']:
+        # Define PvP item if pvp module is enabled
+        pvp_item = combat_module.PvP(global_regions['game'], settings)
+        log_success("Combat module started (PvP mode)")
+    if settings['combat_enabled']:
+        # Define combat item if combat module is enabled
+        combat_item = combat_module.Combat(global_regions['game'], settings)
+        default_quest_mode = 'sortie'
+        log_success("Combat module started (Sortie mode)")
+    if settings['pvp_enabled'] and settings['combat_enabled']:
+        if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
+            # If either of the fleetcomp values are set to 0, do not define the fleet comp
+            # switcher module
+            pass
+        elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
+            # Define fleet comp switcher module if both pvp and combat modules are enabled
+            # and they have different fleet comps assigned
+            fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
+    # Go home
+    go_home(True)
+    if settings['scheduled_sleep_enabled']:
+        # If just starting script, set a sleep start time
+        now_time = datetime.datetime.now()
+        if now_time.hour * 100 + now_time.minute > int(settings['scheduled_sleep_start']):
+            # If the schedule sleep start time for the day has passed, set it for the next day
+            reset_next_sleep_time(True)
+        else:
+            # Otherwise, set it for later in the day
+            reset_next_sleep_time()
+    if settings['scheduled_stop_enabled'] and settings['scheduled_stop_mode'] == 'time':
+        # If ScheduledStop is enabled and its mode is 'time', set the stop time on script start
+        settings['scheduled_stop_time'] = datetime.datetime.now() + datetime.timedelta(hours=settings['scheduled_stop_count'])
+    if settings['quests_enabled']:
+        # Run through quests defined in quests item
+        quest_action(default_quest_mode, True)
+    if settings['expeditions_enabled']:
+        # Run expeditions defined in expedition item
+        go_home()
+        expedition_item.go_expedition()
+        expedition_action('all')
+    if settings['pvp_enabled']:
+        reset_next_pvp_time()
+        now_time = datetime.datetime.now()
+        if not 3 <= jst_convert(now_time).hour < 5:
+            # Run PvP, but not between the time when PvP resets but quests do not!
+            pvp_action()
+    if settings['combat_enabled']:
+        if settings['quests_enabled'] and settings['pvp_enabled']:
             # Run through quests defined in quests item
-            quest_action(default_quest_mode, True)
-        if settings['expeditions_enabled']:
-            # Run expeditions defined in expedition item
-            go_home()
-            expedition_item.go_expedition()
-            expedition_action('all')
-        if settings['pvp_enabled']:
-            reset_next_pvp_time()
-            now_time = datetime.datetime.now()
-            if not 3 <= jst_convert(now_time).hour < 5:
-                # Run PvP, but not between the time when PvP resets but quests do not!
-                pvp_action()
-        if settings['combat_enabled']:
-            if settings['quests_enabled'] and settings['pvp_enabled']:
-                # Run through quests defined in quests item
-                quest_action('sortie', True)
-            # Run sortie defined in combat item
-            sortie_action()
-        display_timers()
-    except FindFailed, e:
-        refresh_kancolle(kc_window, settings, e)
+            quest_action('sortie', True)
+        # Run sortie defined in combat item
+        sortie_action()
+    display_timers()
 
-# initialize kancolle_auto
-# debug_find('dmg_critical.png', 'Chrome', 0.75)  # For debugging purposes only!
-init()
-log_msg("Initial checks and commands complete. Starting loop.")
-main_loop = True
-start_scheduled_sleep = False
-while main_loop:
-    try:
+def kancolle_auto_wrapper():
+    global kc_window, fleet_needs_resupply, quest_item, expedition_item, combat_item, pvp_item
+    global quest_reset_skip, default_quest_mode, next_sleep_time, next_pvp_time, sleep_cycle, settings
+    global idle, done_expeditions, done_sorties, done_pvp
+    init()
+    log_msg("Initial checks and commands complete. Starting loop.")
+    main_loop = True
+    start_scheduled_sleep = False
+    while main_loop:
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
             for expedition in expedition_item.expedition_list:
@@ -446,46 +444,52 @@ while main_loop:
         if not idle:
             display_timers()
             idle = True
+        # Check to see if we need to begin scheduled sleep, but don't actually start the
+        # scheduled sleep until after we've checked for scheduled stop
+        if settings['scheduled_sleep_enabled']:
+            now_time = datetime.datetime.now()
+            if now_time > next_sleep_time:
+                if settings['expeditions_enabled']:
+                    expedition_action_wrapper()
+                start_scheduled_sleep = True
+        # Check to see if we need to do a scheduled stop
+        if settings['scheduled_stop_enabled']:
+            stop_flag = False
+            if settings['scheduled_stop_mode'] == 'time':
+                now_time = datetime.datetime.now()
+                if now_time > settings['scheduled_stop_time']:
+                    log_success("kancolle-auto has ran for the desired %s hours! Shutting down now!" % settings['scheduled_stop_count'])
+                    stop_flag = True
+            elif settings['scheduled_stop_mode'] == 'expedition':
+                if done_expeditions >= settings['scheduled_stop_count']:
+                    log_success("kancolle-auto has ran the desired %s expeditions! Shutting down now!" % settings['scheduled_stop_count'])
+                    stop_flag = True
+            elif settings['scheduled_stop_mode'] == 'sortie':
+                if done_expeditions >= settings['scheduled_stop_count']:
+                    log_success("kancolle-auto has ran for the desired %s sorties! Shutting down now!" % settings['scheduled_stop_count'])
+                    stop_flag = True
+            elif settings['scheduled_stop_mode'] == 'pvp':
+                if done_expeditions >= settings['scheduled_stop_count']:
+                    log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
+                    stop_flag = True
+            if stop_flag:
+                # Turn the main loop off
+                main_loop = False
+        if start_scheduled_sleep:
+            # If it's time to sleep, set the next sleep start time...
+            reset_next_sleep_time(True)
+            # ... and go to sleep
+            log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
+            sleep(settings['scheduled_sleep_length'] * 3600, 600)
+            start_scheduled_sleep = False
+        else:
+            # Otherwise, just sleep for the sleep cycle length
+            sleep(sleep_cycle)
+
+# initialize kancolle_auto
+# debug_find('dmg_critical.png', 'Chrome', 0.75)  # For debugging purposes only!
+while True:
+    try:
+        kancolle_auto_wrapper()
     except FindFailed, e:
         refresh_kancolle(kc_window, settings, e)
-    # Check to see if we need to begin scheduled sleep, but don't actually start the
-    # scheduled sleep until after we've checked for scheduled stop
-    if settings['scheduled_sleep_enabled']:
-        now_time = datetime.datetime.now()
-        if now_time > next_sleep_time:
-            if settings['expeditions_enabled']:
-                expedition_action_wrapper()
-            start_scheduled_sleep = True
-    # Check to see if we need to do a scheduled stop
-    if settings['scheduled_stop_enabled']:
-        stop_flag = False
-        if settings['scheduled_stop_mode'] == 'time':
-            now_time = datetime.datetime.now()
-            if now_time > settings['scheduled_stop_time']:
-                log_success("kancolle-auto has ran for the desired %s hours! Shutting down now!" % settings['scheduled_stop_count'])
-                stop_flag = True
-        elif settings['scheduled_stop_mode'] == 'expedition':
-            if done_expeditions >= settings['scheduled_stop_count']:
-                log_success("kancolle-auto has ran the desired %s expeditions! Shutting down now!" % settings['scheduled_stop_count'])
-                stop_flag = True
-        elif settings['scheduled_stop_mode'] == 'sortie':
-            if done_expeditions >= settings['scheduled_stop_count']:
-                log_success("kancolle-auto has ran for the desired %s sorties! Shutting down now!" % settings['scheduled_stop_count'])
-                stop_flag = True
-        elif settings['scheduled_stop_mode'] == 'pvp':
-            if done_expeditions >= settings['scheduled_stop_count']:
-                log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
-                stop_flag = True
-        if stop_flag:
-            # Turn the main loop off
-            main_loop = False
-    if start_scheduled_sleep:
-        # If it's time to sleep, set the next sleep start time...
-        reset_next_sleep_time(True)
-        # ... and go to sleep
-        log_msg("Schedule sleep begins! See you in around %s hours!" % settings['scheduled_sleep_length'])
-        sleep(settings['scheduled_sleep_length'] * 3600, 600)
-        start_scheduled_sleep = False
-    else:
-        # Otherwise, just sleep for the sleep cycle length
-        sleep(sleep_cycle)
