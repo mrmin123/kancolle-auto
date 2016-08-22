@@ -563,7 +563,8 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
 # Refresh kancolle
 def refresh_kancolle(kc_region, settings, e):
     if settings['basic_recovery'] is True:
-        esc_recovery(kc_region, settings, "recovery")
+        if esc_recovery(kc_region, settings, "recovery"):
+            return True
     if kc_region.exists('catbomb.png') and settings['recovery_method'] != 'None':
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
