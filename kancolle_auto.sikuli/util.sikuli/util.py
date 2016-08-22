@@ -613,22 +613,22 @@ def refresh_kancolle(kc_region, settings, e):
     raise
 
 def while_count_checker(kc_region, settings, while_count):
-    if while_count > 9:
+    if while_count > 10:
+        raise FindFailed("Something is wrong... looping too much!")
+    if while_count > 8:
         esc_recovery(kc_region, settings)
 
 def esc_recovery(kc_region, settings, context="loop"):
     if settings['basic_recovery'] is True:
         sleep(1)
         type(Key.ESC)
-        if kc_region.exists(Pattern('menu_main_home.png').exact()):
-            sleep(1)
-            if context == "recovery":
+        if context == "recovery":
+            if kc_region.exists(Pattern('menu_main_home.png').exact()):
+                sleep(1)
                 log_success("Basic recovery successful! Re-initializing kancolle-auto!")
-            else:
-                log_succses("Basic recovery successful!")
+                return True
+        else:
             return True
-    if context == "loop":
-        raise FindFailed("Something is wrong... Looping too much!")
 
 def debug_find(file, target_program, similarity=0.8):
     """
