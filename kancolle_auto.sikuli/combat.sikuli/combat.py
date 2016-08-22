@@ -632,6 +632,7 @@ class Combat:
 class PvP:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
+        self.settings = settings
 
     def go_pvp(self):
         # Select random pvp opponent
