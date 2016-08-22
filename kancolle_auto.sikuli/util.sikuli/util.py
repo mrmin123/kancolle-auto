@@ -470,7 +470,7 @@ def rnavigation(kc_region, destination, settings, max=0):
         else:
             final_target = ''
         while_count += 1
-        while_count_checker(kc_region, settings, while_count)
+        raise FindFailed("rnavigation looping too much!")
 
 def jst_convert(time):
     """
