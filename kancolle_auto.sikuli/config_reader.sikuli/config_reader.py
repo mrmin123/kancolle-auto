@@ -14,6 +14,7 @@ def get_config(settings, sleep_cycle):
     # 'General' section
     settings['program'] = config.get('General', 'Program')
     settings['recovery_method'] = config.get('General', 'RecoveryMethod')
+    settings['basic_recovery'] = config.getboolean('General', 'BasicRecovery')
     settings['jst_offset'] = config.getint('General', 'JSTOffset')
     sleep_cycle = config.getint('General', 'SleepCycle')
     # 'Scheduled Sleep' section

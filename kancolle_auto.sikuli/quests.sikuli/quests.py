@@ -8,6 +8,7 @@ class Quests:
     """
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
+        self.settings = settings
         self.quest_check_schedule = settings['quests_check_schedule']
         self.combat_enabled = settings['combat_enabled']
         if self.combat_enabled:
@@ -105,6 +106,7 @@ class Quests:
             disable = 'b'
             toggled_quests = list(self.activated_pvp_quests)
             temp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'b']
+        while_count = 0
         while checking_quests:
             toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
@@ -203,6 +205,8 @@ class Quests:
         self.quests_checklist_queue = list(set(self.sortie_quests_checklist_queue + self.pvp_quests_checklist_queue))
         self.quests_checklist_queue.sort()
         log_msg("New quests to look for next time: %s" % ', '.join(self.quests_checklist_queue))
+        while_count += 1
+        while_count_checker(self.kc_region, self.settings, while_count)
 
     def filter_quests(self, disable):
         log_msg("Filtering out quests...")

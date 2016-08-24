@@ -143,14 +143,14 @@ def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
 
-def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
+def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
     """
     Function for rejiggering the mouse position when required, usually to wake
     the screen up or move the mouse out of the way of buttons. The function
     will throw the mouse to around where the kanmasu portrait would be on the
     main screen. Thanks to @minh6a for working on this!
 
-    kc_window - Sikuli window
+    kc_region - Sikuli window
     x1, x2 - random value range for x-coord
     y1, y2 - random value range for y-coord
     """
@@ -162,7 +162,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         util_settings['screen_x'] = temp_screen.width
         util_settings['screen_y'] = temp_screen.height
     if find_position:
-        temp_game = kc_window.getLastMatch()
+        temp_game = kc_region.getLastMatch()
         # Define upper-left corner of game screen
         util_settings['game_x'] = temp_game.x - 99
         util_settings['game_y'] = temp_game.y
@@ -190,8 +190,8 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
 
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
-        rand_x = kc_window.x + randint(x1, x2)
-        rand_y = kc_window.y + randint(y1, y2)
+        rand_x = kc_region.x + randint(x1, x2)
+        rand_y = kc_region.y + randint(y1, y2)
     else:
         rand_x = util_settings['game_x'] + randint(x1, x2)
         rand_y = util_settings['game_y'] + randint(y1, y2)
@@ -204,7 +204,7 @@ def rejigger_mouse(kc_window, x1, x2, y1, y2, find_position=False):
         rand_y = util_settings['screen_y'] - 1
 
     # Rejigger mouse
-    kc_window.mouseMove(Location(rand_x, rand_y))
+    kc_region.mouseMove(Location(rand_x, rand_y))
 
 def expand_areas(target):
     """
@@ -236,7 +236,7 @@ def expand_areas(target):
     elif target == 'repair_list':
         return [-325, 35, -10, 6]
 
-def rnavigation(kc_region, destination, max=0):
+def rnavigation(kc_region, destination, settings, max=0):
     """
     Random navigation function. Randomly wanders through menu items a number
     of times before reaching its destination.
@@ -441,6 +441,7 @@ def rnavigation(kc_region, destination, max=0):
             log_msg("Going home!")
             # At top menu item; hit the home button until we get home (Akashi/Ooyodo, go away)
             final_target = 'menu_top_home.png'
+    while_count = 0
     while final_target != '':
         # In while loop so that if the button has to be pressed again for some
         # reason, it'll do it. Only works for certain destinations.
@@ -468,6 +469,9 @@ def rnavigation(kc_region, destination, max=0):
                 final_target = ''
         else:
             final_target = ''
+        while_count += 1
+        if while_count > 4:
+            raise FindFailed("rnavigation looping too much!")
 
 def jst_convert(time):
     """
@@ -557,9 +561,12 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
             pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
     return pic
 
-# Refresh kancolle. Only supports catbomb situations and browers at the moment
-def refresh_kancolle(kc_window, settings, e):
-    if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
+# Refresh kancolle
+def refresh_kancolle(kc_region, settings, e):
+    if settings['basic_recovery'] is True:
+        if esc_recovery(kc_region, settings, "recovery"):
+            return True
+    if kc_region.exists('catbomb.png') and settings['recovery_method'] != 'None':
         if settings['recovery_method'] == 'Browser':
             # Recovery steps if using a webbrowser with no other plugins
             # Assumes that 'F5' is a valid keyboard shortcut for refreshing
@@ -594,18 +601,35 @@ def refresh_kancolle(kc_window, settings, e):
             type(Key.SPACE)
         # The Game Start button is there and active, so click it to restart
         sleep(3)
-        rejigger_mouse(kc_window, 370, 770, 10, 200)
+        rejigger_mouse(kc_region, 370, 770, 10, 200)
         sleep(3)
-        while not kc_window.exists(Pattern('game_start.png').similar(0.999)):
+        while not kc_region.exists(Pattern('game_start.png').similar(0.999)):
             sleep(1)
-        check_and_click(kc_window, 'game_start.png')
-        sleep(2)
-        # Re-initialize kancolle-auto post-catbomb
-        init()
-    else:
-        log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
-        print e
-        raise
+        check_and_click(kc_region, 'game_start.png')
+        sleep(5)
+        log_success("Catbomb recovery successful! Re-initializing kancolle-auto!")
+        return True
+    # If we get to this point, none of the above recovery attempts worked
+    log_error("Non-catbomb script crash, or catbomb script crash w/ unsupported Viewer!")
+    print e
+    raise
+
+def while_count_checker(kc_region, settings, while_count):
+    if while_count > 10:
+        raise FindFailed("Something is wrong... looping too much!")
+    if while_count > 8:
+        esc_recovery(kc_region, settings)
+
+def esc_recovery(kc_region, settings, context="loop"):
+    if settings['basic_recovery'] is True:
+        type(Key.ESC)
+        if context == "recovery":
+            if kc_region.exists(Pattern('menu_main_home.png').exact()):
+                sleep(1)
+                log_success("Basic recovery successful! Re-initializing kancolle-auto!")
+                return True
+        else:
+            return True
 
 def debug_find(file, target_program, similarity=0.8):
     """
