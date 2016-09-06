@@ -59,7 +59,6 @@ def get_config(settings, sleep_cycle):
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
         settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
-        settings['submarine_switch'] = config.getboolean('Combat', 'SubmarineSwitch')
         settings['combat_area'] = config.get('Combat', 'Area')
         settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
@@ -99,6 +98,12 @@ def get_config(settings, sleep_cycle):
         log_msg("Combat enabled (sortie mode): sortieing to %s-%s" % (settings['combat_area'], settings['combat_subarea']))
     else:
         settings['combat_enabled'] = False
+    # 'SubmarineSwitch' section
+    if config.getboolean('SubmarineSwitch', 'Enabled') and settings['combat_enabled']:
+        settings['submarine_switch'] = True
+        log_msg("Submarine Switch enabled")
+    else:
+        settings['submarine_switch'] = False
     # 'LBAS' section
     if config.getboolean('LBAS', 'Enabled') and settings['combat_enabled']:
         settings['lbas_enabled'] = True
