@@ -74,7 +74,6 @@ class Quests:
         """
         sleep(1)
         checking_quests = True
-        temp_list = []
         self.active_quests = 0
         log_msg("Checking quests, filtering for %s quests!" % mode)
         if mode == 'sortie':
@@ -127,27 +126,24 @@ class Quests:
                         steel = check_number(quest_check_area, 'icon_steel.png', 'r', 33, 1)
                         bauxite = check_number(quest_check_area, 'icon_bauxite.png', 'r', 33, 1)
                         quest_reward = (fuel, ammo, steel, bauxite)
-                        for quest in [q for q in toggled_quests if q[0] == quest_type]:
+                        for quest in self.quest_list:
                             # Loop through every quest to search for, and compare their rewards with the quest we're looking at now
-                            if self.quest_list.find(quest).rewards == quest_reward:
-                                log_msg("Found quest %s!" % quest)
+                            if quest.rewards == quest_reward:
+                                log_msg("Found quest %s!" % quest.id)
                                 if quest_check_area.exists('quest_in_progress.png'):
-                                    log_msg("Quest %s already active!" % quest)
+                                    log_msg("Quest %s already active!" % quest.id)
                                 else:
-                                    log_msg("Attempting to start quest %s!" % quest)
+                                    log_msg("Attempting to start quest %s!" % quest.id)
                                     self.kc_region.click(quest_check_area.nearby(-7))
                                     sleep(3)
                                     if not quest_check_area.nearby(7).exists('quest_in_progress.png'):
                                         log_warning("Couldn't activate quest. Queue must be at maximum!")
-                                        temp_list.append(quest)
                                         continue
                                     else:
                                         self.active_quests += 1
-                                # If we got this far, quest is activated. Remove activated quest from queue and
-                                # add children to temp queue
-                                temp_list.extend(self.quest_list.get_children_ids(quest))
-                                started_quests.append(quest)
-                                waits = self.quest_list.find(quest).wait
+                                # If we got this far, quest is activated
+                                started_quests.append(quest.id)
+                                waits = quest.wait
                                 if waits[0] > 0:
                                     self.schedule_sorties.append(self.done_sorties + waits[0])
                                 if waits[1] > 0:
@@ -171,28 +167,7 @@ class Quests:
             temp_quests_checklist_queue = list(set(temp_quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 checking_quests = False
-        if mode == 'sortie':
-            if len(self.sortie_quests_checklist_queue) == self.sortie_quests_checklist_count:
-                self.sortie_quests_checklist_queue = temp_list
-            else:
-                self.sortie_quests_checklist_queue += temp_list
-            self.sortie_quests_checklist_queue.sort()
-        elif mode == 'pvp':
-            if len(self.pvp_quests_checklist_queue) == self.pvp_quests_checklist_count:
-                self.pvp_quests_checklist_queue = temp_list
-            else:
-                self.pvp_quests_checklist_queue += temp_list
-            self.pvp_quests_checklist_queue.sort()
-        """
-        if first_run:
-            self.quests_checklist_queue = temp_list
-        else:
-            self.quests_checklist_queue += temp_list
-            self.quests_checklist_queue.sort()
-        """
-        self.quests_checklist_queue = list(set(self.sortie_quests_checklist_queue + self.pvp_quests_checklist_queue))
-        self.quests_checklist_queue.sort()
-        log_msg("New quests to look for next time: %s" % ', '.join(self.quests_checklist_queue))
+        log_msg("Quest check complete!")
         while_count += 1
         while_count_checker(self.kc_region, self.settings, while_count)
 
