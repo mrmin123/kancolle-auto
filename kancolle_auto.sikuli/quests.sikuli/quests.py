@@ -98,7 +98,7 @@ class Quests:
                 quest_types.sort()
             elif mode == 'pvp':
                 quest_types.sort(reverse=True)
-            started_quests = []
+            activated_quests = []
             skip_page = True
             log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
             log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
@@ -137,7 +137,7 @@ class Quests:
                                     else:
                                         self.active_quests += 1
                                 # If we got this far, quest is activated
-                                started_quests.append(quest.id)
+                                activated_quests.append(quest.id)
                                 waits = quest.wait
                                 if waits[0] > 0:
                                     self.schedule_sorties.append(self.done_sorties + waits[0])
@@ -153,7 +153,7 @@ class Quests:
                     continue
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 checking_quests = False
-        log_msg("Quest check complete!")
+        log_msg("Quest check complete! Known active quests: %s" % ', '.join(activated_quests))
         while_count += 1
         while_count_checker(self.kc_region, self.settings, while_count)
 
