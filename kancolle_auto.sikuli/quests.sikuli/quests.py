@@ -320,46 +320,10 @@ class Quests:
 
 class QuestNode(object):
     """
-    QuestNode object to hold individual quests and connect to child quests.
+    QuestNode object to hold individual quests, their waits, and rewards
     """
     def __init__(self, id, wait=(0, 0, 0), rewards=(0, 0, 0, 0)):
         self.id = id
         self.wait = wait
         self.rewards = rewards
         self.children = []
-
-    def find(self, target_id):
-        target = None
-        if self.id == target_id:
-            return self
-        else:
-            for child in self.children:
-                target = child.find(target_id)
-                if target is not None:
-                    return target
-
-    def add_children(self, target_id, payload):
-        if self.id == target_id:
-            self.children.extend(payload)
-        else:
-            for child in self.children:
-                child.add_children(target_id, payload)
-
-    def get_children_ids(self, target_id):
-        children = []
-        if len(self.children) > 0:
-            for child in self.children:
-                if self.id == target_id:
-                    children.extend([child.id])
-                else:
-                    children.extend(child.get_children_ids(target_id))
-        return children
-
-    def __repr__(self, depth=0):
-        """
-        For debug purposes.
-        """
-        text = "\t" * depth + self.id + "\n"
-        for child in self.children:
-            text += child.__repr__(depth + 1)
-        return text
