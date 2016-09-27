@@ -91,17 +91,17 @@ class Quests:
             disable = 'b'
             toggled_quests = [q for q in self.quests_checklist_queue if q[0] != 'b']
         while_count = 0
+        toggled_quests = list(set(toggled_quests))
+        toggled_quests.sort()
+        quest_types = list(set([q[0] for q in toggled_quests]))
+        if mode == 'sortie':
+            quest_types.sort()
+        elif mode == 'pvp':
+            quest_types.sort(reverse=True)
+        skip_page = True
+        log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
+        log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
         while checking_quests:
-            toggled_quests = list(set(toggled_quests))
-            toggled_quests.sort()
-            quest_types = list(set([q[0] for q in toggled_quests]))
-            if mode == 'sortie':
-                quest_types.sort()
-            elif mode == 'pvp':
-                quest_types.sort(reverse=True)
-            skip_page = True
-            log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
-            log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
             removed_finished = self.finish_quests(page_backtrack)
             removed_filtered = self.filter_quests(disable)
             self.active_quests = self.active_quests - removed_finished - removed_filtered
