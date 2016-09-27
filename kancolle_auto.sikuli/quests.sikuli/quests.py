@@ -32,10 +32,6 @@ class Quests:
         Method for resetting of tracked quests.
         """
         self.quests_checklist_queue = list(sorted(self.quests_checklist))
-        self.sortie_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'c']
-        self.sortie_quests_checklist_count = len(self.sortie_quests_checklist_queue)
-        self.pvp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'b']
-        self.pvp_quests_checklist_count = len(self.pvp_quests_checklist_queue)
         log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
         self.active_quests = 0
         self.activated_sortie_quests = []
