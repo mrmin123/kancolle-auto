@@ -34,8 +34,6 @@ class Quests:
         self.quests_checklist_queue = list(sorted(self.quests_checklist))
         log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
         self.active_quests = 0
-        self.activated_sortie_quests = []
-        self.activated_pvp_quests = []
         self.done_sorties = 0
         self.done_pvp = 0
         self.done_expeditions = 0
@@ -84,18 +82,15 @@ class Quests:
             page_continue = 'quests_prev_page.png'
             page_backtrack = None
             disable = 'c'
-            toggled_quests = list(self.activated_sortie_quests)
-            temp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'c']
+            toggled_quests = [q for q in self.quests_checklist_queue if q[0] != 'c']
         elif mode == 'pvp':
             # Enable PvP quests, disable Sortie quests
             page_continue = 'quests_next_page.png'
             page_backtrack = 'quests_prev_page.png'
             disable = 'b'
-            toggled_quests = list(self.activated_pvp_quests)
-            temp_quests_checklist_queue = [q for q in self.quests_checklist_queue if q[0] != 'b']
+            toggled_quests = [q for q in self.quests_checklist_queue if q[0] != 'b']
         while_count = 0
         while checking_quests:
-            toggled_quests.extend(temp_quests_checklist_queue)
             toggled_quests = list(set(toggled_quests))
             toggled_quests.sort()
             quest_types = list(set([q[0] for q in toggled_quests]))
@@ -150,21 +145,12 @@ class Quests:
                                     self.schedule_pvp.append(self.done_pvp + waits[1])
                                 if waits[2] > 0:
                                     self.schedule_expeditions.append(self.done_expeditions + waits[2])
-                                if quest[0] == 'b':
-                                    self.activated_sortie_quests.append(quest)
-                                    self.activated_sortie_quests = list(set(self.activated_sortie_quests))
-                                elif quest[0] == 'c':
-                                    self.activated_pvp_quests.append(quest)
-                                    self.activated_pvp_quests = list(set(self.activated_pvp_quests))
-                                    break
-                                waits = self.quest_list.find(quest).wait
             if skip_page:
                 if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     checking_quests = False
                     break
                 else:
                     continue
-            temp_quests_checklist_queue = list(set(temp_quests_checklist_queue) - set(started_quests))
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 checking_quests = False
         log_msg("Quest check complete!")
