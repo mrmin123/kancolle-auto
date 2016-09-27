@@ -25,11 +25,15 @@ class Quests:
         self.quests_checklist = list(settings['active_quests'])
         self.define_quest_list()
         # Make sure quests are valid given the config. If not, remove it from
-        # the queue. There is probably a better way to do this + the tree,
-        # but I'm doing this in a hurry right now...
+        # the queue
         invalid_quests = []
         for quest in self.quests_checklist:
-            if self.quest_list.find(quest) is None:
+            found_invalid_quest = True
+            for defined_quest in self.quest_list:
+                if defined_quest.id == quest:
+                    found_invalid_quest = False
+                    break
+            if found_invalid_quest:
                 invalid_quests.append(quest)
         self.quests_checklist = list(set(self.quests_checklist) - set(invalid_quests))
         # Reset quests
