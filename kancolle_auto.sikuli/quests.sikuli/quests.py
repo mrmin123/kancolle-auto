@@ -23,13 +23,13 @@ class Quests:
                     self.expeditions_tokyo_express = True
                     break
         self.quests_checklist = list(settings['active_quests'])
-        self.define_quest_tree()
+        self.define_quest_list()
         # Make sure quests are valid given the config. If not, remove it from
         # the queue. There is probably a better way to do this + the tree,
         # but I'm doing this in a hurry right now...
         invalid_quests = []
         for quest in self.quests_checklist:
-            if self.quest_tree.find(quest) is None:
+            if self.quest_list.find(quest) is None:
                 invalid_quests.append(quest)
         self.quests_checklist = list(set(self.quests_checklist) - set(invalid_quests))
         # Reset quests
@@ -141,7 +141,7 @@ class Quests:
                         quest_reward = (fuel, ammo, steel, bauxite)
                         for quest in [q for q in toggled_quests if q[0] == quest_type]:
                             # Loop through every quest to search for, and compare their rewards with the quest we're looking at now
-                            if self.quest_tree.find(quest).rewards == quest_reward:
+                            if self.quest_list.find(quest).rewards == quest_reward:
                                 log_msg("Found quest %s!" % quest)
                                 if quest_check_area.exists('quest_in_progress.png'):
                                     log_msg("Quest %s already active!" % quest)
@@ -157,9 +157,9 @@ class Quests:
                                         self.active_quests += 1
                                 # If we got this far, quest is activated. Remove activated quest from queue and
                                 # add children to temp queue
-                                temp_list.extend(self.quest_tree.get_children_ids(quest))
+                                temp_list.extend(self.quest_list.get_children_ids(quest))
                                 started_quests.append(quest)
-                                waits = self.quest_tree.find(quest).wait
+                                waits = self.quest_list.find(quest).wait
                                 if waits[0] > 0:
                                     self.schedule_sorties.append(self.done_sorties + waits[0])
                                 if waits[1] > 0:
@@ -173,7 +173,7 @@ class Quests:
                                     self.activated_pvp_quests.append(quest)
                                     self.activated_pvp_quests = list(set(self.activated_pvp_quests))
                                     break
-                                waits = self.quest_tree.find(quest).wait
+                                waits = self.quest_list.find(quest).wait
             if skip_page:
                 if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     checking_quests = False
@@ -242,81 +242,78 @@ class Quests:
                     sleep(2)
         return removed
 
-    def define_quest_tree(self):
+    def define_quest_list(self):
         """
         Method for populating quest tree as required by config. Run once on
         initialization.
         """
-        self.quest_tree = QuestNode('root')
+        self.quest_list = []
         # Sortie quests
-        # Commented-out quests are not supported due to lack of images
         if self.combat_enabled:
             if 'bd1' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('bd1', (1, 0, 0), (50, 50, 0, 0))])
-                if 'bd2' in self.quests_checklist:
-                    self.quest_tree.add_children('bd1', [QuestNode('bd2', (1, 0, 0), (50, 50, 50, 50))])
-                    if 'bd3' in self.quests_checklist:
-                        self.quest_tree.add_children('bd2', [QuestNode('bd3', (3, 0, 0), (150, 150, 200, 100))])
-                    if 'bd5' in self.quests_checklist:
-                        self.quest_tree.add_children('bd2', [QuestNode('bd5', (3, 0, 0), (100, 50, 200, 50))])
-                        if 'bd7' in self.quests_checklist and self.combat_area == '2':
-                            self.quest_tree.add_children('bd5', [QuestNode('bd7', (5, 0, 0), (300, 0, 0, 200))])
-                            if 'bd8' in self.quests_checklist:
-                                self.quest_tree.add_children('bd7', [QuestNode('bd8', (2, 0, 0), (300, 30, 300, 30))])
-                        if 'bw2' in self.quests_checklist:
-                            self.quest_tree.add_children('bd5', [QuestNode('bw2', (5, 0, 0), (0, 500, 0, 500))])
-                            if 'bw5' in self.quests_checklist:
-                                self.quest_tree.add_children('bw2', [QuestNode('bw5', (5, 0, 0), (600, 0, 0, 0))])
-                                if 'bw6' in self.quests_checklist and self.combat_area == '4':
-                                    self.quest_tree.add_children('bw5', [QuestNode('bw6', (12, 0, 0), (400, 0, 0, 700))])
-                                    if 'bw8' in self.quests_checklist and self.combat_area == '4' and self.combat_subarea == '4':
-                                        self.quest_tree.add_children('bw6', [QuestNode('bw8', (1, 0, 0), (500, 0, 500, 0))])
-                                        # Doesn't make any sense to support bw9 like this, but whatever
-                                        if 'bw9' in self.quests_checklist and self.combat_area == '5' and self.combat_subarea == '2':
-                                            self.quest_tree.add_children('bw8', [QuestNode('bw9', (2, 0, 0), (0, 300, 0, 800))])
-                                if 'bw7' in self.quests_checklist and self.combat_area == '3' and (self.combat_subarea == '3' or self.combat_subarea == '4' or self.combat_subarea == '5'):
-                                        self.quest_tree.add_children('bw5', [QuestNode('bw7', (5, 0, 0), (300, 300, 400, 100))])
-                    if 'bw1' in self.quests_checklist:
-                        self.quest_tree.add_children('bd2', [QuestNode('bw1', (12, 0, 0), (300, 300, 300, 100))])
-                        if 'bw4' in self.quests_checklist:
-                            self.quest_tree.add_children('bw1', [QuestNode('bw4', (12, 0, 0), (400, 0, 800, 0))])
-                            if 'bw10' in self.quests_checklist:
-                                self.quest_tree.add_children('bw4', [QuestNode('bw10', (15, 0, 0), (100, 0, 0, 0))])
-                    if 'bw3' in self.quests_checklist:
-                        self.quest_tree.add_children('bd2', [QuestNode('bw3', (5, 0, 0), (500, 0, 400, 0))])
-                if 'bd4' in self.quests_checklist:
-                    self.quest_tree.add_children('bd1', [QuestNode('bd4', (3, 0, 0), (150, 150, 150, 300))])
-                if 'bd6' in self.quests_checklist:
-                    self.quest_tree.add_children('bd1', [QuestNode('bd6', (2, 0, 0), (0, 200, 0, 0))])
+                self.quest_list.append(QuestNode('bd1', (1, 0, 0), (50, 50, 0, 0)))
+            if 'bd2' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd2', (1, 0, 0), (50, 50, 50, 50)))
+            if 'bd3' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd3', (3, 0, 0), (150, 150, 200, 100)))
+            if 'bd4' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd4', (3, 0, 0), (150, 150, 150, 300)))
+            if 'bd5' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd5', (3, 0, 0), (100, 50, 200, 50)))
+            if 'bd6' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd6', (2, 0, 0), (0, 200, 0, 0)))
+            if 'bd7' in self.quests_checklist and self.combat_area == '2':
+                self.quest_list.append(QuestNode('bd7', (5, 0, 0), (300, 0, 0, 200)))
+            if 'bd8' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bd8', (2, 0, 0), (300, 30, 300, 30)))
+            if 'bw1' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw1', (12, 0, 0), (300, 300, 300, 100)))
+            if 'bw2' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw2', (5, 0, 0), (0, 500, 0, 500)))
+            if 'bw3' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw3', (5, 0, 0), (500, 0, 400, 0)))
+            if 'bw4' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw4', (12, 0, 0), (400, 0, 800, 0)))
+            if 'bw5' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw5', (5, 0, 0), (600, 0, 0, 0)))
+            if 'bw6' in self.quests_checklist and self.combat_area == '4':
+                self.quest_list.append(QuestNode('bw6', (12, 0, 0), (400, 0, 0, 700)))
+            if 'bw7' in self.quests_checklist and self.combat_area == '3' and (self.combat_subarea == '3' or self.combat_subarea == '4' or self.combat_subarea == '5'):
+                self.quest_list.append(QuestNode('bw7', (5, 0, 0), (300, 300, 400, 100)))
+            if 'bw8' in self.quests_checklist and self.combat_area == '4' and self.combat_subarea == '4':
+                self.quest_list.append(QuestNode('bw8', (1, 0, 0), (500, 0, 500, 0)))
+            if 'bw9' in self.quests_checklist and self.combat_area == '5' and self.combat_subarea == '2':
+                self.quest_list.append(QuestNode('bw9', (2, 0, 0), (0, 300, 0, 800)))
+            if 'bw10' in self.quests_checklist:
+                self.quest_list.append(QuestNode('bw10', (15, 0, 0), (100, 0, 0, 0)))
         # PvP quests
         if self.pvp_enabled:
             if 'c2' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('c2', (0, 3, 0), (50, 0, 50, 0))])
-                if 'c3' in self.quests_checklist:
-                    self.quest_tree.add_children('c2', [QuestNode('c3', (0, 5, 0), (0, 50, 0, 50))])
-                if 'c4' in self.quests_checklist:
-                    self.quest_tree.add_children('c2', [QuestNode('c4', (0, 20, 0), (200, 200, 200, 200))])
+                self.quest_list.append(QuestNode('c2', (0, 3, 0), (50, 0, 50, 0)))
+            if 'c3' in self.quests_checklist:
+                self.quest_list.append(QuestNode('c3', (0, 5, 0), (0, 50, 0, 50)))
+            if 'c4' in self.quests_checklist:
+                self.quest_list.append(QuestNode('c4', (0, 20, 0), (200, 200, 200, 200)))
             if 'c8' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('c8', (0, 7, 0), (0, 400, 0, 200))])
+                self.quest_list.append(QuestNode('c8', (0, 7, 0), (0, 400, 0, 200)))
         # Expedition quests
         if self.expeditions_enabled:
             if 'd2' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('d2', (0, 0, 1), (100, 100, 100, 100))])
-                if 'd3' in self.quests_checklist:
-                    self.quest_tree.add_children('d2', [QuestNode('d3', (0, 0, 5), (150, 300, 300, 150))])
+                self.quest_list.append(QuestNode('d2', (0, 0, 1), (100, 100, 100, 100)))
+            if 'd3' in self.quests_checklist:
+                self.quest_list.append(QuestNode('d3', (0, 0, 5), (150, 300, 300, 150)))
             if 'd4' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('d4', (0, 0, 15), (300, 500, 500, 300))])
-            if self.expeditions_tokyo_express:
-                if 'd9' in self.quests_checklist:
-                    self.quest_tree.add_children('root', [QuestNode('d9', (0, 0, 1), (150, 0, 0, 0))])
-                    if 'd11' in self.quests_checklist:
-                        self.quest_tree.add_children('d9', [QuestNode('d11', (0, 0, 7), (400, 0, 0, 400))])
+                self.quest_list.append(QuestNode('d4', (0, 0, 15), (300, 500, 500, 300)))
+            if 'd9' in self.quests_checklist:
+                self.quest_list.append(QuestNode('d9', (0, 0, 1), (150, 0, 0, 0)))
+            if 'd11' in self.quests_checklist:
+                self.quest_list.append(QuestNode('d11', (0, 0, 7), (400, 0, 0, 400)))
         # Supply/Docking quests
         if self.combat_enabled:
             if 'e3' in self.quests_checklist:
-                self.quest_tree.add_children('root', [QuestNode('e3', (0, 2, 0), (30, 30, 30, 30))])
-                if 'e4' in self.quests_checklist:
-                    self.quest_tree.add_children('e3', [QuestNode('e4', (15, 10, 15), (50, 50, 50, 50))])
+                self.quest_list.append(QuestNode('e3', (0, 2, 0), (30, 30, 30, 30)))
+            if 'e4' in self.quests_checklist:
+                self.quest_list.append(QuestNode('e4', (15, 10, 15), (50, 50, 50, 50)))
 
 class QuestNode(object):
     """
