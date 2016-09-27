@@ -72,6 +72,7 @@ class Quests:
         """
         sleep(1)
         checking_quests = True
+        activated_quests = []
         self.active_quests = 0
         log_msg("Checking quests, filtering for %s quests!" % mode)
         if mode == 'sortie':
@@ -98,7 +99,6 @@ class Quests:
                 quest_types.sort()
             elif mode == 'pvp':
                 quest_types.sort(reverse=True)
-            activated_quests = []
             skip_page = True
             log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
             log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
@@ -125,6 +125,7 @@ class Quests:
                             # Loop through every quest to search for, and compare their rewards with the quest we're looking at now
                             if quest.rewards == quest_reward:
                                 log_msg("Found quest %s!" % quest.id)
+                                activated_quests.append(quest.id)
                                 if quest_check_area.exists('quest_in_progress.png'):
                                     log_msg("Quest %s already active!" % quest.id)
                                 else:
@@ -137,7 +138,6 @@ class Quests:
                                     else:
                                         self.active_quests += 1
                                 # If we got this far, quest is activated
-                                activated_quests.append(quest.id)
                                 waits = quest.wait
                                 if waits[0] > 0:
                                     self.schedule_sorties.append(self.done_sorties + waits[0])
