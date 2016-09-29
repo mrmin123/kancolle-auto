@@ -33,7 +33,7 @@ class Quests:
         """
         self.quests_checklist_queue = list(sorted(self.quests_checklist))
         log_success("Quests reset. Checking for the following quests: %s" % self.quests_checklist_queue)
-        self.active_quests = 0
+        self.active_quests = -1  # Set to -1 to bypass no known active quest check in need_to_check
         self.done_sorties = 0
         self.done_pvp = 0
         self.done_expeditions = 0
@@ -44,12 +44,13 @@ class Quests:
 
     def need_to_check(self):
         check = False
-        if len(self.quests_checklist_queue) == 0 and self.active_quests == 0:
-            # No quests in queue, and no known active quests. No need to check
-            # quests.
+        if self.active_quests == 0:
+            # No known active quests. No need to check quests.
             return check
         # Check against the waits stored from previous quest check loops
+        print self.done_sorties
         temp_list = [i for i in self.schedule_sorties if i > self.done_sorties]
+        print temp_list
         if len(temp_list) < len(self.schedule_sorties):
             check = True
             self.schedule_sorties = list(temp_list)
