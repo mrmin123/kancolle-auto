@@ -391,6 +391,11 @@ def init():
         quest_item.schedule_loop += 1
         temp_need_to_check = quest_item.need_to_check()
         log_msg("Quest check loop count at %s; need to check is %s with %s quests being tracked" % (quest_item.schedule_loop, temp_need_to_check, quest_item.active_quests))
+        log_msg("Next quest check after %s sortie(s) / %s pvp(s) / %s expedition(s)" % (
+            quest_item.schedule_sorties[0] - quest_item.done_sorties if len(quest_item.schedule_sorties) > 0 else 0,
+            quest_item.schedule_pvp[0] - quest_item.done_pvp if len(quest_item.schedule_pvp) > 0 else 0,
+            quest_item.schedule_expeditions[0] - quest_item.done_expeditions if len(quest_item.schedule_expeditions) > 0 else 0
+        ))
         if temp_need_to_check:
             go_home()
             quest_action(default_quest_mode)

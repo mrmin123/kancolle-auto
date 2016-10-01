@@ -140,10 +140,13 @@ class Quests:
                                 waits = quest.wait
                                 if waits[0] > 0:
                                     self.schedule_sorties.append(self.done_sorties + waits[0])
+                                    self.schedule_sorties.sort()
                                 if waits[1] > 0:
                                     self.schedule_pvp.append(self.done_pvp + waits[1])
+                                    self.schedule_pvp.sort()
                                 if waits[2] > 0:
                                     self.schedule_expeditions.append(self.done_expeditions + waits[2])
+                                    self.schedule_expeditions.sort()
             if skip_page:
                 if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                     checking_quests = False
@@ -153,6 +156,11 @@ class Quests:
             if not check_and_click(self.kc_region, page_continue, expand_areas('quests_navigation')):
                 checking_quests = False
         log_msg("Quest check complete! Known active quests: %s" % ', '.join(activated_quests))
+        log_msg("Next quest check after %s sortie(s) / %s pvp(s) / %s expedition(s)" % (
+            self.schedule_sorties[0] - self.done_sorties if len(self.schedule_sorties) > 0 else 0,
+            self.schedule_pvp[0] - self.done_pvp if len(self.schedule_pvp) > 0 else 0,
+            self.schedule_expeditions[0] - self.done_expeditions if len(self.schedule_expeditions) > 0 else 0
+        ))
         while_count += 1
         while_count_checker(self.kc_region, self.settings, while_count)
 
