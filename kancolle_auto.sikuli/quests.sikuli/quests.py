@@ -230,6 +230,7 @@ class Quests:
                 self.quest_list.append(QuestNode('bw3', (5, 0, 0), (500, 0, 400, 0)))
             if 'bw4' in self.quests_checklist:
                 self.quest_list.append(QuestNode('bw4', (12, 0, 0), (400, 0, 800, 0)))
+                self.quest_list.append(QuestNode('bw4', (12, 0, 0), (400, 0, 500, 0)))  # Backup BW4 node in case of OCR failure
             if 'bw5' in self.quests_checklist:
                 self.quest_list.append(QuestNode('bw5', (5, 0, 0), (600, 0, 0, 0)))
             if 'bw6' in self.quests_checklist and self.combat_area == '4':
