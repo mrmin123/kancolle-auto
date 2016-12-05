@@ -569,28 +569,31 @@ class Combat:
                         for enabled_sub in self.submarine_switch_subs:
                             enabled_sub_flag = '_%s' % enabled_sub if enabled_sub is not 'all' else ''
                             fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
-                            for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.9)):
-                                self.kc_region.click(sub)
-                                if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
-                                    # The damaged sub can't be replaced with this subtype, so skip the rest of the matches
-                                    log_msg("Can't replace with this sub class!")
-                                    break
-                                if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
-                                     self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
-                                     self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
-                                     self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
-                                    # Submarine available. Switch it in!
-                                    log_msg("Swapping submarines!")
-                                    check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
-                                    ships_switched_out += 1
-                                    sub_chosen = True
-                                    break
-                                else:
-                                    # Submarine is damaged/under repair; click away
-                                    log_msg("Submarine not available, moving on!")
-                                    check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                    sleep(2)
-                                    pass
+                            try:
+                                for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.9)):
+                                    self.kc_region.click(sub)
+                                    if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
+                                        # The damaged sub can't be replaced with this subtype, so skip the rest of the matches
+                                        log_msg("Can't replace with this sub class!")
+                                        break
+                                    if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
+                                        self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
+                                        self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
+                                        self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
+                                        # Submarine available. Switch it in!
+                                        log_msg("Swapping submarines!")
+                                        check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
+                                        ships_switched_out += 1
+                                        sub_chosen = True
+                                        break
+                                    else:
+                                        # Submarine is damaged/under repair; click away
+                                        log_msg("Submarine not available, moving on!")
+                                        check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
+                                        sleep(2)
+                                        pass
+                            except:
+                                pass
                         # If we went through all the submarines on the shiplist page and haven't found a valid
                         # replacement, head to the next page (up to page 11 supported)
                         if not sub_chosen:
