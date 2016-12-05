@@ -13,6 +13,7 @@ class Combat:
         self.kc_region = kc_region
         self.settings = settings
         self.submarine_switch = settings['submarine_switch']
+        self.submarine_switch_subs = settings['submarine_switch_subs']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
@@ -558,20 +559,23 @@ class Combat:
                     saw_subs = False
                     while not sub_chosen and not sub_unavailable:
                         if self.kc_region.exists('fleetcomp_shiplist_submarine.png'):
-                            log_msg("We are seeing submarines!")
+                            log_msg("We are seeing available submarines!")
                             saw_subs = True
                         else:
                             if saw_subs:
                                 # We're not seeing any more submarines in the shiplist...
                                 log_warning("No more submarines!")
                                 return False
-                        if self.kc_region.exists(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
-                            log_msg("We are seeing available submarines!")
-                            for sub in self.kc_region.findAll(Pattern('fleetcomp_shiplist_submarine_available.png').similar(0.9)):
+                        for enabled_sub in self.submarine_switch_subs:
+                            enabled_sub_flag = '_%s' % enabled_sub if enabled_sub is not 'all' else ''
+                            fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
+                            for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.9)):
                                 self.kc_region.click(sub)
-                                if (self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()) and
-                                    self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_substat.png').exact()) and not
-                                    (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
+                                if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact():
+                                    # The damaged sub can't be replaced with this subtype, so skip the rest of the matches
+                                    log_msg("Can't replace with this sub class!");
+                                    break
+                                if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
                                      self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
                                      self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
                                      self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity)))):
@@ -583,7 +587,7 @@ class Combat:
                                     break
                                 else:
                                     # Submarine is damaged/under repair; click away
-                                    log_msg("Submarine not available (or is Taigei), moving on!")
+                                    log_msg("Submarine not available, moving on!")
                                     check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
                                     sleep(2)
                                     pass
