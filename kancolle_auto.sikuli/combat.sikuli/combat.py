@@ -565,12 +565,15 @@ class Combat:
                             if saw_subs:
                                 # We're not seeing any more submarines in the shiplist...
                                 log_warning("No more submarines!")
+                                exit()
                                 return False
                         for enabled_sub in self.submarine_switch_subs:
                             enabled_sub_flag = '_%s' % enabled_sub if enabled_sub is not 'all' else ''
                             fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
+                            print fleetcomp_shiplist_submarine_img
                             try:
                                 for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.9)):
+                                    print 'found match'
                                     self.kc_region.click(sub)
                                     if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                         # The damaged sub can't be replaced with this subtype, so skip the rest of the matches
