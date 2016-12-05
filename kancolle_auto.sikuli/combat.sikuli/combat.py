@@ -568,7 +568,7 @@ class Combat:
                                 exit()
                                 return False
                         for enabled_sub in self.submarine_switch_subs:
-                            enabled_sub_flag = '_%s' % enabled_sub if enabled_sub is not 'all' else ''
+                            enabled_sub_flag = '' if enabled_sub == 'all' else '_%s' % enabled_sub
                             fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
                             print fleetcomp_shiplist_submarine_img
                             try:
