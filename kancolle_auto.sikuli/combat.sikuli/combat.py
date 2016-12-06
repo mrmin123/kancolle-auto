@@ -247,6 +247,13 @@ class Combat:
                     self.tally_damages(add=True, combat=True)
                     wait_and_click(global_regions['next'], 'next.png', 30, expand_areas('next'))
                     sleep(3)
+                    if not self.kc_region.exists('combat_retreat.png'):
+                        # Rudimentary check to dismiss ship reward before FCF screen (if applicable)
+                        if check_and_click(global_regions['next'], 'next_alt.png', expand_areas('next')):
+                            sleep(1)
+                        if check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
+                            sleep(1)
+                        sleep(3)
                     if self.kc_region.exists('fcf_check.png'):
                         # Only bother to retreat via FCF if only one ship is critically damaged,
                         # otherwise, continue with FCF and retreat normally
