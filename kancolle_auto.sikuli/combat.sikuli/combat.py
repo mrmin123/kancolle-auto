@@ -13,7 +13,8 @@ class Combat:
         self.kc_region = kc_region
         self.settings = settings
         self.submarine_switch = settings['submarine_switch']
-        self.submarine_switch_subs = settings['submarine_switch_subs']
+        if self.submarine_switch:
+            self.submarine_switch_subs = settings['submarine_switch_subs']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
