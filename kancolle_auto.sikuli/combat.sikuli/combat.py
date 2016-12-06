@@ -581,6 +581,8 @@ class Combat:
                                     if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                         # The damaged sub can't be replaced with this subtype, so skip the rest of the matches
                                         log_msg("Can't replace with this sub class!")
+                                        check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
+                                        sleep(1)
                                         break
                                     if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
                                         self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
@@ -596,8 +598,7 @@ class Combat:
                                         # Submarine is damaged/under repair; click away
                                         log_msg("Submarine not available, moving on!")
                                         check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                        sleep(2)
-                                        pass
+                                        sleep(1)
                             except:
                                 pass
                         # If we went through all the submarines on the shiplist page and haven't found a valid
