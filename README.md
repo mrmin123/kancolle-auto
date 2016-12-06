@@ -59,17 +59,17 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 
 ### FAQ/Common Issues
 
-**Q: Can I lose my ships using kancolle-auto?**
+#### Q: Can I lose my ships using kancolle-auto?
 
 A: It's highly unlikely, but I can make no guarantees. There is a caveat to 'highly unlikely', however: if you're using a viewer with subtitles and those subtitles cover up ship portraits on the post-combat results screen (typically the last ship in a fleet if the subtitles are at the bottom of the screen), it can hinder kancolle-auto's ability to accurately detect ships in danger of being sunk. Either lower the subtitle's font size so that it does not cover up the results screen (I personally use a font size of 12px on KC3Kai), or disable them entirely.
 
 You could also lose ships if you set the Combat module's LastNodePush to `True` and accidentally push into a comabt node. Hopefully the warnings in the config file will help you make the right decision regarding this flag.
 
-**Q: Can I do other stuff on the machine/play Kantai Collection while kancolle-auto is running?**
+#### Q: Can I do other stuff on the machine/play Kantai Collection while kancolle-auto is running?
 
 A: Sometimes. kancolle-auto takes control of the mouse as it runs so it will be difficult to do anything meaningful while kancolle-auto is actively running. During scheduled pauses, however, you have full control of the machine. Just make sure that Kantai Collection is not in the middle of a PvP or Sortie when the schedule pause ends. The script will crash and you will have to restart the script.
 
-**Q: kancolle-auto crashes on startup (AttributeError ( 'NoneType' object has no attribute 'x' ) error)**
+#### Q: kancolle-auto crashes on startup (AttributeError ( 'NoneType' object has no attribute 'x' ) error)
 
 A: Check/try the following:
 
@@ -78,10 +78,10 @@ A: Check/try the following:
 * Disable any extensions or plugins that might obstruct the Kantai Collection game window.
 * The moment the script starts, manually click on the game window to switch focus to it.
 
-**Q: kancolle-auto periodically crashes! (FindFailed errors)**
+#### Q: kancolle-auto periodically crashes! (FindFailed errors)
 
 A: If you are on Windows, please try disabling time synchronization on the OS level ([relevant information](https://answers.launchpad.net/sikuli/+question/194095)). If that doesn't work, try raising the `SleepModifier` field in the config to 1, 2, or 3. If this does not reduce the number of crashes, then please open a detailed issue ticket.
 
-**Q: I started getting catbombed frequently after I started using kancolle-auto!**
+#### Q: I started getting catbombed frequently after I started using kancolle-auto!
 
 A: You probably botted too much and triggered the game's bot protection. Use the ScheduledSleep functionality and let the program pause itself for a few hours every day.
