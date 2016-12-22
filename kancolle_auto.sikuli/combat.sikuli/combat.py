@@ -191,9 +191,9 @@ class Combat:
             return (continue_combat, False)
         if not self.kc_region.exists(Pattern('combat_start_disabled.png').exact()):
             log_success("Commencing sortie!")
-            if self.lbas_enabled:
-                # If LBAS is enabled, use the special LBAS combat start button and
-                # assign LBAS groups to their assigned nodes
+            if self.lbas_enabled and (len(self.lbas_nodes[1]) == 2 or len(self.lbas_nodes[2]) == 2 or len(self.lbas_nodes[3]) == 2):
+                # If LBAS is enabled and sortie nodes are assigned, use the special LBAS
+                # combat start button and assign LBAS groups to their assigned nodes
                 wait_and_click(self.kc_region, 'combat_start_lbas.png')
                 sleep(6)
                 self.lbas_sortie()
@@ -396,7 +396,13 @@ class Combat:
     # On event map selection screen, segues into LBAS resupply interface and
     # resupplies desired air groups
     def lbas_resupply(self):
-        check_and_click(self.kc_region, 'lbas_resupply_menu.png')
+        menu_button = 'lbas_resupply_menu.png'
+        menu_faded = 'lbas_resupply_menu_faded.png'
+        # If event interface, look for the event-specific LBAS buttons
+        if self.area_num == 'E':
+            menu_button = 'lbas_resupply_menu_event.png'
+            menu_faded = 'lbas_resupply_menu_event_faded.png'
+        check_and_click(self.kc_region, menu_button)
         sleep(2)
         for lbas_group in self.lbas_groups:
             # Loop through active air support groups
@@ -410,7 +416,7 @@ class Combat:
                 rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                 sleep(4)
         # Done resupplying
-        check_and_click(self.kc_region, 'lbas_resupply_menu_faded.png')
+        check_and_click(self.kc_region, menu_faded)
         sleep(2)
 
     # Sends air groups out to desired nodes at beginning of sortie
