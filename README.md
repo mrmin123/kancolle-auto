@@ -1,6 +1,6 @@
 # kancolle-auto
 
-**kancolle-auto** is a robust Kantai Collection automation tool.
+**kancolle-auto** is a robust Kantai Collection automation tool run from the command line. Please see the [kancolle-auto GUI APP (KAGA)](https://github.com/waicool20/KAGA), developed by waicool20, for a GUI for kancolle-auto (note: KAGA is not maintained by the developer of kancolle-auto).
 
 ***
 
@@ -81,6 +81,10 @@ A: Check/try the following:
 #### Q: kancolle-auto periodically crashes! (FindFailed errors)
 
 A: If you are on Windows, please try disabling time synchronization on the OS level ([relevant information](https://answers.launchpad.net/sikuli/+question/194095)). If that doesn't work, try raising the `SleepModifier` field in the config to 1, 2, or 3. If this does not reduce the number of crashes, then please open a detailed issue ticket.
+
+#### Q: kancolle-auto does not take timers into consideration and/or I get OCR warnings (n0text warnings)
+
+A: You're missing the tesseract OCR files. Please re-install Sikuli with the correct settings.
 
 #### Q: I started getting catbombed frequently after I started using kancolle-auto!
 
