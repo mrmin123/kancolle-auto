@@ -1,7 +1,7 @@
 #### 2017-1-1 ([Release 6.1](https://github.com/mrmin123/kancolle-auto/releases/tag/6.1))
 * Happy New Year
 * Add CHANGELOG to repo
-* Update README
+* Update README and ISSUE_TEMPLATE
 
 #### 2016-12-22
 * Add support for LBAS on normal non-event maps

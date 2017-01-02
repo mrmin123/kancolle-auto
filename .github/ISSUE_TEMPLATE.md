@@ -1,16 +1,13 @@
-*Please read the FAQ/Common Issues section of the README before opening a ticket. If you are submitting a feature request or a non-bug report, please feel free to delete this template. Also feel free to delete sections of this template you do not find relevant when submitting a bug report. Thanks!*
+*Please read the FAQ/Common Issues section of the README before opening a ticket. Please remove sections of this template you do not find relevant when creating your ticket.*
 
 #### Environment details
 
-* kancolle-auto version (last modified date):
+* kancolle-auto version (date on first line of your CHANGELOG.md):
 * Viewer/browser:
 * Operating system:
 
 #### Issue
-Is the issue consistent (can be reproduced consistently) or is it transient (only happens sometimes)? Please check one of the boxes:
-
-- [ ] Consistent
-- [ ] Transient
+Is the issue consistent (can be reproduced consistently) or is it transient (only happens sometimes)?:
 
 [replace this line with a description of issue, along with any screenshots and/or videos. Please be descriptive as possible, describing step by step what is happening in the game]
 
