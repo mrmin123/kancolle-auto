@@ -1,4 +1,4 @@
-#### 2017-01-22
+#### 2017-01-22 ([Release 7](https://github.com/mrmin123/kancolle-auto/releases/tag/7))
 * Upgrade to use Sikuli 1.1.1/SikuliX
   * WARNING: Future versions of kancolle-auto will no longer be compatible with Sikuli 1.0.x! Please upgrade Sikuli following the [Quick Start](https://github.com/mrmin123/kancolle-auto#quick-start) directions
 * Update README
