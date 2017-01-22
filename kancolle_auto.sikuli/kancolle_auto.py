@@ -1,3 +1,10 @@
+# Workaround to get jython imports working
+# https://bugs.launchpad.net/sikuli/+bug/1504901
+# https://github.com/RaiMan/SikuliX-2014/issues/151
+import org.sikuli.util.JythonHelper
+JythonHelper.get().addSysPath(getBundlePath())
+
+# Proceed as normal
 import datetime, os, sys
 sys.path.append(os.getcwd())
 import config_reader as config_reader
@@ -58,6 +65,7 @@ def focus_window():
         log_error("Could not find Kancolle homepage after 10 attempts. Exiting script.")
         exit()
     # One more rejigger once the game has been found, to store game window coordinates
+    kc_window.wait(Pattern('menu_main_home.png').exact())
     rejigger_mouse(kc_window, 370, 770, 100, 400, True)
     sleep(2)
 
