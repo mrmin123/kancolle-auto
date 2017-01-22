@@ -1,3 +1,10 @@
+# Workaround to get jython imports working
+# https://bugs.launchpad.net/sikuli/+bug/1504901
+# https://github.com/RaiMan/SikuliX-2014/issues/151
+import org.sikuli.util.JythonHelper
+JythonHelper.get().addSysPath(getBundlePath())
+
+# Proceed as normal
 import datetime, os, sys
 sys.path.append(os.getcwd())
 import config_reader as config_reader
