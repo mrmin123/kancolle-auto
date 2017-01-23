@@ -446,6 +446,7 @@ def kancolle_auto_wrapper():
             if jst_convert(now_time).hour == 6 and quest_reset_skip is True:
                 quest_reset_skip = False
         if settings['pvp_enabled']:
+            now_time = datetime.datetime.now()
             if now_time > next_pvp_time:
                 idle = False
                 pvp_action()
