@@ -323,8 +323,7 @@ class Combat:
         else:
             if self.kc_region.exists('combat_nogo_repair.png'):
                 log_warning("Cannot sortie due to ships under repair!")
-                self.next_sortie_time_set(0, 5, 5)
-                # Expand on this so it goes to repair menu and recheck?
+                self.go_repair()
             elif self.kc_region.exists('combat_nogo_resupply.png'):
                 log_warning("Cannot sortie due to ships needing resupply!")
             elif self.area_num == 'E' and self.kc_region.exists('combat_start_warning_shipsfull_event.png'):
@@ -461,6 +460,7 @@ class Combat:
         except:
             self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+            return
         if empty_docks > 0:
             log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
