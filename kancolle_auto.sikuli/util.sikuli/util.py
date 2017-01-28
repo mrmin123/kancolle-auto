@@ -59,7 +59,8 @@ def check_ocr(kc_region, text_ref, dir, width):
             text = kc_region.find(text_ref).right(width).text().encode('utf-8')
         elif dir == 'l':
             text = kc_region.find(text_ref).left(width).text().encode('utf-8')
-    elif isinstance(text_ref, Match):
+    else:
+    # elif isinstance(text_ref, Match):
         if dir == 'r':
             text = text_ref.right(width).text().encode('utf-8')
         elif dir == 'l':
