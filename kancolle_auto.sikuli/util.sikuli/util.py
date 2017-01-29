@@ -1,5 +1,6 @@
 import ConfigParser, datetime
 from sikuli import *
+from org.sikuli.script import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
