@@ -1,5 +1,6 @@
 import ConfigParser, datetime
 from sikuli import *
+from org.sikuli.script import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
@@ -59,8 +60,7 @@ def check_ocr(kc_region, text_ref, dir, width):
             text = kc_region.find(text_ref).right(width).text().encode('utf-8')
         elif dir == 'l':
             text = kc_region.find(text_ref).left(width).text().encode('utf-8')
-    else:
-    # elif isinstance(text_ref, Match):
+    elif isinstance(text_ref, Match):
         if dir == 'r':
             text = text_ref.right(width).text().encode('utf-8')
         elif dir == 'l':
