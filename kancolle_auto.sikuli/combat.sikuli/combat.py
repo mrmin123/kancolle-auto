@@ -521,6 +521,9 @@ class Combat:
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
         if self.submarine_switch:
+            # Set fastest repair time (which might be a sub) as next sortie time to save time
+            if len(self.repair_timers) > 0:
+                self.next_sortie_time_set()
             if self.switch_sub():
                 log_msg("Attempting to switch out submarines!")
                 # If switch_subs() returns True (all ships being repaired are switched out)
