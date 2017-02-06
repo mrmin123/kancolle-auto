@@ -452,13 +452,13 @@ class Combat:
                 timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                 self.repair_timers.append(timer)
             self.repair_timers.sort()
+            self.next_sortie_time_set()
         except:
             pass
         try:
             for i in self.kc_region.findAll('repair_empty.png'):
                 empty_docks += 1
         except:
-            self.next_sortie_time_set()
             log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         if empty_docks > 0:
             log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
