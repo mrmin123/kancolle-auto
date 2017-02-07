@@ -546,17 +546,17 @@ class Combat:
                 ships_to_switch = 0
                 ships_switched_out = 0
                 shiplist_page = 1
-                # Check each ship being repaired
+                # Check each ship with specified repair/damage state
                 for i in self.kc_region.findAll(Pattern(image).similar(self.dmg_similarity)):
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
-                    log_msg("Found ship under repair!")
+                    log_msg("Found ship that is %s!" % scan_list_dict[idx])
                     target_region = i.offset(Location(-165, 0)).right(180).below(70)
                     ships_to_switch += 1
                     # Check if the ship is a submarine by checking its stats
                     target_region.click('fleetcomp_ship_stats_button.png')
                     sleep(2)
                     if self.kc_region.exists(Pattern('fleetcomp_ship_stats_submarine.png').exact()):
-                        log_msg("Ship under repair is a submarine!")
+                        log_msg("Ship is a submarine!")
                         # If the ship is a sub, back out of stats screen and go to ship switch list
                         sleep(1)
                         check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
