@@ -451,7 +451,6 @@ class Combat:
                 repair_timer = check_timer(self.kc_region, i, 'l', 100)
                 timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                 self.repair_timers.append(timer)
-            self.repair_timers.sort()
             self.next_sortie_time_set()
         except:
             pass
@@ -649,7 +648,11 @@ class Combat:
     # stored time, replace. Otherwise, keep the older (longer) one
     def next_sortie_time_set(self, hours=-1, minutes=-1, flex=0, override=False):
         if hours == -1 and minutes == -1:
-            self.next_sortie_time = self.repair_timers[0]
+            if len(self.repair_timers) > 0:
+                self.repair_timers.sort()
+                self.next_sortie_time = self.repair_timers[0]
+            else:
+                self.next_sortie_time = datetime.datetime.now()
         else:
             proposed_time = datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes + randint(0, flex))
             if override:
