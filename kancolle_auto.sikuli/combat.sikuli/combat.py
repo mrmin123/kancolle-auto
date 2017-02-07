@@ -532,10 +532,18 @@ class Combat:
     def switch_sub(self):
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
-        scan_list = ['dmg_light.png', 'dmg_moderate.png', 'dmg_critical.png', 'fleetcomp_dmg_repair.png']
-        for image in scan_list:
+        scan_list = ['fleetcomp_dmg_repair.png']
+        scan_list_dict = {0: 'under repair'}
+        if self.area_num == '2' and self.subarea_num == '3':
+            # Also switch out other damaged ships for Orel
+            # Consider taking this conditional out after further testing
+            scan_list.extend(['dmg_critical.png', 'dmg_moderate.png', 'dmg_light.png'])
+            scan_list_dict[1] = 'critically damaged'
+            scan_list_dict[2] = 'moderately damaged'
+            scan_list_dict[3] = 'lightly damaged'
+        for idx, image in enumerate(scan_list):
             if self.kc_region.exists(Pattern(image).similar(self.dmg_similarity)):
-                ships_under_repair = 0
+                ships_to_switch = 0
                 ships_switched_out = 0
                 shiplist_page = 1
                 # Check each ship being repaired
@@ -543,7 +551,7 @@ class Combat:
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                     log_msg("Found ship under repair!")
                     target_region = i.offset(Location(-165, 0)).right(180).below(70)
-                    ships_under_repair += 1
+                    ships_to_switch += 1
                     # Check if the ship is a submarine by checking its stats
                     target_region.click('fleetcomp_ship_stats_button.png')
                     sleep(2)
@@ -602,9 +610,9 @@ class Combat:
                                                 sleep(1)
                                                 break
                                         if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
-                                            self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
-                                            self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
-                                            self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
+                                                self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
+                                                self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
+                                                self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
                                             # Submarine available. Switch it in!
                                             log_msg("Swapping submarines!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
@@ -632,12 +640,12 @@ class Combat:
                                 sub_unavailable = True
                     else:
                         check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
-                if ships_under_repair == ships_switched_out:
-                    log_success("All submarines successfully swapped out! Continuing sorties!")
+                if ships_to_switch == ships_switched_out:
+                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[idx])
                     return True
-        # else:
-        #     log_msg("No ships being repaired at the moment. Continuing sorties!")
-        #     return True
+            else:
+                log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[idx])
+                return True
         log_warning("Not all ships under repairs are submarines, or not all submarines could not be swapped out! Waiting for repairs!")
         return False
 
