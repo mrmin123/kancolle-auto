@@ -1,3 +1,4 @@
+# kancolle-auto utility functions
 import ConfigParser, datetime
 from sikuli import *
 from org.sikuli.script import *

@@ -1,4 +1,4 @@
-# Combat list.
+# Combat module
 from sikuli import *
 import datetime
 from random import randint, choice

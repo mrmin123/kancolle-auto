@@ -1,4 +1,4 @@
-# Ensei (expedition) task list.
+# Quest module
 from sikuli import *
 from util import *
 

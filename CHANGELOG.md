@@ -1,3 +1,13 @@
+#### 2017-02-07
+* Improvements to repair and submarine switch modules (thanks to @waicool20)
+* Minor updates and code cleanup
+
+#### 2017-01-28
+* Bugfix for crash when kancolle-auto's repair module encounters a completely filled repair screen (thanks to @waicool20)
+
+#### 2017-01-23
+* Bugfix for crash when kancolle-auto is started only with PvP module enabled (thanks to @waicool20)
+
 #### 2017-01-22 ([Release 7](https://github.com/mrmin123/kancolle-auto/releases/tag/7))
 * Upgrade to use Sikuli 1.1.1/SikuliX
   * WARNING: Future versions of kancolle-auto will no longer be compatible with Sikuli 1.0.x! Please upgrade Sikuli following the [Quick Start](https://github.com/mrmin123/kancolle-auto#quick-start) directions
