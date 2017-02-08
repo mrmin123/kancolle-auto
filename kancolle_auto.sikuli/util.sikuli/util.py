@@ -547,7 +547,6 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
         if mod == 'prematched':
             m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_region.getLastMatch()))
         else:
-            print find(pic)
             m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
         if m:
             # If a match is found and the x,y sizes can be ascertained, generate
