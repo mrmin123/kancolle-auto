@@ -599,7 +599,7 @@ class Combat:
                                         self.kc_region.click(sub)
                                         if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                             # The damaged sub can't be replaced with this subtype
-                                            log_msg("Can't replace with this sub class!")
+                                            log_msg("Can't replace with this sub!" if enabled_sub == 'all' else "Can't replace with this sub type!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
                                             if enabled_sub == 'all':
                                                 # If 'all' subs are valid, continue findAll loop
