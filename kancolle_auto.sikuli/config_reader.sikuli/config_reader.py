@@ -1,3 +1,4 @@
+# Config-reader module
 import ConfigParser, sys
 from sikuli import *
 from util import *

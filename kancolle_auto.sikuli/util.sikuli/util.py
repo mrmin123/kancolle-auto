@@ -1,3 +1,4 @@
+# kancolle-auto utility functions
 import ConfigParser, datetime
 from sikuli import *
 from org.sikuli.script import *
@@ -553,8 +554,6 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
             x_width = int(m.group(1)) / 2
             y_height = int(m.group(2)) / 2
             expand = [-x_width, x_width, -y_height, y_height]
-    else:
-        reset_mouse = True
     if len(expand) == 4:
         if isinstance(pic, str):
             pic = Pattern(pic).targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))

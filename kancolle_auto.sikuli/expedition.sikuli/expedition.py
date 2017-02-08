@@ -1,4 +1,4 @@
-# Ensei (expedition) task list.
+# Expedition module
 from sikuli import *
 import datetime
 from util import *
