@@ -1,3 +1,6 @@
+#### 2017-02-11
+* Add support for 2017 Winter Event E-1
+
 #### 2017-02-07 ([Release 7.1](https://github.com/mrmin123/kancolle-auto/releases/tag/7.1))
 * Improvements to repair and submarine switch modules (thanks to @waicool20)
 * Further modifications to combat module
