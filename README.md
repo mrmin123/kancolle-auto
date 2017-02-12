@@ -26,7 +26,7 @@ Please read the [**kancolle-auto wiki**](https://github.com/mrmin123/kancolle-au
 
 * The [**Changelog**](http://github.com/mrmin123/kancolle-auto/wiki/Changelog) will have information on the differences between the releases and master branch
 * Please refer to the [**Setup**](https://github.com/mrmin123/kancolle-auto/wiki/Setup) page for instructions on setting up kancolle-auto
-* Examples of the config can be found [**here**](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs), while Event-specific config examples can be found [**here**](https://github.com/mrmin123/kancolle-auto/wiki/Example-Event-configs)
+* Examples of the config can be found [**here**](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs), while Event-specific config examples can be found [**here**](https://github.com/mrmin123/kancolle-auto/wiki/Event-configs)
 
 
 ### Features
@@ -52,7 +52,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 2. Install [SikuliX 1.1.1](http://nightly.sikuli.de/) (Nightly; latest tested stable vesion is [sikulixsetup-1.1.1-20170115](https://oss.sonatype.org/content/groups/public/com/sikulix/sikulixsetup/1.1.1-SNAPSHOT/sikulixsetup-1.1.1-20170115.001619-83-forsetup.jar)) with options 1 (Pack 1) and 3 (Tesseract OCR) selected
 3. Install kancolle-auto
-4. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs))
+4. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([standard examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs)/[event examples](https://github.com/mrmin123/kancolle-auto/wiki/Event-configs))
 5. Run Kantai Collection
 6. Run kancolle-auto using command `java -jar <path_to_sikuli>/sikulix.jar -r <path_to_kancolle_auto>/kancolle_auto.sikuli` (replacing `<path_to_sikuli>` and `<path_to_kancolle_auto>` with the correct directories for your installs)
 
