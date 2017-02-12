@@ -1,5 +1,6 @@
 #### 2017-02-11
 * Begin adding support for 2017 Winter Event
+* Bugfix to LBAS panel switch image so it works with low-moarale planes
 
 #### 2017-02-07 ([Release 7.1](https://github.com/mrmin123/kancolle-auto/releases/tag/7.1))
 * Improvements to repair and submarine switch modules (thanks to @waicool20)
