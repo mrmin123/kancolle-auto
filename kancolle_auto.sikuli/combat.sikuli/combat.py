@@ -533,11 +533,13 @@ class Combat:
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
         scan_list = ['fleetcomp_dmg_repair.png']
+        scan_list_status = [False]
         scan_list_dict = {0: 'under repair'}
         if self.area_num == '2' and self.subarea_num == '3':
             # Also switch out other damaged ships for Orel
             # Consider taking this conditional out after further testing
             scan_list.extend(['dmg_critical.png', 'dmg_moderate.png', 'dmg_light.png'])
+            scan_list_status.extend([False, False, False])
             scan_list_dict[1] = 'critically damaged'
             scan_list_dict[2] = 'moderately damaged'
             scan_list_dict[3] = 'lightly damaged'
@@ -641,13 +643,17 @@ class Combat:
                     else:
                         check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
                 if ships_to_switch == ships_switched_out:
+                    scan_list_status[idx] = True
                     log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[idx])
-                    return True
             else:
+                scan_list_status[idx] = True
                 log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[idx])
-                return True
-        log_warning("Not all ships under repairs are submarines, or not all submarines could not be swapped out! Waiting for repairs!")
-        return False
+        if False not in scan_list_status:
+            log_success("All submarines successfully swapped out! Continuing sorties!")
+            return True
+        else:
+            log_warning("Not all ships under repairs are submarines, or not all submarines could not be swapped out! Waiting for repairs!")
+            return False
 
     def __str__(self):
         return '%s' % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S")
