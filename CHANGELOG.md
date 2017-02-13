@@ -1,3 +1,7 @@
+#### 2017-02-12
+* Expand support for 2017 Winter Event
+* Revise submarine switch module logic
+
 #### 2017-02-11
 * Begin adding support for 2017 Winter Event
 * Bugfix to LBAS panel switch image so it works with low-moarale planes
