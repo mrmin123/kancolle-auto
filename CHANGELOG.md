@@ -1,3 +1,6 @@
+#### 2017-02-14
+* Expand support for 2017 Winter Event (thanks to @AppleBoi86 and @Danielosama)
+
 #### 2017-02-12
 * Expand support for 2017 Winter Event
 * Revise submarine switch module logic
