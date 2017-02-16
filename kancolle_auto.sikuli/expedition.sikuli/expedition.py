@@ -26,6 +26,8 @@ class Expedition:
         log_msg("Let's send fleet %d out for expedition %d!" % (expedition.fleet_id, expedition.id))
         sleep(1)
         while_count = 0
+        if expedition.id in [9998, 9999] and self.kc_region.exists('ensei_name_33.png'):
+            wait_and_click(self.kc_region, expedition.area_pict, 10)
         while not check_and_click(self.kc_region, expedition.name_pict):
             wait_and_click(self.kc_region, expedition.area_pict, 10)
             sleep_fast()
