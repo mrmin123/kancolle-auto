@@ -1,3 +1,6 @@
+#### 2017-02-16
+* Expand support for 2017 Winter Event
+
 #### 2017-02-15
 * Expand support for 2017 Winter Event (thanks to @waicool20)
 * Improve Event expedition support (thanks to @waicool20)
