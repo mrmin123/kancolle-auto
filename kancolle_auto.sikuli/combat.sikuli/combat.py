@@ -423,7 +423,7 @@ class Combat:
         for lbas_group in self.lbas_groups:
             # Only assign nodes if they were assigned to the LBAS group
             if len(self.lbas_nodes[lbas_group]) == 2:
-                rejigger_mouse(kc_window, 350, 450, 0, 50)  # Clear the mouse from the LBAS screen
+                rejigger_mouse(self.kc_region, 350, 450, 0, 50)  # Clear the mouse from the LBAS screen
                 log_msg("Assigning targets to LBAS group %s" % lbas_group)
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
                 while not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
