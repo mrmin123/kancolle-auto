@@ -426,14 +426,13 @@ class Combat:
                 rejigger_mouse(self.kc_region, 350, 450, 0, 50)  # Clear the mouse from the LBAS screen
                 log_msg("Assigning targets to LBAS group %s" % lbas_group)
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
-                while not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
+                if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
-                    self.kc_region.mouseMove(self.kc_region.find(self.lbas_nodes[lbas_group][0] + '.png'))
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
                 sleep(2)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
-                while not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
+                if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1] + '.png', expand_areas('node_select'))
