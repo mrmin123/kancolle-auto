@@ -423,6 +423,7 @@ class Combat:
         for lbas_group in self.lbas_groups:
             # Only assign nodes if they were assigned to the LBAS group
             if len(self.lbas_nodes[lbas_group]) == 2:
+                sleep(1)
                 log_msg("Assigning targets to LBAS group %s" % lbas_group)
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
                 if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
