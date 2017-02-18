@@ -423,20 +423,21 @@ class Combat:
         for lbas_group in self.lbas_groups:
             # Only assign nodes if they were assigned to the LBAS group
             if len(self.lbas_nodes[lbas_group]) == 2:
-                sleep(1)
+                rejigger_mouse(self.kc_region, 350, 450, 0, 50)  # Clear the mouse from the LBAS screen
                 log_msg("Assigning targets to LBAS group %s" % lbas_group)
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
-                if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
+                while not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                    sleep(3)
+                    sleep(1)
+                    self.kc_region.mouseMove(self.kc_region.find(self.lbas_nodes[lbas_group][0] + '.png'))
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
                 sleep(2)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
-                if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
+                while not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
-                    sleep(3)
+                    sleep(1)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1] + '.png', expand_areas('node_select'))
-                sleep(2)
+                sleep(1)
                 check_and_click(self.kc_region, 'lbas_assign_nodes.png')
         log_msg("LBAS groups ready with their assignments!")
 
