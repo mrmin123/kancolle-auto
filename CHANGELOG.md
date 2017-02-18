@@ -1,3 +1,6 @@
+#### 2017-02-17
+* Expand support for 2017 Winter Event
+
 #### 2017-02-16
 * Expand support for 2017 Winter Event
 
