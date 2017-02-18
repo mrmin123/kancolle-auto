@@ -1,3 +1,6 @@
+#### 2017-02-18
+* Bugfix to LBAS assignment method
+
 #### 2017-02-17
 * Expand support for 2017 Winter Event
 
