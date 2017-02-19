@@ -102,7 +102,7 @@ def get_config(settings, sleep_cycle):
     # 'SubmarineSwitch' section
     if config.getboolean('SubmarineSwitch', 'Enabled') and settings['combat_enabled']:
         settings['submarine_switch'] = True
-        settings_check_valid_subs = ['all', 'i-8', 'i-19', 'i-26', 'i-401', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511']
+        settings_check_valid_subs = ['all', 'i-8', 'i-8_kai', 'i-19', 'i-26', 'i-401', 'i-58', 'i-58_kai', 'i-168', 'maruyu', 'ro-500', 'u-511']
         settings['submarine_switch_subs'] = config.get('SubmarineSwitch', 'EnabledSubs').replace(' ', '').lower().split(',')
         # If 'submarines' is specified, disregard the other specified options
         if 'all' in settings['submarine_switch_subs']:
