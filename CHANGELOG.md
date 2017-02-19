@@ -1,5 +1,6 @@
 #### 2017-02-18
 * Bugfix to LBAS assignment method
+* Bugfix to repair module's setting of next sortie time
 
 #### 2017-02-17
 * Expand support for 2017 Winter Event
