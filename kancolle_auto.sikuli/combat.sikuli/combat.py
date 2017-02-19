@@ -452,6 +452,7 @@ class Combat:
                 repair_timer = check_timer(self.kc_region, i, 'l', 100)
                 timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
                 self.repair_timers.append(timer)
+            # set next sortie timer in case a ship in-fleet is already being repaired
             self.next_sortie_time_set()
         except:
             pass
@@ -463,6 +464,9 @@ class Combat:
         if empty_docks > 0:
             log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
+            # If repairs are due, reset the next sortie time
+            if repair_queue > 0:
+                self.next_sortie_time_set(0, 0, 0, True)
             while empty_docks > 0 and repair_queue > 0:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
                 repair_start = False
