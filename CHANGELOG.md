@@ -1,3 +1,6 @@
+#### 2017-02-20
+* Optimized default Sikuli and combat loop wait times
+
 #### 2017-02-19
 * Update 2017 Winter Event assets
 * Add SSV support to submarine switch module (thanks to @waicool20)
