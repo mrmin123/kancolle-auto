@@ -578,7 +578,6 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
             pic = Pattern(pic).targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
         elif isinstance(pic, Pattern):
             pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
-    pic.setAutoWaitTimeout(1)
     return pic
 
 
