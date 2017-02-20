@@ -431,7 +431,7 @@ class Combat:
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
-                sleep(2)
+                sleep(1)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
                 if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
@@ -472,7 +472,7 @@ class Combat:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
                 repair_start = False
                 wait_and_click(self.kc_region, 'repair_empty.png', 30)
-                sleep(2)
+                sleep(1)
                 log_msg("Check for critically damaged ships.")
                 if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95), expand_areas('repair_list')):
                     log_success("Starting repair on critically damaged ship!")
@@ -520,7 +520,7 @@ class Combat:
                     wait_and_click(self.kc_region, 'repair_start.png', 10)
                     wait_and_click(self.kc_region, 'repair_start_confirm.png', 10)
                     if bucket_use and self.count_damage_above_limit('repair') > 0:
-                        sleep(8)
+                        sleep(7)
                     sleep_fast()
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
