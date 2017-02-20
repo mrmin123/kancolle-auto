@@ -1,3 +1,7 @@
+#### 2017-02-19
+* Update 2017 Winter Event assets
+* Add SSV support to submarine switch module (thanks to @waicool20)
+
 #### 2017-02-18
 * Bugfix to LBAS assignment method
 * Bugfix to repair module's setting of next sortie time
