@@ -5,6 +5,7 @@ from org.sikuli.script import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
+from sys import exit
 
 Settings.OcrTextRead = True
 util_settings = {}
@@ -640,15 +641,19 @@ def debug_find(file, target_program, similarity=0.8):
     """
     myApp = App.focus(target_program)
     target_window = myApp.focusedWindow()
-    match = target_window.find(Pattern(file).similar(similarity))
     print ""
     print ""
     print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
     print "+    with minimum similarity of %s:" % similarity
-    print match
+    try:
+        for img_match in target_window.findAll(Pattern(file).similar(similarity)):
+            print img_match
+            target_window.mouseMove(img_match)
+    except:
+        print "No matches!"
     print ""
     print ""
-    raise SystemExit
+    exit(0)
 
 
 class color:
