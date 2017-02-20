@@ -1,7 +1,7 @@
 ## Contributing to kancolle-auto
 
 ### General guidelines
-Be courteous to yours truly (@mrmin123) and other users of kancolle-auto! This is a hobby project for a video game, so relax, have fun, and learn a thing or two about scripting or automation.
+Be courteous to yours truly (@mrmin123) and other users of kancolle-auto! This is a hobby project for a video game, so relax, have fun, and thanks for contributing! Hopefully you're getting to learn a thing or two about scripting and/or automation, as well!
 
 ### Bug reporting / feature requests
 If you've found a bug in kancolle-auto, or if you'd like to request a feature, please create a ticket on the [kancolle-auto issue tracker](https://github.com/mrmin123/kancolle-auto/issues). If you can, please search previous tickets in case your bug report or feature request was made already. Please read and follow the directions outlined in the issue template.
