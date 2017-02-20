@@ -3,6 +3,7 @@ import ConfigParser, sys
 from sikuli import *
 from util import *
 
+
 # Load the config.ini file
 def get_config(settings, sleep_cycle):
     log_msg("Reading config file!")

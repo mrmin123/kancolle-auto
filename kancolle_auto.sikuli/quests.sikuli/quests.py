@@ -2,6 +2,7 @@
 from sikuli import *
 from util import *
 
+
 class Quests:
     """
     Quest module to hold relevant variables and data.
@@ -271,6 +272,7 @@ class Quests:
                 self.quest_list.append(QuestNode('e3', (0, 2, 0), (30, 30, 30, 30)))
             if 'e4' in self.quests_checklist:
                 self.quest_list.append(QuestNode('e4', (15, 10, 15), (50, 50, 50, 50)))
+
 
 class QuestNode(object):
     """

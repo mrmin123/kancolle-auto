@@ -6,6 +6,7 @@ from util import *
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
+
 class Expedition:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
@@ -76,6 +77,7 @@ class Expedition:
             check_and_click(self.kc_region, 'ensei_area_01.png')
             return False
 
+
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration, fleet_id):
         self.id = ensei_id
@@ -96,6 +98,7 @@ class Ensei:
     def check_later(self, hours, minutes):
         self.begin_time = datetime.datetime.now()
         self.end_time = self.begin_time + datetime.timedelta(hours=hours, minutes=minutes + 1)
+
 
 def ensei_factory(ensei_id, fleet_id):
     if ensei_id == 1:

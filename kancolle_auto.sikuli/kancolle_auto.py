@@ -40,6 +40,7 @@ done_expeditions = 0
 done_sorties = 0
 done_pvp = 0
 
+
 # Focus on the defined KanColle app
 def focus_window():
     global kc_window, settings
@@ -69,6 +70,7 @@ def focus_window():
     rejigger_mouse(kc_window, 370, 770, 100, 400, True)
     sleep(2)
 
+
 # Switch to KanColle app, navigate to Home screen, and receive+resupply any
 # returning expeditions
 def go_home(refresh=False):
@@ -96,6 +98,7 @@ def go_home(refresh=False):
         # Check for completed expeditions. Resupply them if there are.
         if check_expedition():
             resupply()
+
 
 # Check expedition arrival flag on home screen; ultimately return True if there
 # was at least one expedition received.
@@ -131,6 +134,7 @@ def check_expedition():
         log_msg("No, no fleets to receive!")
         return False
 
+
 # Resupply all or a specific fleet
 def resupply():
     global fleet_needs_resupply, settings
@@ -159,6 +163,7 @@ def resupply():
     # Always go back home after resupplying
     go_home()
 
+
 # Identify which expeditions need to be sent to expedition_action. Used for
 # sending out singular expeditions
 def expedition_action_wrapper():
@@ -171,6 +176,7 @@ def expedition_action_wrapper():
                 expedition_item.go_expedition()
                 at_expedition_screen = True
             expedition_action(expedition.fleet_id)
+
 
 # Navigate to and send expeditions
 def expedition_action(fleet_id):
@@ -190,6 +196,7 @@ def expedition_action(fleet_id):
         sleep(2)
         if kc_window.exists('catbomb.png') and settings['recovery_method'] != 'None':
             refresh_kancolle(kc_window, settings, 'Post-expedition crash')
+
 
 # Actions involved in conducting PvPs
 def pvp_action():
@@ -215,6 +222,7 @@ def pvp_action():
             expedition_action_wrapper()
         rnavigation(global_regions['game'], 'pvp', settings, 2)
     fleet_needs_resupply[0] = False
+
 
 # Actions involved in conducting sorties
 def sortie_action():
@@ -259,6 +267,7 @@ def sortie_action():
             quest_item.done_sorties += 1
         done_sorties += 1
 
+
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
     global quest_item, settings
@@ -271,6 +280,7 @@ def quest_action(mode, first_run=False):
     quest_item.go_quests(mode, first_run)
     quest_item.schedule_loop = 0  # Always reset schedule loop after running through quests
 
+
 # Actions that check and switch fleet comps
 def fleetcomp_switch_action(fleetcomp):
     global current_fleetcomp, fleetcomp_switcher, settings
@@ -280,6 +290,7 @@ def fleetcomp_switch_action(fleetcomp):
         go_home()
         fleetcomp_switcher.switch_fleetcomp(fleetcomp)
         current_fleetcomp = fleetcomp
+
 
 # Function to set the next pvp time
 def reset_next_pvp_time(next_cycle=False):
@@ -296,6 +307,7 @@ def reset_next_pvp_time(next_cycle=False):
         if 3 <= jst_convert(next_pvp_time).hour < 5:
             next_pvp_time = next_pvp_time.replace(hour=next_pvp_time.hour + 2)
 
+
 # Function to set the next sleep time
 def reset_next_sleep_time(next_day=False):
     global next_sleep_time, settings
@@ -303,6 +315,7 @@ def reset_next_sleep_time(next_day=False):
     next_sleep_time = next_sleep_time + datetime.timedelta(minutes=randint(1, 30))
     if next_day:
         next_sleep_time = next_sleep_time + datetime.timedelta(days=1)
+
 
 # Display upcoming timers
 def display_timers():
@@ -324,6 +337,7 @@ def display_timers():
     if settings['scheduled_sleep_enabled']:
         log_success("Next scheduled sleep at %s" % next_sleep_time.strftime("%Y-%m-%d %H:%M:%S"))
     log_success("-----")
+
 
 def init():
     global fleet_needs_resupply, current_fleetcomp, quest_item, expedition_item, combat_item, pvp_item, fleetcomp_switcher, default_quest_mode, sleep_cycle, settings
@@ -409,6 +423,7 @@ def init():
             quest_action(default_quest_mode)
             temp_need_to_check = False  # Disable need to check after checking
     display_timers()
+
 
 def kancolle_auto_wrapper():
     global kc_window, fleet_needs_resupply, quest_item, expedition_item, combat_item, pvp_item
@@ -516,6 +531,7 @@ def kancolle_auto_wrapper():
         else:
             # Otherwise, just sleep for the sleep cycle length
             sleep(sleep_cycle)
+
 
 # initialize kancolle_auto
 # debug_find('dmg_critical.png', 'Chrome', 0.75)  # For debugging purposes only!
