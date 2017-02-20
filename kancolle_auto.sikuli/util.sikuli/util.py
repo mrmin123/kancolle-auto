@@ -5,6 +5,7 @@ from org.sikuli.script import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
+from sys import exit
 
 Settings.OcrTextRead = True
 util_settings = {}
@@ -652,7 +653,7 @@ def debug_find(file, target_program, similarity=0.8):
         print "No matches!"
     print ""
     print ""
-    raise SystemExit
+    exit(0)
 
 
 class color:
