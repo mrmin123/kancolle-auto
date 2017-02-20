@@ -165,6 +165,10 @@ def ensei_factory(ensei_id, fleet_id):
         return Ensei(31, 'ensei_name_31.png', 'ensei_area_04.png', datetime.timedelta(hours=1, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 32:
         return Ensei(32, 'ensei_name_32.png', 'ensei_area_04.png', datetime.timedelta(hours=23, minutes=59, seconds=15), fleet_id)
+    elif ensei_id == 33:
+        return Ensei(33, 'ensei_name_33.png', 'ensei_area_05.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
+    elif ensei_id == 34:
+        return Ensei(34, 'ensei_name_34.png', 'ensei_area_05.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
     elif ensei_id == 35:
         return Ensei(35, 'ensei_name_35.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 36:

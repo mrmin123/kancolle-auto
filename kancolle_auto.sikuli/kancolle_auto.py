@@ -240,7 +240,7 @@ def sortie_action():
         # Check for event-specific expeditions
         if settings['expeditions_enabled'] is True and expedition_item is not None:
             for expedition in expedition_item.expedition_list:
-                if expedition.id in [9998, 9999]:
+                if expedition.id in [33, 34, 9998, 9999]:
                     # Set event-specific expeditions to be done on sortie end
                     fleet_needs_resupply[expedition.fleet_id - 1] = True
                     expedition.check_later(0, -1)
