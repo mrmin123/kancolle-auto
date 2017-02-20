@@ -6,6 +6,7 @@ from util import *
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
+
 class Expedition:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
@@ -76,6 +77,7 @@ class Expedition:
             check_and_click(self.kc_region, 'ensei_area_01.png')
             return False
 
+
 class Ensei:
     def __init__(self, ensei_id, name_pict, area_pict, duration, fleet_id):
         self.id = ensei_id
@@ -96,6 +98,7 @@ class Ensei:
     def check_later(self, hours, minutes):
         self.begin_time = datetime.datetime.now()
         self.end_time = self.begin_time + datetime.timedelta(hours=hours, minutes=minutes + 1)
+
 
 def ensei_factory(ensei_id, fleet_id):
     if ensei_id == 1:
@@ -162,6 +165,10 @@ def ensei_factory(ensei_id, fleet_id):
         return Ensei(31, 'ensei_name_31.png', 'ensei_area_04.png', datetime.timedelta(hours=1, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 32:
         return Ensei(32, 'ensei_name_32.png', 'ensei_area_04.png', datetime.timedelta(hours=23, minutes=59, seconds=15), fleet_id)
+    elif ensei_id == 33:
+        return Ensei(33, 'ensei_name_33.png', 'ensei_area_05.png', datetime.timedelta(hours=0, minutes=15, seconds=0), fleet_id)
+    elif ensei_id == 34:
+        return Ensei(34, 'ensei_name_34.png', 'ensei_area_05.png', datetime.timedelta(hours=0, minutes=30, seconds=0), fleet_id)
     elif ensei_id == 35:
         return Ensei(35, 'ensei_name_35.png', 'ensei_area_05.png', datetime.timedelta(hours=6, minutes=59, seconds=15), fleet_id)
     elif ensei_id == 36:

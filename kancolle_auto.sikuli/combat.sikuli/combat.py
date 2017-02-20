@@ -7,6 +7,7 @@ from util import *
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
+
 class Combat:
     def __init__(self, kc_region, settings):
         self.next_sortie_time = datetime.datetime.now()
@@ -683,6 +684,7 @@ class Combat:
     def timer_end(self, hours, minutes):
         return datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
 
+
 class PvP:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
@@ -723,6 +725,7 @@ class PvP:
             while_count_checker(self.kc_region, self.settings, while_count)
         log_msg("PvP complete!")
         return True
+
 
 class FleetcompSwitcher:
     def __init__(self, kc_region, settings):
