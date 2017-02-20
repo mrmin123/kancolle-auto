@@ -198,6 +198,10 @@ def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
         # global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
+        # Set short autowait timeouts
+        for key in global_regions:
+            global_regions[key].setAutoWaitTimeout(1)
+
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
         rand_x = kc_region.x + randint(x1, x2)
