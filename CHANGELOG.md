@@ -2,6 +2,7 @@
 * Update 2017 Winter Event assets
 * Add SSV support to submarine switch module (thanks to @waicool20)
 * Revise submarine switch assets
+* Revise some expedition assets
 * Improve `debug_find` function
 * Add CONTRIBUTING.md
 * Update config and config_detailed (may cause many merge conflicts)
