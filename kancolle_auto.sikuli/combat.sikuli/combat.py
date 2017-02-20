@@ -374,8 +374,7 @@ class Combat:
                 break
             elif (self.kc_region.exists('combat_nb_retreat.png') or
                   global_regions['next'].exists('next.png') or
-                  global_regions['next'].exists('next_alt.png') or
-                  self.kc_region.exists('catbomb.png')):
+                  global_regions['next'].exists('next_alt.png')):
                 loop_pre_combat_stop = True
                 break
             elif self.kc_region.exists('catbomb.png'):
