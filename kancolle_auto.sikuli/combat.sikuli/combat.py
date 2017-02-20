@@ -269,7 +269,7 @@ class Combat:
                         sleep(2)
                 # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
                 if not self.kc_region.exists('combat_retreat.png'):
-                    sleep(3)
+                    sleep(2)
                     # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
                     # click through reward(s)
                     while_count = 0
@@ -315,7 +315,6 @@ class Combat:
                         wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                         sortie_underway = False
                         return (continue_combat, True)
-                sleep(3)
                 if nodes_run >= self.nodes and self.last_node_push:
                     log_warning("Push to next node!")
                 else:
