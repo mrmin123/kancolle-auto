@@ -20,7 +20,7 @@
 
 ***
 
-**Please refer to the [releases page](https://github.com/mrmin123/kancolle-auto/releases) for stable releases, or the master branch for bleeding-edge (potentially untested and/or buggy in exchange for additional features).**
+**Please refer to the [releases page](https://github.com/mrmin123/kancolle-auto/releases) for stable releases, or the [master branch](https://github.com/mrmin123/kancolle-auto/archive/master.zip) for bleeding-edge (stable for the most part, but may potentially contain untested and/or buggy code in exchange for additional features). For Event support, please use the master branch for most up-to-date compatibility with the Event.**
 
 Please read the [**kancolle-auto wiki**](https://github.com/mrmin123/kancolle-auto/wiki) for more details:
 
