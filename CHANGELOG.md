@@ -1,4 +1,5 @@
 #### 2017-02-23
+* Implement `ReplaceLimit`, which lets you specify what up to what level of damaged subs should be swapped out by the submarine switch module
 * Revise timings to fix bugs caused by optimizing default Sikuli wait times
 * Bugfix on 2017 Winter Event asset (E-3 panel)
 
