@@ -1,3 +1,6 @@
+#### 2017-02-23
+* Revise timings to fix bugs caused by optimizing default Sikuli wait times
+
 #### 2017-02-20
 * Optimized default Sikuli and combat loop wait times
 * Bugfix and updates to config files
