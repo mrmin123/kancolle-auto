@@ -1,3 +1,21 @@
+#### 2017-02-23
+* Revise timings to fix bugs caused by optimizing default Sikuli wait times
+
+#### 2017-02-20
+* Optimized default Sikuli and combat loop wait times
+* Bugfix and updates to config files
+* Revise some expedition assets
+
+#### 2017-02-19
+* Update 2017 Winter Event assets
+* Add SSV support to submarine switch module (thanks to @waicool20)
+* Revise submarine switch assets
+* Improve `debug_find` function
+* Add CONTRIBUTING.md
+* Update config and config_detailed (may cause many merge conflicts)
+* Update code to follow PEP8 spacing
+* Copy 2017 Winter Event assets into archive folder for use in wiki documentation
+
 #### 2017-02-18
 * Bugfix to LBAS assignment method
 * Bugfix to repair module's setting of next sortie time

@@ -7,6 +7,7 @@ from util import *
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
+
 class Combat:
     def __init__(self, kc_region, settings):
         self.next_sortie_time = datetime.datetime.now()
@@ -268,7 +269,7 @@ class Combat:
                         sleep(2)
                 # Check to see if we're at combat retreat/continue screen or item/ship reward screen(s)
                 if not self.kc_region.exists('combat_retreat.png'):
-                    sleep(3)
+                    sleep(2)
                     # If we're not at the home screen, the retreat screen, or the flagship retreat screen,
                     # click through reward(s)
                     while_count = 0
@@ -314,7 +315,6 @@ class Combat:
                         wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                         sortie_underway = False
                         return (continue_combat, True)
-                sleep(3)
                 if nodes_run >= self.nodes and self.last_node_push:
                     log_warning("Push to next node!")
                 else:
@@ -373,8 +373,7 @@ class Combat:
                 break
             elif (self.kc_region.exists('combat_nb_retreat.png') or
                   global_regions['next'].exists('next.png') or
-                  global_regions['next'].exists('next_alt.png') or
-                  self.kc_region.exists('catbomb.png')):
+                  global_regions['next'].exists('next_alt.png')):
                 loop_pre_combat_stop = True
                 break
             elif self.kc_region.exists('catbomb.png'):
@@ -430,7 +429,7 @@ class Combat:
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
                 check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
-                sleep(2)
+                sleep(1)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
                 if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
@@ -471,7 +470,7 @@ class Combat:
                 log_msg("Available docks: %d; repair queue: %d" % (empty_docks, repair_queue))
                 repair_start = False
                 wait_and_click(self.kc_region, 'repair_empty.png', 30)
-                sleep(2)
+                sleep(1)
                 log_msg("Check for critically damaged ships.")
                 if check_and_click(self.kc_region, Pattern('repair_dmg_critical.png').similar(0.95), expand_areas('repair_list')):
                     log_success("Starting repair on critically damaged ship!")
@@ -519,7 +518,7 @@ class Combat:
                     wait_and_click(self.kc_region, 'repair_start.png', 10)
                     wait_and_click(self.kc_region, 'repair_start_confirm.png', 10)
                     if bucket_use and self.count_damage_above_limit('repair') > 0:
-                        sleep(8)
+                        sleep(7)
                     sleep_fast()
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
         # If submarine switching is enabled, run through it if repairs were required
@@ -602,8 +601,9 @@ class Combat:
                                     enabled_sub_flag = '_%s' % enabled_sub
                                 fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
                                 try:
-                                    for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.9)):
+                                    for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95)):
                                         self.kc_region.click(sub)
+                                        sleep(1)
                                         if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                             # The damaged sub can't be replaced with this subtype
                                             log_msg("Can't replace with this sub!" if enabled_sub == 'all' else "Can't replace with this sub type!")
@@ -683,6 +683,7 @@ class Combat:
     def timer_end(self, hours, minutes):
         return datetime.datetime.now() + datetime.timedelta(hours=hours, minutes=minutes)
 
+
 class PvP:
     def __init__(self, kc_region, settings):
         self.kc_region = kc_region
@@ -723,6 +724,7 @@ class PvP:
             while_count_checker(self.kc_region, self.settings, while_count)
         log_msg("PvP complete!")
         return True
+
 
 class FleetcompSwitcher:
     def __init__(self, kc_region, settings):

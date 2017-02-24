@@ -2,6 +2,7 @@
 from sikuli import *
 from util import *
 
+
 class Quests:
     """
     Quest module to hold relevant variables and data.
@@ -69,7 +70,6 @@ class Quests:
         Method for going through quests page(s), turning in completed quests,
         and starting up quests as needed.
         """
-        sleep(1)
         checking_quests = True
         activated_quests = []
         self.active_quests = 0
@@ -101,6 +101,7 @@ class Quests:
         log_msg("Checking for quests: %s" % ', '.join(toggled_quests))
         log_msg("Enabling quests starting with letters: %s" % ', '.join(quest_types))
         while checking_quests:
+            sleep(1)
             removed_finished = self.finish_quests(page_backtrack)
             removed_filtered = self.filter_quests(disable)
             self.active_quests = self.active_quests - removed_finished - removed_filtered
@@ -190,12 +191,13 @@ class Quests:
         removed = 0
         while check_and_click(global_regions['quest_status'], 'quest_completed.png', expand_areas('quest_completed')):
             log_success("Completed quest found!")
+            sleep(1)
             removed += 1
             while check_and_click(self.kc_region, 'quest_reward_accept.png'):
-                sleep(2)
-            if page_backtrack:
-                if check_and_click(self.kc_region, page_backtrack, expand_areas('quests_navigation')):
-                    sleep(2)
+                sleep(1)
+        if removed > 0 and page_backtrack:
+            if check_and_click(self.kc_region, page_backtrack, expand_areas('quests_navigation')):
+                sleep(1)
         return removed
 
     def define_quest_list(self):
@@ -271,6 +273,7 @@ class Quests:
                 self.quest_list.append(QuestNode('e3', (0, 2, 0), (30, 30, 30, 30)))
             if 'e4' in self.quests_checklist:
                 self.quest_list.append(QuestNode('e4', (15, 10, 15), (50, 50, 50, 50)))
+
 
 class QuestNode(object):
     """

@@ -5,10 +5,12 @@ from org.sikuli.script import *
 from random import uniform, randint, choice
 from time import sleep as tsleep, strftime
 from re import match
+from sys import exit
 
 Settings.OcrTextRead = True
 util_settings = {}
 global_regions = {}
+
 
 def get_util_config():
     """Load the settings related to the util module"""
@@ -25,12 +27,14 @@ def get_util_config():
     util_settings['sleep_mod'] = 0 if config.getint('General', 'SleepModifier') < 0 else config.getint('General', 'SleepModifier')
     util_settings['jst_offset'] = config.getint('General', 'JSTOffset')
 
+
 def sleep_fast():
     """
     Function for sleeping for a very short period of time. For use mainly between
     a succession of mouseclick events.
     """
     tsleep(uniform(0.2, 0.5))
+
 
 def sleep(base, flex=-1):
     """
@@ -45,6 +49,7 @@ def sleep(base, flex=-1):
         tsleep(randint(base, base * 2) + util_settings['sleep_mod'])
     else:
         tsleep(randint(base, base + flex) + util_settings['sleep_mod'])
+
 
 def check_ocr(kc_region, text_ref, dir, width):
     """
@@ -75,6 +80,7 @@ def check_ocr(kc_region, text_ref, dir, width):
         .replace('B', '8').replace(':', '8').replace(' ', '').replace('-', '')
     )
     return text
+
 
 def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
     """
@@ -115,6 +121,7 @@ def check_timer(kc_region, timer_ref, dir, width, attempt_limit=0):
         log_warning("Got invalid timer (%s)... trying again!" % timer)
         sleep(1)
 
+
 def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
     """
     Function for grabbing numbers from the kancolle-auto screen.
@@ -144,6 +151,7 @@ def check_number(kc_region, number_ref, dir, width, attempt_limit=0):
         # Otherwise, try again!
         log_warning("Got invalid number (%s)... trying again!" % number)
         sleep(1)
+
 
 def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
     """
@@ -190,6 +198,10 @@ def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
         # global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
 
+        # Set short autowait timeouts
+        for key in global_regions:
+            global_regions[key].setAutoWaitTimeout(1)
+
     # Generate random coordinates
     if 'game_x' not in util_settings or 'game_y' not in util_settings:
         rand_x = kc_region.x + randint(x1, x2)
@@ -207,6 +219,7 @@ def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
 
     # Rejigger mouse
     kc_region.mouseMove(Location(rand_x, rand_y))
+
 
 def expand_areas(target):
     """
@@ -237,6 +250,7 @@ def expand_areas(target):
         return [-495, 45, -5, 35]
     elif target == 'repair_list':
         return [-325, 35, -10, 6]
+
 
 def rnavigation(kc_region, destination, settings, max=0):
     """
@@ -475,6 +489,7 @@ def rnavigation(kc_region, destination, settings, max=0):
         if while_count > 4:
             raise FindFailed("rnavigation looping too much!")
 
+
 def jst_convert(time):
     """
     Function for converting the input time to JST based on the JST Offset
@@ -484,6 +499,7 @@ def jst_convert(time):
     """
     global util_settings
     return time + datetime.timedelta(hours=util_settings['jst_offset'])
+
 
 def rnavigation_chooser(options, exclude):
     """
@@ -496,6 +512,7 @@ def rnavigation_chooser(options, exclude):
     exclude - list of images that should not be clicked
     """
     return choice([i for i in options if i not in exclude])
+
 
 def check_and_click(kc_region, pic, expand=[]):
     """
@@ -510,6 +527,7 @@ def check_and_click(kc_region, pic, expand=[]):
         kc_region.click(pattern_generator(kc_region, pic, expand, 'prematched'))
         return True
     return False
+
 
 def wait_and_click(kc_region, pic, time=5, expand=[]):
     """
@@ -526,6 +544,7 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
     else:
         kc_region.wait(pattern_generator(kc_region, pic, expand))
     kc_region.click(pattern_generator(kc_region, pic, expand))
+
 
 def pattern_generator(kc_region, pic, expand=[], mod=''):
     """
@@ -560,6 +579,7 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
         elif isinstance(pic, Pattern):
             pic = pic.targetOffset(randint(expand[0], expand[1]), randint(expand[2], expand[3]))
     return pic
+
 
 # Refresh kancolle
 def refresh_kancolle(kc_region, settings, e):
@@ -614,11 +634,13 @@ def refresh_kancolle(kc_region, settings, e):
     print e
     raise
 
+
 def while_count_checker(kc_region, settings, while_count):
     if while_count > 10:
         raise FindFailed("Something is wrong... looping too much!")
     if while_count > 8:
         esc_recovery(kc_region, settings)
+
 
 def esc_recovery(kc_region, settings, context="loop"):
     if settings['basic_recovery'] is True:
@@ -631,6 +653,7 @@ def esc_recovery(kc_region, settings, context="loop"):
         else:
             return True
 
+
 def debug_find(file, target_program, similarity=0.8):
     """
     Debug function. Uncomment the line in kancolle_auto.py referencing this function
@@ -640,15 +663,19 @@ def debug_find(file, target_program, similarity=0.8):
     """
     myApp = App.focus(target_program)
     target_window = myApp.focusedWindow()
-    match = target_window.find(Pattern(file).similar(similarity))
     print ""
     print ""
     print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
     print "+    with minimum similarity of %s:" % similarity
-    print match
+    try:
+        for img_match in target_window.findAll(Pattern(file).similar(similarity)):
+            print img_match
+            target_window.mouseMove(img_match)
+    except:
+        print "No matches!"
     print ""
     print ""
-    raise SystemExit
+    exit(0)
 
 
 class color:
@@ -661,18 +688,23 @@ class color:
     ERROR = '\033[91m'
     END = '\033[0m'
 
+
 def format(msg):
     now = strftime("%Y-%m-%d %H:%M:%S")
     return "[%s] %s" % (now, msg)
 
+
 def log_msg(msg):
     print "%s%s%s" % (color.MSG, format(msg), color.END)
+
 
 def log_success(msg):
     print "%s%s%s" % (color.SUCCESS, format(msg), color.END)
 
+
 def log_warning(msg):
     print "%s%s%s" % (color.WARNING, format(msg), color.END)
+
 
 def log_error(msg):
     print "%s%s%s" % (color.ERROR, format(msg), color.END)
