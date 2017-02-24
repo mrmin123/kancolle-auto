@@ -16,6 +16,7 @@ class Combat:
         self.submarine_switch = settings['submarine_switch']
         if self.submarine_switch:
             self.submarine_switch_subs = settings['submarine_switch_subs']
+            self.submarine_switch_replace_limit = settings['submarine_switch_replace_limit']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
@@ -536,17 +537,21 @@ class Combat:
     def switch_sub(self):
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
-        scan_list = ['fleetcomp_dmg_repair.png']
-        scan_list_status = [False]
-        scan_list_dict = {0: 'under repair'}
-        if self.area_num == '2' and self.subarea_num == '3':
-            # Also switch out other damaged ships for Orel
-            # Consider taking this conditional out after further testing
-            scan_list.extend(['dmg_critical.png', 'dmg_moderate.png', 'dmg_light.png'])
-            scan_list_status.extend([False, False, False])
-            scan_list_dict[1] = 'critically damaged'
-            scan_list_dict[2] = 'moderately damaged'
-            scan_list_dict[3] = 'lightly damaged'
+        scan_list = ['fleetcomp_dmg_repair.png', 'dmg_critical.png']
+        scan_list_status = [False, False]
+        scan_list_dict = {
+            0: 'under repair',
+            1: 'critically damaged',
+            2: 'moderately damaged',
+            3: 'lightly damaged'
+        }
+        if isinstance(self.submarine_switch_replace_limit, int) and self.submarine_switch_replace_limit in [0, 1]:
+            if self.submarine_switch_replace_limit <= 1:
+                scan_list.append('dmg_moderate.png')
+                scan_list_status.append(False)
+            if self.submarine_switch_replace_limit == 0:
+                scan_list.append('dmg_light.png')
+                scan_list_status.append(False)
         for idx, image in enumerate(scan_list):
             if self.kc_region.exists(Pattern(image).similar(self.dmg_similarity)):
                 ships_to_switch = 0

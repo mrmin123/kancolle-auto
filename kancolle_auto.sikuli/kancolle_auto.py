@@ -234,6 +234,7 @@ def sortie_action():
     go_home(True)
     rnavigation(global_regions['game'], 'combat', settings, 2)
     combat_results = combat_item.go_sortie()
+    sleep(1)
     if combat_results[0]:
         fleet_needs_resupply[0] = True
         if settings['combined_fleet']:
