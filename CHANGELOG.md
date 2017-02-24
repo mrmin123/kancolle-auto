@@ -1,5 +1,6 @@
 #### 2017-02-23
 * Revise timings to fix bugs caused by optimizing default Sikuli wait times
+* Bugfix on 2017 Winter Event asset (E-3 panel)
 
 #### 2017-02-20
 * Optimized default Sikuli and combat loop wait times
