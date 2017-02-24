@@ -603,6 +603,7 @@ class Combat:
                                 try:
                                     for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95)):
                                         self.kc_region.click(sub)
+                                        sleep(1)
                                         if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                             # The damaged sub can't be replaced with this subtype
                                             log_msg("Can't replace with this sub!" if enabled_sub == 'all' else "Can't replace with this sub type!")
