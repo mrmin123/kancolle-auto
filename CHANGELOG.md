@@ -1,3 +1,6 @@
+#### 2017-02-25
+* Critical bugfix to `LastNodePush` feature. Please upgrade if you are using this, otherwise you are at risk of losing ships
+
 #### 2017-02-24
 * Bugfix with config reader not working when `ReplaceLimit` was set to blank value
 
