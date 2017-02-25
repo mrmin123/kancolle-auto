@@ -308,7 +308,7 @@ class Combat:
                     return (continue_combat, True)
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
-                    if nodes_run >= self.nodes and self.last_node_push:
+                    if nodes_run == self.nodes and self.last_node_push:
                         # Unless the PushLastNode flag is set, and we've ran the necessary nodes, then push!
                         pass
                     else:
@@ -316,7 +316,7 @@ class Combat:
                         wait_and_click(self.kc_region, 'combat_retreat.png', 30)
                         sortie_underway = False
                         return (continue_combat, True)
-                if nodes_run >= self.nodes and self.last_node_push:
+                if nodes_run == self.nodes and self.last_node_push:
                     log_warning("Push to next node!")
                 else:
                     log_msg("Continuing on to next node...")
