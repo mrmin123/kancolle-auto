@@ -308,8 +308,8 @@ class Combat:
                     return (continue_combat, True)
                 # If fleet is damaged, fall back
                 if self.count_damage_above_limit('retreat') > 0 or self.damage_counts[2] > 0:
-                    if self.last_node_push:
-                        # Unless the PushLastNode flag is set, then push!
+                    if nodes_run >= self.nodes and self.last_node_push:
+                        # Unless the PushLastNode flag is set, and we've ran the necessary nodes, then push!
                         pass
                     else:
                         log_warning("Ship(s) in condition at or below retreat threshold! Ceasing sortie!")
