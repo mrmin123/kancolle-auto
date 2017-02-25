@@ -1,3 +1,6 @@
+#### 2017-02-24
+* Bugfix with config reader not working when `ReplaceLimit` was set to blank value
+
 #### 2017-02-23
 * Implement `ReplaceLimit`, which lets you specify what up to what level of damaged subs should be swapped out by the submarine switch module
 * Revise timings to fix bugs caused by optimizing default Sikuli wait times
