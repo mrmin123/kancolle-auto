@@ -111,7 +111,7 @@ def get_config(settings, sleep_cycle):
             settings['submarine_switch_replace_limit'] = None
         # If 'submarines' is specified, disregard the other specified options
         if 'all' in settings['submarine_switch_subs']:
-            settings['submarine_switch_subs'] = ['all']
+            settings['submarine_switch_subs'] = ['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511']
         for sub in settings['submarine_switch_subs']:
             if sub not in settings_check_valid_subs:
                 log_error("'%s' is not a valid sub selection! Please check your config file." % formation)
