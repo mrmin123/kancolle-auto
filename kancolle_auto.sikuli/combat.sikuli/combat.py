@@ -611,7 +611,7 @@ class Combat:
                                             log_msg("Can't replace with this sub type!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
                                             # This sub class can't be switched in, so break out of the for loop
-                                            sleep(1)
+                                            sleep_fast()
                                             break
                                         if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
                                                 self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
@@ -627,7 +627,7 @@ class Combat:
                                             # Submarine is damaged/under repair; click away
                                             log_msg("Submarine not available, moving on!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            sleep(1)
+                                            sleep_fast()
                                 except:
                                     pass
                             # If we went through all the submarines on the shiplist page and haven't found a valid
