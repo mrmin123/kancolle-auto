@@ -17,6 +17,7 @@ class Combat:
         if self.submarine_switch:
             self.submarine_switch_subs = settings['submarine_switch_subs']
             self.submarine_switch_replace_limit = settings['submarine_switch_replace_limit']
+            self.submarine_switch_fatigue_switch = settings['submarine_switch_fatigue_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
