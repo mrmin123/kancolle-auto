@@ -601,26 +601,18 @@ class Combat:
                                     log_warning("No more submarines!")
                                     return False
                             for enabled_sub in self.submarine_switch_subs:
-                                enabled_sub_flag = ''
-                                if enabled_sub != 'all':
-                                    enabled_sub_flag = '_%s' % enabled_sub
-                                fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
+                                fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine_%s.png' % enabled_sub
                                 try:
                                     for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95)):
                                         self.kc_region.click(sub)
                                         sleep(1)
                                         if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                             # The damaged sub can't be replaced with this subtype
-                                            log_msg("Can't replace with this sub!" if enabled_sub == 'all' else "Can't replace with this sub type!")
+                                            log_msg("Can't replace with this sub type!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            if enabled_sub == 'all':
-                                                # If 'all' subs are valid, continue findAll loop
-                                                sleep(1)
-                                                continue
-                                            else:
-                                                # Otherwise, break the findAll loop
-                                                sleep(1)
-                                                break
+                                            # This sub class can't be switched in, so break out of the for loop
+                                            sleep(1)
+                                            break
                                         if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
                                                 self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
                                                 self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
