@@ -538,30 +538,42 @@ class Combat:
     def switch_sub(self):
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
-        scan_list = ['fleetcomp_dmg_repair.png', 'dmg_critical.png']
-        scan_list_status = [False, False]
+        scan_list = ['fleetcomp_dmg_repair', 'dmg_critical']
+        scan_list_status = {
+            'fleetcomp_dmg_repair': False,
+            'dmg_critical': False
+        }
         scan_list_dict = {
-            0: 'under repair',
-            1: 'critically damaged',
-            2: 'moderately damaged',
-            3: 'lightly damaged'
+            'fleetcomp_dmg_repair': 'under repair',
+            'dmg_critical': 'critically damaged',
+            'dmg_moderate': 'moderately damaged',
+            'dmg_light': 'lightly damaged',
+            'fatigue_high': 'highly fatigued',
+            'fatigue_med': 'moderately fatigued'
         }
         if isinstance(self.submarine_switch_replace_limit, int) and self.submarine_switch_replace_limit in [0, 1]:
             if self.submarine_switch_replace_limit <= 1:
-                scan_list.append('dmg_moderate.png')
-                scan_list_status.append(False)
+                scan_list.append('dmg_moderate')
+                scan_list_status['dmg_moderate'] = False
             if self.submarine_switch_replace_limit == 0:
-                scan_list.append('dmg_light.png')
-                scan_list_status.append(False)
-        for idx, image in enumerate(scan_list):
-            if self.kc_region.exists(Pattern(image).similar(self.dmg_similarity)):
+                scan_list.append('dmg_light')
+                scan_list_status['dmg_light'] = False
+            if self.submarine_switch_fatigue_switch:
+                scan_list.extend(['fatigue_high', 'fatigue_med'])
+                # Set status of fatigue checks to True by default, so that even if these subs are not
+                # replaced, it doesn't stop kancolle-auto from continuing sortie as long as damaged ships
+                # have all been replaced
+                scan_list_status['fatigue_high'] = True
+                scan_list_status['fatigue_med'] = True
+        for image in scan_list:
+            if self.kc_region.exists(Pattern('%s.png' % image).similar(self.dmg_similarity)):
                 ships_to_switch = 0
                 ships_switched_out = 0
                 shiplist_page = 1
                 # Check each ship with specified repair/damage state
-                for i in self.kc_region.findAll(Pattern(image).similar(self.dmg_similarity)):
+                for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(self.dmg_similarity)):
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
-                    log_msg("Found ship that is %s!" % scan_list_dict[idx])
+                    log_msg("Found ship that is %s!" % scan_list_dict[image])
                     target_region = i.offset(Location(-165, 0)).right(180).below(70)
                     ships_to_switch += 1
                     # Check if the ship is a submarine by checking its stats
@@ -646,12 +658,12 @@ class Combat:
                     else:
                         check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
                 if ships_to_switch == ships_switched_out:
-                    scan_list_status[idx] = True
-                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[idx])
+                    scan_list_status[image] = True
+                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[image])
             else:
-                scan_list_status[idx] = True
-                log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[idx])
-        if False not in scan_list_status:
+                scan_list_status[image] = True
+                log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[image])
+        if False not in scan_list_status.itervalues():
             log_success("All submarines successfully swapped out! Continuing sorties!")
             return True
         else:
