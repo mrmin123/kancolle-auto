@@ -238,7 +238,7 @@ class Quests:
             if 'bw6' in self.quests_checklist and self.combat_area == '4':
                 self.quest_list.append(QuestNode('bw6', (12, 0, 0), (400, 0, 0, 700)))
             if 'bw7' in self.quests_checklist and self.combat_area == '3' and (self.combat_subarea == '3' or self.combat_subarea == '4' or self.combat_subarea == '5'):
-                self.quest_list.append(QuestNode('bw7', (5, 0, 0), (300, 300, 400, 100)))
+                self.quest_list.append(QuestNode('bw7', (5, 0, 0), (300, 300, 400, 300)))
             if 'bw8' in self.quests_checklist and self.combat_area == '4' and self.combat_subarea == '4':
                 self.quest_list.append(QuestNode('bw8', (1, 0, 0), (500, 0, 500, 0)))
             if 'bw9' in self.quests_checklist and self.combat_area == '5' and self.combat_subarea == '2':
