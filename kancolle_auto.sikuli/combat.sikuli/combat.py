@@ -558,18 +558,18 @@ class Combat:
             if self.submarine_switch_replace_limit == 0:
                 scan_list.append('dmg_light')
                 scan_list_status['dmg_light'] = False
-            if self.submarine_switch_fatigue_switch:
-                scan_list.extend(['fatigue_high', 'fatigue_med'])
-                # Set status of fatigue checks to True by default, so that even if these subs are not
-                # replaced, it doesn't stop kancolle-auto from continuing sortie as long as damaged ships
-                # have all been replaced
-                scan_list_status['fatigue_high'] = True
-                scan_list_status['fatigue_med'] = True
+        if self.submarine_switch_fatigue_switch:
+            scan_list.extend(['fatigue_high', 'fatigue_med'])
+            # Set status of fatigue checks to True by default, so that even if these subs are not
+            # replaced, it doesn't stop kancolle-auto from continuing sortie as long as damaged ships
+            # have all been replaced
+            scan_list_status['fatigue_high'] = True
+            scan_list_status['fatigue_med'] = True
         for image in scan_list:
-            if self.kc_region.exists(Pattern('%s.png' % image).similar(self.dmg_similarity)):
-                ships_to_switch = 0
-                ships_switched_out = 0
-                shiplist_page = 1
+            ships_to_switch = 0
+            ships_switched_out = 0
+            shiplist_page = 1
+            try:
                 # Check each ship with specified repair/damage state
                 for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(self.dmg_similarity)):
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
@@ -660,7 +660,7 @@ class Combat:
                 if ships_to_switch == ships_switched_out:
                     scan_list_status[image] = True
                     log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[image])
-            else:
+            except TypeError:
                 scan_list_status[image] = True
                 log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[image])
         if False not in scan_list_status.itervalues():
