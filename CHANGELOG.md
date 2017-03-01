@@ -1,4 +1,4 @@
-#### ?
+#### 2017-02-28
 * Implement `FatigueSwitch` feature, which lets you specify whether or not kancolle-auto should attempt to switch out fatigued submarines with its submarine switcher module
 * Optimized the submarine switch module's performance when `EnabledSubs` is set to 'all'
 * Bugfix to fix non-detection of quest bw7
