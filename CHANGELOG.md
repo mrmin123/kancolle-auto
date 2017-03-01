@@ -1,4 +1,4 @@
-#### 2017-02-28 ([Release 7.1](https://github.com/mrmin123/kancolle-auto/releases/tag/7.1))
+#### 2017-02-28 ([Release 7.2](https://github.com/mrmin123/kancolle-auto/releases/tag/7.2))
 * Archive 2017 Winter Event assets
 * Implement `FatigueSwitch` feature, which lets you specify whether or not kancolle-auto should attempt to switch out fatigued submarines with its submarine switcher module
 * Optimized the submarine switch module's performance when `EnabledSubs` is set to 'all'
