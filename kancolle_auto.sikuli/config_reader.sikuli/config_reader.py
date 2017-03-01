@@ -105,13 +105,14 @@ def get_config(settings, sleep_cycle):
         settings['submarine_switch'] = True
         settings_check_valid_subs = ['all', 'i-8', 'i-8-kai', 'i-13', 'i-14', 'i-19', 'i-19-kai', 'i-26', 'i-26-kai', 'i-58', 'i-58-kai', 'i-168', 'i-401', 'maruyu', 'ro-500', 'u-511']
         settings['submarine_switch_subs'] = config.get('SubmarineSwitch', 'EnabledSubs').replace(' ', '').lower().split(',')
+        settings['submarine_switch_fatigue_switch'] = config.getboolean('SubmarineSwitch', 'FatigueSwitch')
         try:
             settings['submarine_switch_replace_limit'] = config.getint('SubmarineSwitch', 'ReplaceLimit')
         except ValueError:
             settings['submarine_switch_replace_limit'] = None
         # If 'submarines' is specified, disregard the other specified options
         if 'all' in settings['submarine_switch_subs']:
-            settings['submarine_switch_subs'] = ['all']
+            settings['submarine_switch_subs'] = ['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511']
         for sub in settings['submarine_switch_subs']:
             if sub not in settings_check_valid_subs:
                 log_error("'%s' is not a valid sub selection! Please check your config file." % formation)

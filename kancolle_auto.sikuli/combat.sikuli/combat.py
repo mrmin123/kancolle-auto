@@ -17,6 +17,7 @@ class Combat:
         if self.submarine_switch:
             self.submarine_switch_subs = settings['submarine_switch_subs']
             self.submarine_switch_replace_limit = settings['submarine_switch_replace_limit']
+            self.submarine_switch_fatigue_switch = settings['submarine_switch_fatigue_switch']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
@@ -426,16 +427,16 @@ class Combat:
                 rejigger_mouse(self.kc_region, 350, 450, 0, 50)  # Clear the mouse from the LBAS screen
                 log_msg("Assigning targets to LBAS group %s" % lbas_group)
                 # Check to see if the first specified node exists on screen... because the LBAS screen might be covering it
-                if not self.kc_region.exists(self.lbas_nodes[lbas_group][0] + '.png'):
+                if not self.kc_region.exists('%s.png' % self.lbas_nodes[lbas_group][0]):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
-                check_and_click(self.kc_region, self.lbas_nodes[lbas_group][0] + '.png', expand_areas('node_select'))
+                check_and_click(self.kc_region, '%s.png' % self.lbas_nodes[lbas_group][0], expand_areas('node_select'))
                 sleep(1)
                 # Check to see if the second specified node exists on screen... because the LBAS screen might be covering it
-                if not self.kc_region.exists(self.lbas_nodes[lbas_group][1] + '.png'):
+                if not self.kc_region.exists('%s.png' % self.lbas_nodes[lbas_group][1]):
                     self.kc_region.mouseMove(self.kc_region.find('lbas_panel_switch.png'))
                     sleep(1)
-                check_and_click(self.kc_region, self.lbas_nodes[lbas_group][1] + '.png', expand_areas('node_select'))
+                check_and_click(self.kc_region, '%s.png' % self.lbas_nodes[lbas_group][1], expand_areas('node_select'))
                 sleep(1)
                 check_and_click(self.kc_region, 'lbas_assign_nodes.png')
         log_msg("LBAS groups ready with their assignments!")
@@ -537,30 +538,42 @@ class Combat:
     def switch_sub(self):
         # See if it's possible to switch any submarines out
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
-        scan_list = ['fleetcomp_dmg_repair.png', 'dmg_critical.png']
-        scan_list_status = [False, False]
+        scan_list = ['fleetcomp_dmg_repair', 'dmg_critical']
+        scan_list_status = {
+            'fleetcomp_dmg_repair': False,
+            'dmg_critical': False
+        }
         scan_list_dict = {
-            0: 'under repair',
-            1: 'critically damaged',
-            2: 'moderately damaged',
-            3: 'lightly damaged'
+            'fleetcomp_dmg_repair': 'under repair',
+            'dmg_critical': 'critically damaged',
+            'dmg_moderate': 'moderately damaged',
+            'dmg_light': 'lightly damaged',
+            'fatigue_high': 'highly fatigued',
+            'fatigue_med': 'moderately fatigued'
         }
         if isinstance(self.submarine_switch_replace_limit, int) and self.submarine_switch_replace_limit in [0, 1]:
             if self.submarine_switch_replace_limit <= 1:
-                scan_list.append('dmg_moderate.png')
-                scan_list_status.append(False)
+                scan_list.append('dmg_moderate')
+                scan_list_status['dmg_moderate'] = False
             if self.submarine_switch_replace_limit == 0:
-                scan_list.append('dmg_light.png')
-                scan_list_status.append(False)
-        for idx, image in enumerate(scan_list):
-            if self.kc_region.exists(Pattern(image).similar(self.dmg_similarity)):
-                ships_to_switch = 0
-                ships_switched_out = 0
-                shiplist_page = 1
+                scan_list.append('dmg_light')
+                scan_list_status['dmg_light'] = False
+        if self.submarine_switch_fatigue_switch:
+            scan_list.extend(['fatigue_high', 'fatigue_med'])
+            # Set status of fatigue checks to True by default, so that even if these subs are not
+            # replaced, it doesn't stop kancolle-auto from continuing sortie as long as damaged ships
+            # have all been replaced
+            scan_list_status['fatigue_high'] = True
+            scan_list_status['fatigue_med'] = True
+        for image in scan_list:
+            ships_to_switch = 0
+            ships_switched_out = 0
+            shiplist_page = 1
+            try:
                 # Check each ship with specified repair/damage state
-                for i in self.kc_region.findAll(Pattern(image).similar(self.dmg_similarity)):
+                for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(self.dmg_similarity)):
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
-                    log_msg("Found ship that is %s!" % scan_list_dict[idx])
+                    log_msg("Found ship that is %s!" % scan_list_dict[image])
                     target_region = i.offset(Location(-165, 0)).right(180).below(70)
                     ships_to_switch += 1
                     # Check if the ship is a submarine by checking its stats
@@ -601,26 +614,18 @@ class Combat:
                                     log_warning("No more submarines!")
                                     return False
                             for enabled_sub in self.submarine_switch_subs:
-                                enabled_sub_flag = ''
-                                if enabled_sub != 'all':
-                                    enabled_sub_flag = '_%s' % enabled_sub
-                                fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine%s.png' % enabled_sub_flag
+                                fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine_%s.png' % enabled_sub
                                 try:
                                     for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95)):
                                         self.kc_region.click(sub)
                                         sleep(1)
                                         if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
                                             # The damaged sub can't be replaced with this subtype
-                                            log_msg("Can't replace with this sub!" if enabled_sub == 'all' else "Can't replace with this sub type!")
+                                            log_msg("Can't replace with this sub type!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            if enabled_sub == 'all':
-                                                # If 'all' subs are valid, continue findAll loop
-                                                sleep(1)
-                                                continue
-                                            else:
-                                                # Otherwise, break the findAll loop
-                                                sleep(1)
-                                                break
+                                            # This sub class can't be switched in, so break out of the for loop
+                                            sleep_fast()
+                                            break
                                         if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
                                                 self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
                                                 self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
@@ -635,7 +640,7 @@ class Combat:
                                             # Submarine is damaged/under repair; click away
                                             log_msg("Submarine not available, moving on!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            sleep(1)
+                                            sleep_fast()
                                 except:
                                     pass
                             # If we went through all the submarines on the shiplist page and haven't found a valid
@@ -643,7 +648,7 @@ class Combat:
                             if not sub_chosen:
                                 shiplist_page += 1
                                 if shiplist_page < 12:
-                                    if check_and_click(self.kc_region, 'fleetcomp_shiplist_pg' + str(shiplist_page) + '.png'):
+                                    if check_and_click(self.kc_region, 'fleetcomp_shiplist_pg%s.png' % shiplist_page):
                                         sleep_fast()
                                         continue
                                 # If we do not have any more available pages, we do not have any more available submarines
@@ -653,12 +658,12 @@ class Combat:
                     else:
                         check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
                 if ships_to_switch == ships_switched_out:
-                    scan_list_status[idx] = True
-                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[idx])
-            else:
-                scan_list_status[idx] = True
-                log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[idx])
-        if False not in scan_list_status:
+                    scan_list_status[image] = True
+                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[image])
+            except TypeError:
+                scan_list_status[image] = True
+                log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[image])
+        if False not in scan_list_status.itervalues():
             log_success("All submarines successfully swapped out! Continuing sorties!")
             return True
         else:
