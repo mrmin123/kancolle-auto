@@ -572,8 +572,8 @@ class Combat:
                 log_msg("Found ship that is %s!" % scan_list_dict[image])
                 target_region = i.offset(Location(-170, -30)).right(195).below(110)
                 ships_to_switch += 1
-                if self.kc_region.exists(Pattern('fleetcomp_ship_class_ss.png').similar(CLASS_SIMILARITY) or
-                                         Pattern('fleetcomp_ship_class_ssv.png').similar(CLASS_SIMILARITY)):
+                if self.kc_region.exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY) or
+                                         Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY)):
                     log_msg("Ship is a submarine!")
                     target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
@@ -689,6 +689,9 @@ class PvP:
         self.settings = settings
 
     def go_pvp(self):
+        enemy_ship_count = 0
+        enemy_sub_count = 0
+
         # Select random pvp opponent
         random_choices = ['pvp_row_1.png', 'pvp_row_2.png']
         random_choice_one = choice(random_choices)
@@ -701,17 +704,34 @@ class PvP:
                 return False
         # An opponent was chosen
         rejigger_mouse(self.kc_region, 50, 750, 50, 350)
+
+        # Identify opponent ship and sub counts
+        enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.9))
+        for i in (enemy_ship_count_matches if enemy_ship_count_matches is not None else []):
+            enemy_ship_count += 1
+        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ss.png'))
+        for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
+            enemy_sub_count += 1
+        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ssv.png'))
+        for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
+            enemy_sub_count += 1
+        formation, nb = self.formation_nb_selector(enemy_ship_count, enemy_sub_count)
+
+        # Continue sortie
         wait_and_click(self.kc_region, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_region, 'pvp_start_2.png', 30)
         log_msg("Sortieing against PvP opponent!")
         rejigger_mouse(self.kc_region, 50, 350, 0, 100)
-        sleep(3)
-        wait_and_click(global_regions['formation_line_ahead'], 'formation_line_ahead.png', 30)
+        sleep(2)
+        wait_and_click(global_regions[formation], '%s.png' % formation, 30)
         rejigger_mouse(self.kc_region, 50, 750, 0, 100)
         while not (global_regions['next'].exists('next.png') or
                    self.kc_region.exists('combat_nb_fight.png')):
             pass
-        check_and_click(self.kc_region, 'combat_nb_fight.png')
+        if nb:
+            check_and_click(self.kc_region, 'combat_nb_fight.png')
+        else:
+            check_and_click(self.kc_region, 'combat_nb_retreat.png')
         while not check_and_click(global_regions['next'], 'next.png', expand_areas('next')):
             pass
         sleep(2)
@@ -723,6 +743,18 @@ class PvP:
             while_count_checker(self.kc_region, self.settings, while_count)
         log_msg("PvP complete!")
         return True
+
+    def formation_nb_selector(self, enemy_ship_count, enemy_sub_count):
+        formation = 'formation_line_ahead'
+        nb = True
+        sub_ratio = enemy_sub_count / enemy_ship_count
+        if sub_ratio > 0.5:
+            formation = 'formation_line_abreast'
+        elif sub_ratio == 0.5:
+            formation = 'formation_diamond'
+        if sub_ratio == 1:
+            nb = False  # Skip night battle if the entire enemy fleet are subs
+        return (formation, nb)
 
 
 class FleetcompSwitcher:
