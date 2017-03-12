@@ -533,6 +533,7 @@ def kancolle_auto_wrapper():
         else:
             # Otherwise, just sleep for the sleep cycle length
             sleep(sleep_cycle)
+    sys.exit(0)
 
 
 # initialize kancolle_auto
