@@ -115,11 +115,11 @@ def get_config(settings, sleep_cycle):
             settings['submarine_switch_subs'] = ['i-8', 'i-8-kai', 'i-13', 'i-14', 'i-19', 'i-19-kai', 'i-26', 'i-26-kai', 'i-58', 'i-58-kai', 'i-168', 'i-401', 'maruyu', 'ro-500', 'u-511']
         # Expand 'ss' and 'ssv' group values to their actual subs
         if 'ss' in settings['submarine_switch_subs']:
-            a.remove('ss')
-            a.extend(['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511'])
+            settings['submarine_switch_subs'].remove('ss')
+            settings['submarine_switch_subs'].extend(['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511'])
         if 'ssv' in settings['submarine_switch_subs']:
-            a.remove('ssv')
-            a.extend(['i-8-kai', 'i-13', 'i-14', 'i-19-kai', 'i-26-kai', 'i-58-kai', 'i-401'])
+            settings['submarine_switch_subs'].remove('ssv')
+            settings['submarine_switch_subs'].extend(['i-8-kai', 'i-13', 'i-14', 'i-19-kai', 'i-26-kai', 'i-58-kai', 'i-401'])
         settings['submarine_switch_subs'] = list(set(settings['submarine_switch_subs']))
         for sub in settings['submarine_switch_subs']:
             if sub not in settings_check_valid_subs:
