@@ -1,3 +1,6 @@
+#### 2017-03-12 ([Release 8.1](https://github.com/mrmin123/kancolle-auto/releases/tag/8.1))
+* Bugfix to `ScheduledStop` feature (thanks to @waicool20)
+
 #### 2017-02-28 ([Release 8](https://github.com/mrmin123/kancolle-auto/releases/tag/8))
 * Archive 2017 Winter Event assets
 * Implement `FatigueSwitch` feature, which lets you specify whether or not kancolle-auto should attempt to switch out fatigued submarines with its submarine switcher module
