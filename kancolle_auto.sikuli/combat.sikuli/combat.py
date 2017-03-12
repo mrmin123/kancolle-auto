@@ -7,6 +7,9 @@ from util import *
 Settings.OcrTextRead = True
 Settings.MinSimilarity = 0.8
 
+# Custom similarity thresholds
+DMG_SIMILARITY = 0.7  # Damage state icons
+CLASS_SIMILARITY = 0.7  # Ship class icons
 
 class Combat:
     def __init__(self, kc_region, settings):
@@ -43,7 +46,6 @@ class Combat:
             self.lbas_nodes[2] = settings['lbas_group_2_nodes']
             self.lbas_nodes[3] = settings['lbas_group_3_nodes']
         self.damage_counts = [0, 0, 0]
-        self.dmg_similarity = 0.7
 
     # Tally and return number of ships of each damage state. Supports combined
     # fleets (add=True) as well as pre-sortie and post-sortie screens
@@ -59,19 +61,19 @@ class Combat:
             tally_damage_region = global_regions['check_damage']
         # Tally light damages
         try:
-            for i in tally_damage_region.findAll(Pattern('dmg_light.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_light.png').similar(DMG_SIMILARITY)):
                 self.damage_counts[0] += 1
         except:
             pass
         # Tally moderate damages
         try:
-            for i in tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)):
                 self.damage_counts[1] += 1
         except:
             pass
         # Tally critical damages
         try:
-            for i in tally_damage_region.findAll(Pattern('dmg_critical.png').similar(self.dmg_similarity)):
+            for i in tally_damage_region.findAll(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)):
                 self.damage_counts[2] += 1
         except:
             pass
@@ -571,21 +573,14 @@ class Combat:
             shiplist_page = 1
             try:
                 # Check each ship with specified repair/damage state
-                for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(self.dmg_similarity)):
+                for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(DMG_SIMILARITY)):
                     rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                     log_msg("Found ship that is %s!" % scan_list_dict[image])
-                    target_region = i.offset(Location(-165, 0)).right(180).below(70)
+                    target_region = i.offset(Location(-170, -30)).right(195).below(110)
                     ships_to_switch += 1
-                    # Check if the ship is a submarine by checking its stats
-                    target_region.click('fleetcomp_ship_stats_button.png')
-                    sleep(2)
-                    if self.kc_region.exists(Pattern('fleetcomp_ship_stats_submarine.png').exact()):
+                    if self.kc_region.exists(Pattern('fleetcomp_ship_class_ss.png').similar(CLASS_SIMILARITY) or
+                                             Pattern('fleetcomp_ship_class_ssv.png').similar(CLASS_SIMILARITY)):
                         log_msg("Ship is a submarine!")
-                        # If the ship is a sub, back out of stats screen and go to ship switch list
-                        sleep(1)
-                        check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
-                        sleep(1)
-                        rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                         target_region.click('fleetcomp_ship_switch_button.png')
                         self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
                         sleep_fast()
@@ -626,10 +621,10 @@ class Combat:
                                             # This sub class can't be switched in, so break out of the for loop
                                             sleep_fast()
                                             break
-                                        if not (self.kc_region.exists(Pattern('dmg_light.png').similar(self.dmg_similarity)) or
-                                                self.kc_region.exists(Pattern('dmg_moderate.png').similar(self.dmg_similarity)) or
-                                                self.kc_region.exists(Pattern('dmg_critical.png').similar(self.dmg_similarity)) or
-                                                self.kc_region.exists(Pattern('dmg_repair.png').similar(self.dmg_similarity))):
+                                        if not (self.kc_region.exists(Pattern('dmg_light.png').similar(DMG_SIMILARITY)) or
+                                                self.kc_region.exists(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)) or
+                                                self.kc_region.exists(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)) or
+                                                self.kc_region.exists(Pattern('dmg_repair.png').similar(DMG_SIMILARITY))):
                                             # Submarine available. Switch it in!
                                             log_msg("Swapping submarines!")
                                             check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
