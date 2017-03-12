@@ -60,23 +60,17 @@ class Combat:
         else:
             tally_damage_region = global_regions['check_damage']
         # Tally light damages
-        try:
-            for i in tally_damage_region.findAll(Pattern('dmg_light.png').similar(DMG_SIMILARITY)):
-                self.damage_counts[0] += 1
-        except:
-            pass
+        damage_matches = tally_damage_region.findAll(Pattern('dmg_light.png').similar(DMG_SIMILARITY))
+        for i in (damage_matches if damage_matches is not None else []):
+            self.damage_counts[0] += 1
         # Tally moderate damages
-        try:
-            for i in tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)):
-                self.damage_counts[1] += 1
-        except:
-            pass
+        damage_matches = tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY))
+        for i in (damage_matches if damage_matches is not None else []):
+            self.damage_counts[1] += 1
         # Tally critical damages
-        try:
-            for i in tally_damage_region.findAll(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)):
-                self.damage_counts[2] += 1
-        except:
-            pass
+        damage_matches = tally_damage_region.findAll(Pattern('dmg_critical.png').similar(DMG_SIMILARITY))
+        for i in (damage_matches if damage_matches is not None else []):
+            self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
 
@@ -450,20 +444,18 @@ class Combat:
         self.repair_timers = []
         rnavigation(self.kc_region, 'repair', self.settings)
         # Are there any pre-existing repairs happening?
-        try:
-            for i in self.kc_region.findAll(Pattern('repair_timer_alt.png').similar(0.5)):
-                repair_timer = check_timer(self.kc_region, i, 'l', 100)
-                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
-                self.repair_timers.append(timer)
-            # set next sortie timer in case a ship in-fleet is already being repaired
-            self.next_sortie_time_set()
-        except:
-            pass
-        try:
-            for i in self.kc_region.findAll('repair_empty.png'):
-                empty_docks += 1
-        except:
-            log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
+        repair_timer_alt_matches = self.kc_region.findAll(Pattern('repair_timer_alt.png').similar(0.5))
+        for i in (repair_timer_alt_matches if repair_timer_alt_matches is not None else []):
+            repair_timer = check_timer(self.kc_region, i, 'l', 100)
+            timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
+            self.repair_timers.append(timer)
+        # Set next sortie timer in case a ship in-fleet is already being repaired
+        self.next_sortie_time_set()
+        # Get number of empty/available docks
+        repair_empty_matches = self.kc_region.findAll('repair_empty.png')
+        for i in (repair_empty_matches if repair_empty_matches is not None else []):
+            empty_docks += 1
+        # Primary repair action (if dock is available)
         if empty_docks > 0:
             log_msg("Attempting to conduct repairs on %d ship(s)!" % self.count_damage_above_limit('repair'))
             repair_queue = empty_docks if self.count_damage_above_limit('repair') > empty_docks else self.count_damage_above_limit('repair')
@@ -525,6 +517,8 @@ class Combat:
                         sleep(7)
                     sleep_fast()
                 log_msg("%d ships needing repairs left..." % self.count_damage_above_limit('repair'))
+        else:
+            log_warning("Cannot repair; docks are full. Checking back at %s!" % self.next_sortie_time.strftime("%Y-%m-%d %H:%M:%S"))
         # If submarine switching is enabled, run through it if repairs were required
         if self.submarine_switch:
             # Set fastest repair time (which might be a sub) as next sortie time to save time
@@ -571,93 +565,93 @@ class Combat:
             ships_to_switch = 0
             ships_switched_out = 0
             shiplist_page = 1
-            try:
-                # Check each ship with specified repair/damage state
-                for i in self.kc_region.findAll(Pattern('%s.png' % image).similar(DMG_SIMILARITY)):
-                    rejigger_mouse(self.kc_region, 50, 100, 50, 100)
-                    log_msg("Found ship that is %s!" % scan_list_dict[image])
-                    target_region = i.offset(Location(-170, -30)).right(195).below(110)
-                    ships_to_switch += 1
-                    if self.kc_region.exists(Pattern('fleetcomp_ship_class_ss.png').similar(CLASS_SIMILARITY) or
-                                             Pattern('fleetcomp_ship_class_ssv.png').similar(CLASS_SIMILARITY)):
-                        log_msg("Ship is a submarine!")
-                        target_region.click('fleetcomp_ship_switch_button.png')
-                        self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
+            # Check each ship with specified repair/damage state
+            image_matches = self.kc_region.findAll(Pattern('%s.png' % image).similar(DMG_SIMILARITY))
+            for i in (image_matches if image_matches is not None else []):
+                rejigger_mouse(self.kc_region, 50, 100, 50, 100)
+                log_msg("Found ship that is %s!" % scan_list_dict[image])
+                target_region = i.offset(Location(-170, -30)).right(195).below(110)
+                ships_to_switch += 1
+                if self.kc_region.exists(Pattern('fleetcomp_ship_class_ss.png').similar(CLASS_SIMILARITY) or
+                                         Pattern('fleetcomp_ship_class_ssv.png').similar(CLASS_SIMILARITY)):
+                    log_msg("Ship is a submarine!")
+                    target_region.click('fleetcomp_ship_switch_button.png')
+                    self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
+                    sleep_fast()
+                    # Make sure the sort order is correct
+                    log_msg("Checking shiplist sort order and moving to first page if necessary!")
+                    while_count = 0
+                    while not self.kc_region.exists('fleetcomp_shiplist_sort_type.png'):
+                        check_and_click(self.kc_region, 'fleetcomp_shiplist_sort_arrow.png')
                         sleep_fast()
-                        # Make sure the sort order is correct
-                        log_msg("Checking shiplist sort order and moving to first page if necessary!")
-                        while_count = 0
-                        while not self.kc_region.exists('fleetcomp_shiplist_sort_type.png'):
-                            check_and_click(self.kc_region, 'fleetcomp_shiplist_sort_arrow.png')
-                            sleep_fast()
-                            while_count += 1
-                            while_count_checker(self.kc_region, self.settings, while_count)
-                        if shiplist_page == 1:
-                            check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                        rejigger_mouse(self.kc_region, 50, 100, 50, 100)
-                        # Sort through pages and find a sub that's not damaged/under repair
-                        sub_chosen = False
-                        sub_unavailable = False
-                        saw_subs = False
-                        while not sub_chosen and not sub_unavailable:
-                            if self.kc_region.exists('fleetcomp_shiplist_submarine.png'):
-                                log_msg("We are seeing available submarines!")
-                                saw_subs = True
-                            else:
-                                if saw_subs:
-                                    # We're not seeing any more submarines in the shiplist...
-                                    log_warning("No more submarines!")
-                                    return False
-                            for enabled_sub in self.submarine_switch_subs:
-                                fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine_%s.png' % enabled_sub
-                                try:
-                                    for sub in self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95)):
-                                        self.kc_region.click(sub)
-                                        sleep(1)
-                                        if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
-                                            # The damaged sub can't be replaced with this subtype
-                                            log_msg("Can't replace with this sub type!")
-                                            check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            # This sub class can't be switched in, so break out of the for loop
-                                            sleep_fast()
-                                            break
-                                        if not (self.kc_region.exists(Pattern('dmg_light.png').similar(DMG_SIMILARITY)) or
-                                                self.kc_region.exists(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)) or
-                                                self.kc_region.exists(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)) or
-                                                self.kc_region.exists(Pattern('dmg_repair.png').similar(DMG_SIMILARITY))):
-                                            # Submarine available. Switch it in!
-                                            log_msg("Swapping submarines!")
-                                            check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
-                                            ships_switched_out += 1
-                                            sub_chosen = True
-                                            break
-                                        else:
-                                            # Submarine is damaged/under repair; click away
-                                            log_msg("Submarine not available, moving on!")
-                                            check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
-                                            sleep_fast()
-                                except:
-                                    pass
-                            # If we went through all the submarines on the shiplist page and haven't found a valid
-                            # replacement, head to the next page (up to page 11 supported)
-                            if not sub_chosen:
-                                shiplist_page += 1
-                                if shiplist_page < 12:
-                                    if check_and_click(self.kc_region, 'fleetcomp_shiplist_pg%s.png' % shiplist_page):
-                                        sleep_fast()
-                                        continue
-                                # If we do not have any more available pages, we do not have any more available submarines
-                                log_msg("No more ships to look at, moving on!")
-                                check_and_click(self.kc_region, 'fleetcomp_shiplist_misc.png')
-                                sub_unavailable = True
-                    else:
-                        check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
-                if ships_to_switch == ships_switched_out:
-                    scan_list_status[image] = True
-                    log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[image])
-            except TypeError:
+                        while_count += 1
+                        while_count_checker(self.kc_region, self.settings, while_count)
+                    if shiplist_page == 1:
+                        check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
+                    rejigger_mouse(self.kc_region, 50, 100, 50, 100)
+                    # Sort through pages and find a sub that's not damaged/under repair
+                    sub_chosen = False
+                    sub_unavailable = False
+                    saw_subs = False
+                    while not sub_chosen and not sub_unavailable:
+                        if self.kc_region.exists('fleetcomp_shiplist_submarine.png'):
+                            log_msg("We are seeing available submarines!")
+                            saw_subs = True
+                        else:
+                            if saw_subs:
+                                # We're not seeing any more submarines in the shiplist...
+                                log_warning("No more submarines!")
+                                return False
+                        for enabled_sub in self.submarine_switch_subs:
+                            fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine_%s.png' % enabled_sub
+                            fleetcomp_shiplist_submarine_img_matches = self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95))
+                            for sub in (fleetcomp_shiplist_submarine_img_matches if fleetcomp_shiplist_submarine_img_matches is not None else []):
+                                self.kc_region.click(sub)
+                                sleep(1)
+                                if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
+                                    # The damaged sub can't be replaced with this subtype
+                                    log_msg("Can't replace with this sub type!")
+                                    check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
+                                    # This sub class can't be switched in, so break out of the for loop
+                                    sleep_fast()
+                                    break
+                                if not (self.kc_region.exists(Pattern('dmg_light.png').similar(DMG_SIMILARITY)) or
+                                        self.kc_region.exists(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)) or
+                                        self.kc_region.exists(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)) or
+                                        self.kc_region.exists(Pattern('dmg_repair.png').similar(DMG_SIMILARITY))):
+                                    # Submarine available. Switch it in!
+                                    log_msg("Swapping submarines!")
+                                    check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
+                                    ships_switched_out += 1
+                                    sub_chosen = True
+                                    break
+                                else:
+                                    # Submarine is damaged/under repair; click away
+                                    log_msg("Submarine not available, moving on!")
+                                    check_and_click(self.kc_region, 'fleetcomp_shiplist_first_page.png')
+                                    sleep_fast()
+                        # If we went through all the submarines on the shiplist page and haven't found a valid
+                        # replacement, head to the next page (up to page 11 supported)
+                        if not sub_chosen:
+                            shiplist_page += 1
+                            if shiplist_page < 12:
+                                if check_and_click(self.kc_region, 'fleetcomp_shiplist_pg%s.png' % shiplist_page):
+                                    sleep_fast()
+                                    continue
+                            # If we do not have any more available pages, we do not have any more available submarines
+                            log_msg("No more ships to look at, moving on!")
+                            check_and_click(self.kc_region, 'fleetcomp_shiplist_misc.png')
+                            sub_unavailable = True
+                else:
+                    check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
+            if image_matches is None:
+                # No matches; continue on
                 scan_list_status[image] = True
                 log_msg("No ships %s at the moment. Continuing..." % scan_list_dict[image])
+            elif ships_to_switch == ships_switched_out:
+                # Matches, with correct number of ships swapped out; continue on
+                scan_list_status[image] = True
+                log_success("All submarines (%s) successfully swapped out! Continuing!" % scan_list_dict[image])
         if False not in scan_list_status.itervalues():
             log_success("All submarines successfully swapped out! Continuing sorties!")
             return True

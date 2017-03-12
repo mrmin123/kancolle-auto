@@ -168,19 +168,17 @@ class Quests:
     def filter_quests(self, disable):
         log_msg("Filtering out quests...")
         removed = 0
-        try:
-            # Check if enabled quests on the page are ones to be disabled
-            for i in global_regions['quest_status'].findAll('quest_in_progress.png'):
-                self.active_quests += 1
-                quest_check_area = i.left(570)
-                # If they are, disable them
-                if quest_check_area.exists(disable + '.png'):
-                    log_msg("Disabling quest!")
-                    self.kc_region.click(quest_check_area)
-                    removed += 1
-                    sleep(3)
-        except:
-            pass
+        quest_in_progress_matches = global_regions['quest_status'].findAll('quest_in_progress.png')
+        # Check if enabled quests on the page are ones to be disabled
+        for i in (quest_in_progress_matches if quest_in_progress_matches is not None else []):
+            self.active_quests += 1
+            quest_check_area = i.left(570)
+            # If they are, disable them
+            if quest_check_area.exists(disable + '.png'):
+                log_msg("Disabling quest!")
+                self.kc_region.click(quest_check_area)
+                removed += 1
+                sleep(3)
         return removed
 
     def finish_quests(self, page_backtrack):

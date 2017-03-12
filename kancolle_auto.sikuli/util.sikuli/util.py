@@ -667,11 +667,11 @@ def debug_find(file, target_program, similarity=0.8):
     print ""
     print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
     print "+    with minimum similarity of %s:" % similarity
-    try:
-        for img_match in target_window.findAll(Pattern(file).similar(similarity)):
-            print img_match
-            target_window.mouseMove(img_match)
-    except:
+    debug_matches = target_window.findAll(Pattern(file).similar(similarity))
+    for img_match in (debug_matches if debug_matches is not None else []):
+        print img_match
+        target_window.mouseMove(img_match)
+    if debug_matches is None:
         print "No matches!"
     print ""
     print ""
