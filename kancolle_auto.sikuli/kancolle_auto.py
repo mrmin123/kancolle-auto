@@ -433,9 +433,8 @@ def kancolle_auto_wrapper():
     global idle, done_expeditions, done_sorties, done_pvp
     init()
     log_msg("Initial checks and commands complete. Starting loop.")
-    main_loop = True
     start_scheduled_sleep = False
-    while main_loop:
+    while True:
         if settings['expeditions_enabled']:
             # If expedition timers are up, check for their arrival
             for expedition in expedition_item.expedition_list:
@@ -509,20 +508,19 @@ def kancolle_auto_wrapper():
                     log_success("kancolle-auto has ran for the desired %s hours! Shutting down now!" % settings['scheduled_stop_count'])
                     stop_flag = True
             elif settings['scheduled_stop_mode'] == 'expedition':
-                if done_expeditions >= settings['scheduled_stop_count']:
+                if (done_expeditions + 1) >= settings['scheduled_stop_count']:
                     log_success("kancolle-auto has ran the desired %s expeditions! Shutting down now!" % settings['scheduled_stop_count'])
                     stop_flag = True
             elif settings['scheduled_stop_mode'] == 'sortie':
-                if done_sorties >= settings['scheduled_stop_count']:
+                if (done_sorties + 1) >= settings['scheduled_stop_count']:
                     log_success("kancolle-auto has ran for the desired %s sorties! Shutting down now!" % settings['scheduled_stop_count'])
                     stop_flag = True
             elif settings['scheduled_stop_mode'] == 'pvp':
-                if done_pvp >= settings['scheduled_stop_count']:
+                if (done_pvp + 1) >= settings['scheduled_stop_count']:
                     log_success("kancolle-auto has ran for the desired %s pvps! Shutting down now!" % settings['scheduled_stop_count'])
                     stop_flag = True
             if stop_flag:
-                # Turn the main loop off
-                main_loop = False
+                sys.exit(0)
         if start_scheduled_sleep:
             # If it's time to sleep, set the next sleep start time...
             reset_next_sleep_time(True)
@@ -533,7 +531,6 @@ def kancolle_auto_wrapper():
         else:
             # Otherwise, just sleep for the sleep cycle length
             sleep(sleep_cycle)
-    sys.exit(0)
 
 
 # initialize kancolle_auto
