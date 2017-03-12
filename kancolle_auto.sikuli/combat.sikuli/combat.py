@@ -704,9 +704,10 @@ class PvP:
                 return False
         # An opponent was chosen
         rejigger_mouse(self.kc_region, 50, 750, 50, 350)
+        self.kc_region.wait('pvp_start_1.png', 30)
 
         # Identify opponent ship and sub counts
-        enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.9))
+        enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.95))
         for i in (enemy_ship_count_matches if enemy_ship_count_matches is not None else []):
             enemy_ship_count += 1
         enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ss.png'))
