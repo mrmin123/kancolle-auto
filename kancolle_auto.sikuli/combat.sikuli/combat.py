@@ -716,11 +716,12 @@ class PvP:
         for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
             enemy_sub_count += 1
         formation, nb = self.formation_nb_selector(enemy_ship_count, enemy_sub_count)
+        log_msg("Sortieing against %s ships (%s subs); deploying with %s formation!" % (enemy_ship_count, enemy_sub_count, formation[10:].replace('_', ' ')))
 
         # Continue sortie
         wait_and_click(self.kc_region, 'pvp_start_1.png', 30)
         wait_and_click(self.kc_region, 'pvp_start_2.png', 30)
-        log_msg("Sortieing against PvP opponent!")
+        log_msg("Beginning PvP sortie!")
         rejigger_mouse(self.kc_region, 50, 350, 0, 100)
         sleep(2)
         wait_and_click(global_regions[formation], '%s.png' % formation, 30)
