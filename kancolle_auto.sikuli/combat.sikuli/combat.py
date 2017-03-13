@@ -9,7 +9,7 @@ Settings.MinSimilarity = 0.8
 
 # Custom similarity thresholds
 DMG_SIMILARITY = 0.7  # Damage state icons
-FATIGUE_SIMILARITY = 0.8  # Fatigue state icons
+FATIGUE_SIMILARITY = 0.98  # Fatigue state icons
 CLASS_SIMILARITY = 0.7  # Ship class icons
 
 class Combat:
@@ -93,10 +93,10 @@ class Combat:
     # attempting to sortie again
     def fatigue_check(self):
         log_msg("Checking fleet morale!")
-        if global_regions['check_morale'].exists(Pattern('fatigue_high.png').similar(0.98)):
+        if global_regions['check_morale'].exists(Pattern('fatigue_high.png').similar(FATIGUE_SIMILARITY)):
             log_warning("Ship(s) with high fatigue found!")
             return 24
-        elif global_regions['check_morale'].exists(Pattern('fatigue_med.png').similar(0.98)):
+        elif global_regions['check_morale'].exists(Pattern('fatigue_med.png').similar(FATIGUE_SIMILARITY)):
             log_warning("Ship(s) with medium fatigue found!")
             return 12
         else:
