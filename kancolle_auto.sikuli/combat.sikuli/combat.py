@@ -615,8 +615,7 @@ class Combat:
                                     # This sub class can't be switched in, so break out of the for loop
                                     sleep_fast()
                                     break
-                                if not (self.kc_region.exists(Pattern('dmg_light.png').similar(DMG_SIMILARITY)) or
-                                        self.kc_region.exists(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)) or
+                                if not (self.kc_region.exists(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY)) or
                                         self.kc_region.exists(Pattern('dmg_critical.png').similar(DMG_SIMILARITY)) or
                                         self.kc_region.exists(Pattern('dmg_repair.png').similar(DMG_SIMILARITY))):
                                     # Submarine available. Switch it in!
@@ -624,6 +623,7 @@ class Combat:
                                     check_and_click(self.kc_region, 'fleetcomp_shiplist_ship_switch_button.png')
                                     ships_switched_out += 1
                                     sub_chosen = True
+                                    sleep(1)
                                     break
                                 else:
                                     # Submarine is damaged/under repair; click away
