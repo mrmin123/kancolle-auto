@@ -113,17 +113,18 @@ def get_config(settings, sleep_cycle):
         # If 'all' is specified, disregard the other specified options
         if 'all' in settings['submarine_switch_subs']:
             settings['submarine_switch_subs'] = ['i-8', 'i-8-kai', 'i-13', 'i-14', 'i-19', 'i-19-kai', 'i-26', 'i-26-kai', 'i-58', 'i-58-kai', 'i-168', 'i-401', 'maruyu', 'ro-500', 'u-511']
-        # Expand 'ss' and 'ssv' group values to their actual subs
-        if 'ss' in settings['submarine_switch_subs']:
-            settings['submarine_switch_subs'].remove('ss')
-            settings['submarine_switch_subs'].extend(['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511'])
-        if 'ssv' in settings['submarine_switch_subs']:
-            settings['submarine_switch_subs'].remove('ssv')
-            settings['submarine_switch_subs'].extend(['i-8-kai', 'i-13', 'i-14', 'i-19-kai', 'i-26-kai', 'i-58-kai', 'i-401'])
-        settings['submarine_switch_subs'] = list(set(settings['submarine_switch_subs']))
+        else:
+            # Expand 'ss' and 'ssv' group values to their actual subs
+            if 'ss' in settings['submarine_switch_subs']:
+                settings['submarine_switch_subs'].remove('ss')
+                settings['submarine_switch_subs'].extend(['i-8', 'i-19', 'i-26', 'i-58', 'i-168', 'maruyu', 'ro-500', 'u-511'])
+            if 'ssv' in settings['submarine_switch_subs']:
+                settings['submarine_switch_subs'].remove('ssv')
+                settings['submarine_switch_subs'].extend(['i-8-kai', 'i-13', 'i-14', 'i-19-kai', 'i-26-kai', 'i-58-kai', 'i-401'])
+            settings['submarine_switch_subs'] = list(set(settings['submarine_switch_subs']))
         for sub in settings['submarine_switch_subs']:
             if sub not in settings_check_valid_subs:
-                log_error("'%s' is not a valid sub selection! Please check your config file." % formation)
+                log_error("'%s' is not a valid sub selection! Please check your config file." % sub)
                 sys.exit()
         log_msg("Submarine Switch enabled")
     else:
