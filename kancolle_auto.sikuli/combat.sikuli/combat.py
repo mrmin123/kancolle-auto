@@ -758,7 +758,7 @@ class PvP:
     def formation_nb_selector(self, enemy_ship_count, enemy_sub_count):
         formation = 'formation_line_ahead'
         nb = True
-        sub_ratio = enemy_sub_count / enemy_ship_count
+        sub_ratio = float(enemy_sub_count) / float(enemy_ship_count)
         if sub_ratio > 0.5:
             formation = 'formation_line_abreast'
         elif sub_ratio == 0.5:
