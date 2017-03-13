@@ -581,8 +581,8 @@ class Combat:
                 log_msg("Found ship that is %s!" % scan_list_dict[image])
                 target_region = i.offset(Location(-170, -30)).right(195).below(110)
                 ships_to_switch += 1
-                if self.kc_region.exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY) or
-                                         Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY)):
+                if (target_region.exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY)) or
+                        target_region.exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))):
                     log_msg("Ship is a submarine!")
                     target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
