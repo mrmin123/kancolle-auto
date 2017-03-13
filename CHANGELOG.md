@@ -1,3 +1,6 @@
+#### 2017-03-13 ([Release 8.2](https://github.com/mrmin123/kancolle-auto/releases/tag/8.2))
+* Bugfixes to submarine switch module
+
 #### 2017-03-12 ([Release 8.1](https://github.com/mrmin123/kancolle-auto/releases/tag/8.1))
 * Impovements to PvP module so it selects diamond or line abreast vs sub-heavy opponents, as well as declining night battle against all-sub fleets
 * Improvements to submarine switch module to use less clicks
