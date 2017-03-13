@@ -1,3 +1,10 @@
+#### 2017-03-12 ([Release 8.1](https://github.com/mrmin123/kancolle-auto/releases/tag/8.1))
+* Impovements to PvP module so it selects diamond or line abreast vs sub-heavy opponents, as well as declining night battle against all-sub fleets
+* Improvements to submarine switch module to use less clicks
+* `EnabledSubs` option of submarine switch module now supports 'ss' and 'ssv' as valid group values
+* Bugfix to `ScheduledStop` feature (thanks to @waicool20)
+* Minor code updates
+
 #### 2017-02-28 ([Release 8](https://github.com/mrmin123/kancolle-auto/releases/tag/8))
 * Archive 2017 Winter Event assets
 * Implement `FatigueSwitch` feature, which lets you specify whether or not kancolle-auto should attempt to switch out fatigued submarines with its submarine switcher module
