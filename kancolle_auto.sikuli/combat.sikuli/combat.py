@@ -652,7 +652,7 @@ class Combat:
                             check_and_click(self.kc_region, 'fleetcomp_shiplist_misc.png')
                             sub_unavailable = True
                 else:
-                    check_and_click(self.kc_region, 'fleetcomp_ship_stats_misc.png')
+                    log_msg("Ship is not a submarine! Continuing!")
             if image_matches is None:
                 # No matches; continue on
                 scan_list_status[image] = True
