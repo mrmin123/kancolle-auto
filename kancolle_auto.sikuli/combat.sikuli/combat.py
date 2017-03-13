@@ -9,6 +9,7 @@ Settings.MinSimilarity = 0.8
 
 # Custom similarity thresholds
 DMG_SIMILARITY = 0.7  # Damage state icons
+FATIGUE_SIMILARITY = 0.8  # Fatigue state icons
 CLASS_SIMILARITY = 0.7  # Ship class icons
 
 class Combat:
@@ -547,6 +548,14 @@ class Combat:
             'fatigue_high': 'highly fatigued',
             'fatigue_med': 'moderately fatigued'
         }
+        similarity_dict = {
+            'fleetcomp_dmg_repair': DMG_SIMILARITY,
+            'dmg_critical': DMG_SIMILARITY,
+            'dmg_moderate': DMG_SIMILARITY,
+            'dmg_light': DMG_SIMILARITY,
+            'fatigue_high': FATIGUE_SIMILARITY,
+            'fatigue_med': FATIGUE_SIMILARITY
+        }
         if isinstance(self.submarine_switch_replace_limit, int) and self.submarine_switch_replace_limit in [0, 1]:
             if self.submarine_switch_replace_limit <= 1:
                 scan_list.append('dmg_moderate')
@@ -566,7 +575,7 @@ class Combat:
             ships_switched_out = 0
             shiplist_page = 1
             # Check each ship with specified repair/damage state
-            image_matches = self.kc_region.findAll(Pattern('%s.png' % image).similar(DMG_SIMILARITY))
+            image_matches = self.kc_region.findAll(Pattern('%s.png' % image).similar(similarity_dict[image]))
             for i in (image_matches if image_matches is not None else []):
                 rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                 log_msg("Found ship that is %s!" % scan_list_dict[image])
