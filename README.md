@@ -32,7 +32,7 @@ Please read the [**kancolle-auto wiki**](https://github.com/mrmin123/kancolle-au
 ### Features
 
 * Expedition module &mdash; automate expeditions
-* PvP module &mdash; automate PvP
+* PvP module &mdash; automate PvP, including diamond and line abreast formations versus submarine-heavy fleets
 * Combat module &mdash; automate sorties, node selections, repairs, and submarine switching
   * Supports sorties to Event maps, Combined Fleets, LBAS, and pre-boss/boss support expeditions
 * Quests module &mdash; automate quests
