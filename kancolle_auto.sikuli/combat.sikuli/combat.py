@@ -714,6 +714,7 @@ class PvP:
         # An opponent was chosen
         rejigger_mouse(self.kc_region, 50, 750, 50, 350)
         self.kc_region.wait('pvp_start_1.png', 30)
+        sleep(1)
 
         # Identify opponent ship and sub counts
         enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.95))
@@ -758,6 +759,9 @@ class PvP:
     def formation_nb_selector(self, enemy_ship_count, enemy_sub_count):
         formation = 'formation_line_ahead'
         nb = True
+        if enemy_ship_count == 0:
+            # Return defaults if enemy ship count detection fails; avoid divide by 0
+            return (formation, nb)
         sub_ratio = float(enemy_sub_count) / float(enemy_ship_count)
         if sub_ratio > 0.5:
             formation = 'formation_line_abreast'
