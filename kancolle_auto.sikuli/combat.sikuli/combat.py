@@ -720,10 +720,10 @@ class PvP:
         enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.95))
         for i in (enemy_ship_count_matches if enemy_ship_count_matches is not None else []):
             enemy_ship_count += 1
-        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ss.png'))
+        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY))
         for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
             enemy_sub_count += 1
-        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ssv.png'))
+        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))
         for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
             enemy_sub_count += 1
         formation, nb = self.formation_nb_selector(enemy_ship_count, enemy_sub_count)
