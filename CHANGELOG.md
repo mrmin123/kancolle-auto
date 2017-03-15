@@ -1,4 +1,4 @@
-#### 2017-03-13 ([Release 8.3](https://github.com/mrmin123/kancolle-auto/releases/tag/8.3))
+#### 2017-03-15 ([Release 8.3](https://github.com/mrmin123/kancolle-auto/releases/tag/8.3))
 * Bugfixes to PvP module
 
 #### 2017-03-13 ([Release 8.2](https://github.com/mrmin123/kancolle-auto/releases/tag/8.2))
