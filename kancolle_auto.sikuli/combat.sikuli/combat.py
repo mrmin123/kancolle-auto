@@ -767,7 +767,7 @@ class PvP:
             formation = 'formation_line_abreast'
         elif sub_ratio == 0.5:
             formation = 'formation_diamond'
-        if sub_ratio == 1:
+        if sub_ratio >= 1:
             nb = False  # Skip night battle if the entire enemy fleet are subs
         return (formation, nb)
 
