@@ -784,11 +784,14 @@ class FleetcompSwitcher:
         wait_and_click(self.kc_region, 'fleetcomp_preset_screen_button.png', 30)
         self.kc_region.wait('fleetcomp_preset_switch_button.png', 30)
         if fleetcomp > 5:
+            # Click the next button the necessary number of times to scroll
             fleetcomp_shift = 5
             fleetcomp_pos = 5
             while fleetcomp_pos < fleetcomp:
                 self.kc_region.click('fleetcomp_preset_next_button.png')
                 fleetcomp_pos += 1
                 sleep_fast()
-        target_region = self.kc_region.find('fleet_4.png').offset(Location(45, 13 + (52 * fleetcomp_shift))).right(60).below(32)
+        # Generate the location of the desired fleet relative to the 2nd fleet flag
+        # Any fleet comp at position 5+ is always at the 5th and last position
+        target_region = self.kc_region.find('fleet_2.png').offset(Location(100, 52 * fleetcomp_shift)).right(50).below(40)
         target_region.click('fleetcomp_preset_switch_button.png')
