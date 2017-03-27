@@ -779,10 +779,16 @@ class FleetcompSwitcher:
 
     def switch_fleetcomp(self, fleetcomp):
         # Navigate to the fleetcomp page, then enter the fleetcomp screen
+        fleetcomp_shift = fleetcomp
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
         wait_and_click(self.kc_region, 'fleetcomp_preset_screen_button.png', 30)
-        self.kc_region.wait('fleetcomp_preset_switch_button_offset.png', 30)
-        # the button_offset image is located 50 pixels above the first button,
-        # and each subsequent buttons are situated 52 pixels apart vertically
-        target_button = Pattern('fleetcomp_preset_switch_button_offset.png').targetOffset(randint(-15, 15), 50 + (52 * (fleetcomp - 1)) + randint(-8, 8))
-        self.kc_region.click(target_button)
+        self.kc_region.wait('fleetcomp_preset_switch_button.png', 30)
+        if fleetcomp > 5:
+            fleetcomp_shift = 5
+            fleetcomp_pos = 5
+            while fleetcomp_pos < fleetcomp:
+                self.kc_region.click('fleetcomp_preset_next_button.png')
+                fleetcomp_pos += 1
+                sleep_fast()
+        target_region = self.kc_region.find('fleet_4.png').offset(Location(45, 13 + (52 * fleetcomp_shift))).right(60).below(32)
+        target_region.click('fleetcomp_preset_switch_button.png')
