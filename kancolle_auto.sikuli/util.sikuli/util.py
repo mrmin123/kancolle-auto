@@ -686,7 +686,7 @@ def debug_find(file, target_program, similarity=0.8):
     for img_match in debug_matches:
         print img_match
         target_window.mouseMove(img_match)
-    if len(debug_matches) == 0:
+    if isinstance(debug_matches, list) and len(debug_matches) == 0:
         print "No matches!"
     print ""
     print ""
