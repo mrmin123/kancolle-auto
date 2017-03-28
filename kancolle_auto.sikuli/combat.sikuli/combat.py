@@ -61,16 +61,16 @@ class Combat:
         else:
             tally_damage_region = global_regions['check_damage']
         # Tally light damages
-        damage_matches = tally_damage_region.findAll(Pattern('dmg_light.png').similar(DMG_SIMILARITY))
-        for i in (damage_matches if damage_matches is not None else []):
+        damage_matches = findAll_wrapper(tally_damage_region, Pattern('dmg_light.png').similar(DMG_SIMILARITY))
+        for i in damage_matches:
             self.damage_counts[0] += 1
         # Tally moderate damages
-        damage_matches = tally_damage_region.findAll(Pattern('dmg_moderate.png').similar(DMG_SIMILARITY))
-        for i in (damage_matches if damage_matches is not None else []):
+        damage_matches = findAll_wrapper(tally_damage_region, Pattern('dmg_moderate.png').similar(DMG_SIMILARITY))
+        for i in damage_matches:
             self.damage_counts[1] += 1
         # Tally critical damages
-        damage_matches = tally_damage_region.findAll(Pattern('dmg_critical.png').similar(DMG_SIMILARITY))
-        for i in (damage_matches if damage_matches is not None else []):
+        damage_matches = findAll_wrapper(tally_damage_region, Pattern('dmg_critical.png').similar(DMG_SIMILARITY))
+        for i in damage_matches:
             self.damage_counts[2] += 1
         log_msg("Light damage: %d; moderate damage: %d; critical damage: %d" % (self.damage_counts[0], self.damage_counts[1], self.damage_counts[2]))
         return self.damage_counts
@@ -453,8 +453,8 @@ class Combat:
         # Set next sortie timer in case a ship in-fleet is already being repaired
         self.next_sortie_time_set()
         # Get number of empty/available docks
-        repair_empty_matches = self.kc_region.findAll('repair_empty.png')
-        for i in (repair_empty_matches if repair_empty_matches is not None else []):
+        repair_empty_matches = findAll_wrapper(self.kc_region, 'repair_empty.png')
+        for i in repair_empty_matches:
             empty_docks += 1
         # Primary repair action (if dock is available)
         if empty_docks > 0:
@@ -575,8 +575,8 @@ class Combat:
             ships_switched_out = 0
             shiplist_page = 1
             # Check each ship with specified repair/damage state
-            image_matches = self.kc_region.findAll(Pattern('%s.png' % image).similar(similarity_dict[image]))
-            for i in (image_matches if image_matches is not None else []):
+            image_matches = findAll_wrapper(self.kc_region, Pattern('%s.png' % image).similar(similarity_dict[image]))
+            for i in image_matches:
                 rejigger_mouse(self.kc_region, 50, 100, 50, 100)
                 log_msg("Found ship that is %s!" % scan_list_dict[image])
                 target_region = i.offset(Location(-170, -30)).right(195).below(110)
@@ -613,8 +613,8 @@ class Combat:
                                 return False
                         for enabled_sub in self.submarine_switch_subs:
                             fleetcomp_shiplist_submarine_img = 'fleetcomp_shiplist_submarine_%s.png' % enabled_sub
-                            fleetcomp_shiplist_submarine_img_matches = self.kc_region.findAll(Pattern(fleetcomp_shiplist_submarine_img).similar(0.95))
-                            for sub in (fleetcomp_shiplist_submarine_img_matches if fleetcomp_shiplist_submarine_img_matches is not None else []):
+                            fleetcomp_shiplist_submarine_img_matches = findAll_wrapper(self.kc_region, Pattern(fleetcomp_shiplist_submarine_img).similar(0.95))
+                            for sub in fleetcomp_shiplist_submarine_img_matches:
                                 self.kc_region.click(sub)
                                 sleep(1)
                                 if not self.kc_region.exists(Pattern('fleetcomp_shiplist_ship_switch_button.png').exact()):
@@ -717,14 +717,14 @@ class PvP:
         sleep(1)
 
         # Identify opponent ship and sub counts
-        enemy_ship_count_matches = self.kc_region.findAll(Pattern('pvp_lvl.png').similar(0.95))
-        for i in (enemy_ship_count_matches if enemy_ship_count_matches is not None else []):
+        enemy_ship_count_matches = findAll_wrapper(self.kc_region, Pattern('pvp_lvl.png').similar(0.95))
+        for i in enemy_ship_count_matches:
             enemy_ship_count += 1
-        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY))
-        for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
+        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY))
+        for i in enemy_sub_count_matches:
             enemy_sub_count += 1
-        enemy_sub_count_matches = self.kc_region.findAll(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))
-        for i in (enemy_sub_count_matches if enemy_sub_count_matches is not None else []):
+        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))
+        for i in enemy_sub_count_matches:
             enemy_sub_count += 1
         formation, nb = self.formation_nb_selector(enemy_ship_count, enemy_sub_count)
         log_msg("Sortieing against %s ships (%s subs); deploying with %s formation!" % (enemy_ship_count, enemy_sub_count, formation[10:].replace('_', ' ')))
