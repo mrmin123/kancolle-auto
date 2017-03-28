@@ -546,7 +546,7 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
     kc_region.click(pattern_generator(kc_region, pic, expand))
 
 
-def findAll_container(kc_region, pattern):
+def findAll_wrapper(kc_region, pattern):
     """
     Alternative to Sikuli's findAll function, with the try-except catch
     built-in. Returns an empty list if there are no matches (FindFailed).
