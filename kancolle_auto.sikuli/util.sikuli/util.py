@@ -546,6 +546,21 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
     kc_region.click(pattern_generator(kc_region, pic, expand))
 
 
+def findAll_container(kc_region, pattern):
+    """
+    Alternative to Sikuli's findAll function, with the try-except catch
+    built-in. Returns an empty list if there are no matches (FindFailed).
+
+    kc_region - Sikuli region
+    pattern - image or Pattern object to match within kc_region
+    """
+    try:
+        matches = kc_region.findAll(pattern)
+        return matches
+    except FindFailed:
+        return []
+
+
 def pattern_generator(kc_region, pic, expand=[], mod=''):
     """
     Function for generating Sikuli Pattern with randomized click locations.
