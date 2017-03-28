@@ -556,7 +556,7 @@ def findAll_wrapper(kc_region, pattern):
     """
     try:
         matches = kc_region.findAll(pattern)
-        return matches
+        return matches if matches is not None else []
     except FindFailed:
         return []
 
