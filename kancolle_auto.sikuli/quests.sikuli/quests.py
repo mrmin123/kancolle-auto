@@ -109,7 +109,8 @@ class Quests:
                 if self.kc_region.exists(quest_type + '.png'):
                     # Found quest(s) of desired category
                     skip_page = False
-                    for quest_bar in self.kc_region.findAll(quest_type + '.png'):
+                    quest_bars = findAll_wrapper(self.kc_region, '%s.png' % quest_type)
+                    for quest_bar in quest_bars:
                         # Loop through all found quests of that desired category; expand the region to fit the entire quest bar
                         quest_check_area = quest_bar.nearby(7).right(580)
                         if quest_check_area.exists('flag_once.png'):
@@ -168,7 +169,7 @@ class Quests:
     def filter_quests(self, disable):
         log_msg("Filtering out quests...")
         removed = 0
-        quest_in_progress_matches = global_regions['quest_status'].findAll('quest_in_progress.png')
+        quest_in_progress_matches = findAll_wrapper(global_regions['quest_status'], 'quest_in_progress.png')
         # Check if enabled quests on the page are ones to be disabled
         for i in (quest_in_progress_matches if quest_in_progress_matches is not None else []):
             self.active_quests += 1

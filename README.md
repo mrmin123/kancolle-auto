@@ -50,7 +50,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 ### Quick Start
 
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-2. Install [SikuliX 1.1.1](http://nightly.sikuli.de/) (Nightly; latest tested stable vesion is [sikulixsetup-1.1.1-20170115](https://oss.sonatype.org/content/groups/public/com/sikulix/sikulixsetup/1.1.1-SNAPSHOT/sikulixsetup-1.1.1-20170115.001619-83-forsetup.jar)) with options 1 (Pack 1) and 3 (Tesseract OCR) selected
+2. Install [SikuliX 1.1.1](http://nightly.sikuli.de/) (Nightly; latest tested stable vesion is sikulixsetup-1.1.1-20170115) with options 1 (Pack 1) and 3 (Tesseract OCR) selected
 3. Install kancolle-auto
 4. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([standard examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs)/[event examples](https://github.com/mrmin123/kancolle-auto/wiki/Event-configs))
 5. Run Kantai Collection
@@ -77,9 +77,13 @@ A: Check/try the following:
 * Disable any extensions or plugins that might obstruct the Kantai Collection game window.
 * The moment the script starts, manually click on the game window to switch focus to it.
 
-#### Q: kancolle-auto periodically crashes! (FindFailed errors)
+#### Q: kancolle-auto periodically restarts and/or crashes!
 
-A: If you are on Windows, please try disabling time synchronization on the OS level ([relevant information](https://answers.launchpad.net/sikuli/+question/194095)). If that doesn't work, try raising the `SleepModifier` field in the config to 1, 2, or 3. If this does not reduce the number of crashes, then please open a detailed issue ticket.
+A: kancolle-auto is fairly stable at this moment. Assuming your dependencies (Java, Sikuli, and Tesseract) and config are set up properly, crashes might be specific to your viewer, machine, internet connection, etc. To help mitigate these issues please turn to the `SleepModifier` parameter in the config. This value raises the buffer time kancolle-auto takes between steps, and can address most issues not caused by actual bugs in the code. Begin with 1 and gradually raise it to 10. If this does not eliminate or reduce the number of restarts and crashes, only then please open a detailed issue ticket.
+
+Side note 1: If you are on Windows, also try disabling time synchronization on the OS level ([relevant information](https://answers.launchpad.net/sikuli/+question/194095)).
+
+Side note 2: Certain VMs and VM setups have been known to cause issues with Sikuli image matching. If you are running kancolle-auto on a VM, try restarting your environment, or switching to a different VM.
 
 #### Q: kancolle-auto does not take timers into consideration and/or I get OCR warnings (n0text warnings)
 

@@ -546,6 +546,21 @@ def wait_and_click(kc_region, pic, time=5, expand=[]):
     kc_region.click(pattern_generator(kc_region, pic, expand))
 
 
+def findAll_wrapper(kc_region, pattern):
+    """
+    Alternative to Sikuli's findAll function, with the try-except catch
+    built-in. Returns an empty list if there are no matches (FindFailed).
+
+    kc_region - Sikuli region
+    pattern - image or Pattern object to match within kc_region
+    """
+    try:
+        matches = kc_region.findAll(pattern)
+        return matches if matches is not None else []
+    except FindFailed:
+        return []
+
+
 def pattern_generator(kc_region, pic, expand=[], mod=''):
     """
     Function for generating Sikuli Pattern with randomized click locations.
@@ -667,11 +682,11 @@ def debug_find(file, target_program, similarity=0.8):
     print ""
     print "+  Sikuli match object for '%s' in window '%s'" % (file, target_program)
     print "+    with minimum similarity of %s:" % similarity
-    debug_matches = target_window.findAll(Pattern(file).similar(similarity))
-    for img_match in (debug_matches if debug_matches is not None else []):
+    debug_matches = findAll_wrapper(target_window, Pattern(file).similar(similarity))
+    for img_match in debug_matches:
         print img_match
         target_window.mouseMove(img_match)
-    if debug_matches is None:
+    if isinstance(debug_matches, list) and len(debug_matches) == 0:
         print "No matches!"
     print ""
     print ""
