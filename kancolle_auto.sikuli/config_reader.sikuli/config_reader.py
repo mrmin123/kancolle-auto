@@ -60,9 +60,9 @@ def get_config(settings, sleep_cycle):
     # 'Combat' section
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
-        settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
         settings['combat_fleetcomps'] = config.get('Combat', 'FleetComps').replace('', '').split(',')
-        log_success("Combat module cycling fleetcomps %s" % ', '.join(settings['combat_fleetcomps']))
+        if len(settings['combat_fleetcomps']) > 1:
+            log_success("Combat module cycling fleetcomps %s" % ', '.join(settings['combat_fleetcomps']))
         settings['combat_area'] = config.get('Combat', 'Area')
         settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')

@@ -204,7 +204,8 @@ def pvp_action():
     global pvp_item, done_pvp, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
-    fleetcomp_switch_action(settings['pvp_fleetcomp'])
+    if settings['combat_enabled']:
+        fleetcomp_switch_action(settings['pvp_fleetcomp'])
     if settings['quests_enabled']:
         quest_action('pvp')
     go_home()
@@ -228,12 +229,11 @@ def pvp_action():
 # Actions involved in conducting sorties
 def sortie_action():
     global fleet_needs_resupply, combat_item, expedition_item, quest_item, done_sorties, settings
-    # Cycle fleetcomps
-    fleetcomp = settings['combat_fleetcomps'].pop(0)
-    log_success("Switching fleetcomp to %s" % fleetcomp)
-    settings['combat_fleetcomps'].append(fleetcomp)
-    fleetcomp_switch_action(int(fleetcomp))
-    ##
+    if settings['pvp_enabled'] or len(settings['combat_fleetcomps']) > 1:
+        fleetcomp = int(settings['combat_fleetcomps'].pop(0))
+        settings['combat_fleetcomps'].append(fleetcomp)
+        log_success("Switching fleetcomp to %s" % fleetcomp)
+        fleetcomp_switch_action(fleetcomp)
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
@@ -371,18 +371,7 @@ def init():
         combat_item = combat_module.Combat(global_regions['game'], settings)
         default_quest_mode = 'sortie'
         log_success("Combat module started (Sortie mode)")
-    # TODO cleanup
     fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
-    # if settings['pvp_enabled'] and settings['combat_enabled']:
-    #     if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
-    #         # If either of the fleetcomp values are set to 0, do not define the fleet comp
-    #         # switcher module
-    #         pass
-    #     elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
-    #         # Define fleet comp switcher module if both pvp and combat modules are enabled
-    #         # and they have different fleet comps assigned
-    #         fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
-    # Go home
     go_home(True)
     if settings['scheduled_sleep_enabled']:
         # If just starting script, set a sleep start time
