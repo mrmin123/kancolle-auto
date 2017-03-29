@@ -1,3 +1,6 @@
+#### 2017-03-29 ([Release 9.1](https://github.com/mrmin123/kancolle-auto/releases/tag/9.1))
+* Create wrapper for streamlining calls to Sikuli's `findAll` functionality
+
 #### 2017-03-26
 * Fix fleetcomp switcher and assets
 * Update readme and configs
