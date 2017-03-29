@@ -10,7 +10,7 @@ Settings.MinSimilarity = 0.8
 # Custom similarity thresholds
 DMG_SIMILARITY = 0.7  # Damage state icons
 FATIGUE_SIMILARITY = 0.98  # Fatigue state icons
-CLASS_SIMILARITY = 0.7  # Ship class icons
+CLASS_SIMILARITY = 0.76  # Ship class icons
 
 class Combat:
     def __init__(self, kc_region, settings):
@@ -782,7 +782,7 @@ class FleetcompSwitcher:
         rnavigation(self.kc_region, 'fleetcomp', self.settings)
         wait_and_click(self.kc_region, 'fleetcomp_preset_screen_button.png', 30)
         self.kc_region.wait('fleetcomp_preset_switch_button_offset.png', 30)
-        # the button_offset image is located 50 pixels above the first button,
+        # the button_offset image is located 47 pixels above the first button,
         # and each subsequent buttons are situated 52 pixels apart vertically
-        target_button = Pattern('fleetcomp_preset_switch_button_offset.png').targetOffset(randint(-15, 15), 50 + (52 * (fleetcomp - 1)) + randint(-8, 8))
+        target_button = Pattern('fleetcomp_preset_switch_button_offset.png').targetOffset(-35 + randint(-15, 15), 47 + (52 * (fleetcomp - 1)) + randint(-8, 8))
         self.kc_region.click(target_button)

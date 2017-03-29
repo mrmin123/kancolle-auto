@@ -228,7 +228,12 @@ def pvp_action():
 # Actions involved in conducting sorties
 def sortie_action():
     global fleet_needs_resupply, combat_item, expedition_item, quest_item, done_sorties, settings
-    fleetcomp_switch_action(settings['combat_fleetcomp'])
+    # Cycle fleetcomps
+    fleetcomp = settings['combat_fleetcomps'].pop(0)
+    log_success("Switching fleetcomp to %s" % fleetcomp)
+    settings['combat_fleetcomps'].append(fleetcomp)
+    fleetcomp_switch_action(int(fleetcomp))
+    ##
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
@@ -286,9 +291,8 @@ def quest_action(mode, first_run=False):
 # Actions that check and switch fleet comps
 def fleetcomp_switch_action(fleetcomp):
     global current_fleetcomp, fleetcomp_switcher, settings
-    if fleetcomp_switcher and fleetcomp != current_fleetcomp:
-        # fleetcomp_switcher is defined (aka necessary) AND the needed fleetcomp
-        # is different from the current fleetcomp, go home then switch fleets
+    if fleetcomp != current_fleetcomp:
+        # Switch only if current fleetcomp is not the right one
         go_home()
         fleetcomp_switcher.switch_fleetcomp(fleetcomp)
         current_fleetcomp = fleetcomp
@@ -367,15 +371,17 @@ def init():
         combat_item = combat_module.Combat(global_regions['game'], settings)
         default_quest_mode = 'sortie'
         log_success("Combat module started (Sortie mode)")
-    if settings['pvp_enabled'] and settings['combat_enabled']:
-        if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
-            # If either of the fleetcomp values are set to 0, do not define the fleet comp
-            # switcher module
-            pass
-        elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
-            # Define fleet comp switcher module if both pvp and combat modules are enabled
-            # and they have different fleet comps assigned
-            fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
+    # TODO cleanup
+    fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
+    # if settings['pvp_enabled'] and settings['combat_enabled']:
+    #     if settings['pvp_fleetcomp'] == 0 or settings['combat_fleetcomp'] == 0:
+    #         # If either of the fleetcomp values are set to 0, do not define the fleet comp
+    #         # switcher module
+    #         pass
+    #     elif settings['pvp_fleetcomp'] != settings['combat_fleetcomp']:
+    #         # Define fleet comp switcher module if both pvp and combat modules are enabled
+    #         # and they have different fleet comps assigned
+    #         fleetcomp_switcher = combat_module.FleetcompSwitcher(global_regions['game'], settings)
     # Go home
     go_home(True)
     if settings['scheduled_sleep_enabled']:
