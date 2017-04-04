@@ -445,7 +445,7 @@ class Combat:
         self.repair_timers = []
         rnavigation(self.kc_region, 'repair', self.settings)
         # Are there any pre-existing repairs happening?
-        repair_timer_alt_matches = self.kc_region.findAll(Pattern('repair_timer_alt.png').similar(0.5))
+        repair_timer_alt_matches = findAll_wrapper(self.kc_region, Pattern('repair_timer_alt.png').similar(0.5))
         for i in (repair_timer_alt_matches if repair_timer_alt_matches is not None else []):
             repair_timer = check_timer(self.kc_region, i, 'l', 100)
             timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
