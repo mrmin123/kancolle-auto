@@ -1,3 +1,9 @@
+#### 2017-04-03
+* Bugfix to repair module (thanks to @Aripracc)
+
+#### 2017-04-02
+* Updates to sortie-related assets (thanks to @waicool20)
+
 #### 2017-03-29 ([Release 9.1](https://github.com/mrmin123/kancolle-auto/releases/tag/9.1))
 * Create wrapper for streamlining calls to Sikuli's `findAll` functionality
 
