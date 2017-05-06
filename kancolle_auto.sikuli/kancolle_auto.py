@@ -204,7 +204,7 @@ def pvp_action():
     global pvp_item, done_pvp, settings
     reset_next_pvp_time(True)
     # Switch fleet comp, if necessary
-    if settings['combat_enabled']:
+    if settings['combat_enabled'] and not (len(settings['combat_fleetcomps']) == 1 and settings['combat_fleetcomps'][0] == settings['pvp_fleetcomp']):
         fleetcomp_switch_action(settings['pvp_fleetcomp'])
     if settings['quests_enabled']:
         quest_action('pvp')
@@ -229,11 +229,10 @@ def pvp_action():
 # Actions involved in conducting sorties
 def sortie_action():
     global fleet_needs_resupply, combat_item, expedition_item, quest_item, done_sorties, settings
-    if settings['pvp_enabled'] or len(settings['combat_fleetcomps']) > 1:
-        fleetcomp = settings['combat_fleetcomps'].pop(0)
-        settings['combat_fleetcomps'].append(fleetcomp)
-        log_success("Switching fleetcomp to %s" % fleetcomp)
-        fleetcomp_switch_action(fleetcomp)
+    # Always switches if more than 1 combat fleet is specified, otherwise checks if combat and pvp fleets are same
+    if (len(settings['combat_fleetcomps']) > 1 or
+        settings['pvp_enabled'] and not (len(settings['combat_fleetcomps']) == 1 and settings['combat_fleetcomps'][0] == settings['pvp_fleetcomp'])):
+        cycle_combat_fleet()
     if settings['expeditions_enabled']:
         expedition_action_wrapper()
     go_home(True)
@@ -274,6 +273,12 @@ def sortie_action():
             quest_item.done_sorties += 1
         done_sorties += 1
 
+# Cycles combat fleets
+def cycle_combat_fleet():
+    fleetcomp = settings['combat_fleetcomps'].pop(0)
+    settings['combat_fleetcomps'].append(fleetcomp)
+    log_success("Switching fleetcomp to %s" % fleetcomp)
+    fleetcomp_switch_action(fleetcomp)
 
 # Actions involved in checking quests
 def quest_action(mode, first_run=False):
