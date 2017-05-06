@@ -230,7 +230,7 @@ def pvp_action():
 def sortie_action():
     global fleet_needs_resupply, combat_item, expedition_item, quest_item, done_sorties, settings
     if settings['pvp_enabled'] or len(settings['combat_fleetcomps']) > 1:
-        fleetcomp = int(settings['combat_fleetcomps'].pop(0))
+        fleetcomp = settings['combat_fleetcomps'].pop(0)
         settings['combat_fleetcomps'].append(fleetcomp)
         log_success("Switching fleetcomp to %s" % fleetcomp)
         fleetcomp_switch_action(fleetcomp)
