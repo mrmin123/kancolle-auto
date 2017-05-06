@@ -50,3 +50,5 @@ crashes
 
 # Configs
 configs/
+config.ini.bak
+config.ini
