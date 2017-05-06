@@ -197,6 +197,7 @@ def rejigger_mouse(kc_region, x1, x2, y1, y2, find_position=False):
         global_regions['formation_combinedfleet_4'] = Region(util_settings['game_x'] + 580, util_settings['game_y'] + 280, 160, 50)
         # global_regions['quest_category'] = Region(util_settings['game_x'] + 140, util_settings['game_y'] + 110, 65, 340)
         global_regions['quest_status'] = Region(util_settings['game_x'] + 710, util_settings['game_y'] + 110, 65, 340)
+        global_regions['repair_panel'] = Region(util_settings['game_x'] + 600, util_settings['game_y'] + 110, 100, 340)
 
         # Set short autowait timeouts
         for key in global_regions:
