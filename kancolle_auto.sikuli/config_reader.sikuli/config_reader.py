@@ -61,7 +61,7 @@ def get_config(settings, sleep_cycle):
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
         settings['combat_fleetcomps'] = []
-        for fleet in config.get('Combat', 'FleetComps').replace(' ', '').split(','):
+        for fleet in filter(None, config.get('Combat', 'FleetComps').replace(' ', '').split(',')):
             try:
                 fleet_num = int(fleet)
                 if 1 <= fleet_num <= 10:
