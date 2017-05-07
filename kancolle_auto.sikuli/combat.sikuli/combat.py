@@ -10,7 +10,7 @@ Settings.MinSimilarity = 0.8
 # Custom similarity thresholds
 DMG_SIMILARITY = 0.7  # Damage state icons
 FATIGUE_SIMILARITY = 0.98  # Fatigue state icons
-CLASS_SIMILARITY = 0.65  # Ship class icons
+CLASS_SIMILARITY = 0.7  # Ship class icons
 
 class Combat:
     def __init__(self, kc_region, settings):
@@ -500,7 +500,7 @@ class Combat:
                             bucket_use = True
                         else:
                             # Submarine switch is enabled, but bucket use is disallowed
-                            if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY)):
+                            if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(0.8)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(0.65)):
                                 # Ship is submarine
                                 # Try setting next sortie time according to repair timer
                                 log_msg("Submarine denied bucket. ;_;")
@@ -530,7 +530,7 @@ class Combat:
                                 bucket_use = True
                             else:                                
                                 # Submarine switch is enabled, but bucket use is disallowed                                
-                                if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY)):
+                                if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(0.8)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(0.65)):
                                     # Ship is submarine
                                     # Try setting next sortie time according to repair timer
                                     log_msg("Submarine denied bucket. ;_;")
