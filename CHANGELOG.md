@@ -1,5 +1,5 @@
 #### 2017-05-??
-* Add support for 2017 Spring Event (thanks to @AppleBoi86, @waicool20, and @twisting2017)
+* Add support for 2017 Spring Event (thanks to @AppleBoi86, @waicool20, @twisting2017, @perryhuynh, and @frosty5689)
 
 #### 2017-05-07
 * Update asset for port checking for Events
