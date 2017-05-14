@@ -1,5 +1,5 @@
 #### 2017-05-13
-* Add additional assets for 2017 Spring Event
+* Add additional assets for 2017 Spring Event (thanks to @frosty5689)
 
 #### 2017-05-12
 * Add support for 2017 Spring Event (thanks to @AppleBoi86, @waicool20, @twisting2017, @perryhuynh, and @frosty5689)
