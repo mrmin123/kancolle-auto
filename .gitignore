@@ -47,3 +47,8 @@ Sublime files
 
 # KAGA
 crashes
+
+# Configs
+configs/
+config.ini.bak
+config.ini
