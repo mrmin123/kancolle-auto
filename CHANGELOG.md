@@ -1,3 +1,6 @@
+#### 2017-05-22
+* Archive 2017 Spring Event assets
+
 #### 2017-05-13
 * Add additional assets for 2017 Spring Event (thanks to @frosty5689)
 
