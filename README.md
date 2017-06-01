@@ -50,7 +50,7 @@ kancolle-auto was originally a fork of [these](https://github.com/amylase/kancol
 ### Quick Start
 
 1. Install [Java JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-2. Install [SikuliX 1.1.1](http://nightly.sikuli.de/) (Nightly; latest tested stable vesion is sikulixsetup-1.1.1-20170115) with options 1 (Pack 1) and 3 (Tesseract OCR) selected
+2. Install the latest [SikuliX Nightly](http://nightly.sikuli.de/) with options 1 (Pack 1) and 3 (Tesseract OCR) selected (these are important!)
 3. Install kancolle-auto
 4. [Setup kancolle-auto's config file](https://github.com/mrmin123/kancolle-auto/wiki/Setup-config.ini) ([standard examples](https://github.com/mrmin123/kancolle-auto/wiki/Example-configs)/[event examples](https://github.com/mrmin123/kancolle-auto/wiki/Event-configs))
 5. Run Kantai Collection
