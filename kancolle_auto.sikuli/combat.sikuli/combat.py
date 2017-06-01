@@ -493,7 +493,13 @@ class Combat:
                     sleep(1)
                     bucket_use = False
                     if self.repair_time_limit == 0:
-                        if (not self.submarine_switch) or (self.submarine_switch and self.submarine_switch_use_buckets):
+                        if self.reserve_docks and empty_docks == 1:
+                            # If only one empty dock, need to use bucket to keep it cleared.
+                            log_success("Ensuring a free dock, using bucket!")
+                            self.kc_region.click('repair_bucket_switch.png')
+                            self.next_sortie_time_set(0, 0)
+                            bucket_use = True
+                        elif (not self.submarine_switch) or (self.submarine_switch and self.submarine_switch_use_buckets):
                             # If set to use buckets for all repairs, no need to check timer
                             # Use buckets on subs if submarine handling is disabled, or buckets use is allowed
                             log_success("Using bucket for all repairs!")
@@ -522,7 +528,13 @@ class Combat:
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
                         repair_timer = check_timer(self.kc_region, 'repair_timer.png', 'r', 80, 5)
-                        if int(repair_timer[0:2] + repair_timer[3:5]) >= self.repair_time_limit:
+                        if self.reserve_docks and empty_docks == 1:
+                            # If only one empty dock, need to use bucket to keep it cleared.
+                            log_success("Ensuring a free dock, using bucket!")
+                            self.kc_region.click('repair_bucket_switch.png')
+                            self.next_sortie_time_set(0, 0)
+                            bucket_use = True
+                        elif int(repair_timer[0:2] + repair_timer[3:5]) >= self.repair_time_limit:
                             # Use bucket if the repair time is longer than desired
                             if (not self.submarine_switch) or (self.submarine_switch and self.submarine_switch_use_buckets):
                                 # Use buckets on subs if submarine handling is disabled, or buckets use is allowed
