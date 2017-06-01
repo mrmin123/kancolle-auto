@@ -10,7 +10,7 @@ Settings.MinSimilarity = 0.8
 # Custom similarity thresholds
 DMG_SIMILARITY = 0.7  # Damage state icons
 FATIGUE_SIMILARITY = 0.98  # Fatigue state icons
-CLASS_SIMILARITY = 0.7  # Ship class icons
+CLASS_SIMILARITY = 0.76  # Ship class icons
 
 class Combat:
     def __init__(self, kc_region, settings):

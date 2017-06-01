@@ -60,7 +60,20 @@ def get_config(settings, sleep_cycle):
     # 'Combat' section
     if config.getboolean('Combat', 'Enabled'):
         settings['combat_enabled'] = True
-        settings['combat_fleetcomp'] = config.getint('Combat', 'FleetComp')
+        settings['combat_fleetcomps'] = []
+        for fleet in filter(None, config.get('Combat', 'FleetComps').replace(' ', '').split(',')):
+            try:
+                fleet_num = int(fleet)
+                if 1 <= fleet_num <= 10:
+                    settings['combat_fleetcomps'].append(fleet_num)
+                else:
+                    raise ValueError("Value %s must be a number between 1 - 10 inclusive" % fleet)
+            except ValueError, e:
+                log_error(str(e))
+                log_error("Invalid value found: %s" % fleet)
+                sys.exit(1)
+        if len(settings['combat_fleetcomps']) > 1:
+            log_success("Combat module cycling fleetcomps %s" % ', '.join(map(str, settings['combat_fleetcomps'])))
         settings['combat_area'] = config.get('Combat', 'Area')
         settings['combat_subarea'] = config.get('Combat', 'Subarea')
         settings['combined_fleet'] = config.getboolean('Combat', 'CombinedFleet')
