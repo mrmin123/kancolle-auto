@@ -106,7 +106,7 @@ def get_config(settings, sleep_cycle):
         settings['retreat_limit'] = config.getint('Combat', 'RetreatLimit')
         settings['repair_limit'] = config.getint('Combat', 'RepairLimit')
         settings['repair_time_limit'] = config.getint('Combat', 'RepairTimeLimit')
-        settings['reserve_docks'] = config.getint('Combat', 'ReserveDocks')
+        settings['reserve_docks'] = config.getboolean('Combat', 'ReserveDocks')
         settings['check_fatigue'] = config.getboolean('Combat', 'CheckFatigue')
         settings['port_check'] = config.getboolean('Combat', 'PortCheck')
         settings['medal_stop'] = config.getboolean('Combat', 'MedalStop')

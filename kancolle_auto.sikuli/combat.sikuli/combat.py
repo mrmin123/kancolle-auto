@@ -37,6 +37,7 @@ class Combat:
         self.retreat_limit = settings['retreat_limit']
         self.repair_limit = settings['repair_limit']
         self.repair_time_limit = settings['repair_time_limit']
+        self.reserve_docks = settings['reserve_docks']
         self.repair_timers = []
         self.check_fatigue = settings['check_fatigue']
         self.port_check = settings['port_check']
