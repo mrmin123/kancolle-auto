@@ -1,3 +1,9 @@
+#### 2017-05-31
+* Actually archive 2017 Spring Event assets
+* Change `FleetComp` option to `FleetComps` to support fleet cycling for sorties (thanks to @waicool20)
+* Add `UseBuckets` option to Submarine Switch module to specify whether or not submarines should be bucketed (thanks to @R-Jimenez)
+* Update readme
+
 #### 2017-05-22
 * Archive 2017 Spring Event assets
 
