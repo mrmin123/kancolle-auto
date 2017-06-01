@@ -11,6 +11,8 @@ Settings.MinSimilarity = 0.8
 DMG_SIMILARITY = 0.7  # Damage state icons
 FATIGUE_SIMILARITY = 0.98  # Fatigue state icons
 CLASS_SIMILARITY = 0.7  # Ship class icons
+CLASS_SIMILARITY_SS = 0.8  # Specific (for SS)
+CLASS_SIMILARITY_SSV = 0.65  # Broad (for SSV)
 
 class Combat:
     def __init__(self, kc_region, settings):
@@ -22,6 +24,7 @@ class Combat:
             self.submarine_switch_subs = settings['submarine_switch_subs']
             self.submarine_switch_replace_limit = settings['submarine_switch_replace_limit']
             self.submarine_switch_fatigue_switch = settings['submarine_switch_fatigue_switch']
+            self.submarine_switch_use_buckets = settings['submarine_switch_use_buckets']
         self.area_num = settings['combat_area']
         self.subarea_num = settings['combat_subarea']
         self.area_pict = 'combat_area_%s.png' % settings['combat_area']
@@ -490,20 +493,62 @@ class Combat:
                     sleep(1)
                     bucket_use = False
                     if self.repair_time_limit == 0:
-                        # If set to use buckets for all repairs, no need to check timer
-                        log_success("Using bucket for all repairs!")
-                        self.kc_region.click('repair_bucket_switch.png')
-                        self.next_sortie_time_set(0, 0)
-                        bucket_use = True
+                        if (not self.submarine_switch) or (self.submarine_switch and self.submarine_switch_use_buckets):
+                            # If set to use buckets for all repairs, no need to check timer
+                            # Use buckets on subs if submarine handling is disabled, or buckets use is allowed
+                            log_success("Using bucket for all repairs!")
+                            self.kc_region.click('repair_bucket_switch.png')
+                            self.next_sortie_time_set(0, 0)
+                            bucket_use = True
+                        else:
+                            # Submarine switch is enabled, but bucket use is disallowed
+                            if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY_SS)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY_SSV)):
+                                # Ship is submarine
+                                # Try setting next sortie time according to repair timer
+                                log_msg("Submarine denied bucket. ;_;")
+                                timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
+                                log_success("Repair should be done at %s" % timer.strftime("%Y-%m-%d %H:%M:%S"))
+                                self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
+                                self.repair_timers.append(timer)
+                                self.repair_timers.sort()
+                                empty_docks -= 1
+                            else:
+                                # Ship is not submarine
+                                log_msg("Not submarine!")
+                                log_success("Using bucket for all repairs!")
+                                self.kc_region.click('repair_bucket_switch.png')
+                                self.next_sortie_time_set(0, 0)
+                                bucket_use = True
                     else:
                         # Otherwise, act accordingly to timer and repair timer limit
                         repair_timer = check_timer(self.kc_region, 'repair_timer.png', 'r', 80, 5)
                         if int(repair_timer[0:2] + repair_timer[3:5]) >= self.repair_time_limit:
                             # Use bucket if the repair time is longer than desired
-                            log_success("Repair time too long... using bucket!")
-                            self.kc_region.click('repair_bucket_switch.png')
-                            self.next_sortie_time_set(0, 0)
-                            bucket_use = True
+                            if (not self.submarine_switch) or (self.submarine_switch and self.submarine_switch_use_buckets):
+                                # Use buckets on subs if submarine handling is disabled, or buckets use is allowed
+                                log_success("Repair time too long... using bucket!")
+                                self.kc_region.click('repair_bucket_switch.png')
+                                self.next_sortie_time_set(0, 0)
+                                bucket_use = True
+                            else:
+                                # Submarine switch is enabled, but bucket use is disallowed
+                                if global_regions['repair_panel'].exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY_SS)) or global_regions['repair_panel'].exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY_SSV)):
+                                    # Ship is submarine
+                                    # Try setting next sortie time according to repair timer
+                                    log_msg("Submarine denied bucket. ;_;")
+                                    timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
+                                    log_success("Repair should be done at %s" % timer.strftime("%Y-%m-%d %H:%M:%S"))
+                                    self.next_sortie_time_set(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
+                                    self.repair_timers.append(timer)
+                                    self.repair_timers.sort()
+                                    empty_docks -= 1
+                                else:
+                                    # Ship is not submarine
+                                    log_msg("Not submarine!")
+                                    log_success("Repair time too long... using bucket!")
+                                    self.kc_region.click('repair_bucket_switch.png')
+                                    self.next_sortie_time_set(0, 0)
+                                    bucket_use = True
                         else:
                             # Try setting next sortie time according to repair timer
                             timer = self.timer_end(int(repair_timer[0:2]), int(repair_timer[3:5]) - 1)
@@ -581,8 +626,8 @@ class Combat:
                 log_msg("Found ship that is %s!" % scan_list_dict[image])
                 target_region = i.offset(Location(-170, -30)).right(195).below(110)
                 ships_to_switch += 1
-                if (target_region.exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY)) or
-                        target_region.exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))):
+                if (target_region.exists(Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY_SS)) or
+                        target_region.exists(Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY_SSV))):
                     log_msg("Ship is a submarine!")
                     target_region.click('fleetcomp_ship_switch_button.png')
                     self.kc_region.wait('fleetcomp_shiplist_sort_arrow.png')
@@ -720,10 +765,10 @@ class PvP:
         enemy_ship_count_matches = findAll_wrapper(self.kc_region, Pattern('pvp_lvl.png').similar(0.95))
         for i in enemy_ship_count_matches:
             enemy_ship_count += 1
-        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY))
+        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ss.png').similar(CLASS_SIMILARITY_SS))
         for i in enemy_sub_count_matches:
             enemy_sub_count += 1
-        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY))
+        enemy_sub_count_matches = findAll_wrapper(self.kc_region, Pattern('ship_class_ssv.png').similar(CLASS_SIMILARITY_SSV))
         for i in enemy_sub_count_matches:
             enemy_sub_count += 1
         formation, nb = self.formation_nb_selector(enemy_ship_count, enemy_sub_count)
