@@ -1,3 +1,6 @@
+#### 2017-06-07
+* Update PvP and Submarine Switch assets to support the June 6th 2017 update to Kantai Collection (thanks to everyone for reporting changes and providing assets)
+
 #### 2017-05-31
 * Actually archive 2017 Spring Event assets
 * Change `FleetComp` option to `FleetComps` to support fleet cycling for sorties (thanks to @waicool20)
