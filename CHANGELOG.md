@@ -1,4 +1,4 @@
-#### 2017-06-07
+#### 2017-06-07 ([Release 10](https://github.com/mrmin123/kancolle-auto/releases/tag/10))
 * Update PvP and Submarine Switch assets to support the June 6th 2017 update to Kantai Collection (thanks to everyone for reporting changes and providing assets)
 
 #### 2017-05-31
