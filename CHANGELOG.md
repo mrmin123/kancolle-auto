@@ -1,3 +1,7 @@
+#### 2017-09-04
+* Add support for 2017 Summer Event (thanks to @muromachi, @waicool20, @yhn147, @perryhuynh)
+* Add support for Luigi Torelli in the submarine switcher module (thanks to @waicool20)
+
 #### 2017-06-07 ([Release 10](https://github.com/mrmin123/kancolle-auto/releases/tag/10))
 * Update PvP and Submarine Switch assets to support the June 6th 2017 update to Kantai Collection (thanks to everyone for reporting changes and providing assets)
 
