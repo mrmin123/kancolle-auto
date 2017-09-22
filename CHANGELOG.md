@@ -1,3 +1,6 @@
+#### 2017-09-22
+* Archive 2017 Summer Event assets
+
 #### 2017-09-04
 * Add support for 2017 Summer Event (thanks to @muromachi, @waicool20, @yhn147, @perryhuynh)
 * Add support for Luigi Torelli in the submarine switcher module (thanks to @waicool20)
