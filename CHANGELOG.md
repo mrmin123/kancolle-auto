@@ -1,3 +1,6 @@
+#### 2017-09-29 ([Release 10.1](https://github.com/mrmin123/kancolle-auto/releases/tag/10.1))
+* Restore accidentally-removed combat assets
+
 #### 2017-09-22
 * Archive 2017 Summer Event assets
 
