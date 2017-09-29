@@ -1,4 +1,4 @@
-#### 2017-09-29 ([Release 10.1](https://github.com/mrmin123/kancolle-auto/releases/tag/10.1))¡
+#### 2017-09-29 ([Release 10.1](https://github.com/mrmin123/kancolle-auto/releases/tag/10.1))
 * Add support for UIT-25 and I-504 (thanks to @twisting2017)
 * Restore accidentally-removed combat assets
 
