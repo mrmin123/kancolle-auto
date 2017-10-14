@@ -580,14 +580,13 @@ def pattern_generator(kc_region, pic, expand=[], mod=''):
         # This slows down the click actions, but it looks for the pattern and
         # finds the size of the image from the resulting Pattern object.
         if mod == 'prematched':
-            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(kc_region.getLastMatch()))
+            m = kc_region.getLastMatch()
         else:
-            m = match(r'M\[\d+\,\d+ (\d+)x(\d+)\]', str(find(pic)))
+            m = find(pic)
         if m:
-            # If a match is found and the x,y sizes can be ascertained, generate
-            # the random offsets. Otherwise, just click the damn middle.
-            x_width = int(m.group(1)) / 2
-            y_height = int(m.group(2)) / 2
+            # If a match is found, generate the random offsets. Otherwise, just click the damn middle.
+            x_width = m.w / 2
+            y_height = m.h / 2
             expand = [-x_width, x_width, -y_height, y_height]
     if len(expand) == 4:
         if isinstance(pic, str):
