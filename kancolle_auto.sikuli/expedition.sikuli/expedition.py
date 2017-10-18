@@ -37,7 +37,7 @@ class Expedition:
         sleep_fast()
         # If the expedition can't be selected, it's either running or just returned
         if not check_and_click(self.kc_region, 'decision.png'):
-            if self.kc_region.exists('expedition_time_complete.png'):
+            if self.kc_region.exists(Pattern('expedition_time_complete.png').exact()):
                 # Expedition just returned
                 expedition.check_later(0, -1)  # set the check_later time to now
                 expedition.returned = False
