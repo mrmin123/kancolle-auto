@@ -1,3 +1,6 @@
+#### 2017-10-25 ([Release 10.3](https://github.com/mrmin123/kancolle-auto/releases/tag/10.3))
+* Update assets for Kantai Collection UI update and other compatibility
+
 #### 2017-10-18 ([Release 10.2](https://github.com/mrmin123/kancolle-auto/releases/tag/10.2))
 * Update assets and code for Kantai Collection UI Update
 * Update pattern generator
