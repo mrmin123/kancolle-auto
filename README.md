@@ -1,5 +1,7 @@
 # kancolle-auto
 
+## IMPORTANT! Please see the [important announcement regarding the 2017 Fall Event ](https://github.com/mrmin123/kancolle-auto/issues/418) regarding ongoing support of kancolle-auto!
+
 **kancolle-auto** is a robust Kantai Collection automation tool run from the command line. Please see the [kancolle-auto GUI APP (KAGA)](https://github.com/waicool20/KAGA), developed by waicool20, for a GUI for kancolle-auto (note: KAGA is not maintained by the developer of kancolle-auto).
 
 ***
