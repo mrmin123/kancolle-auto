@@ -1,6 +1,10 @@
 # kancolle-auto
 
-## IMPORTANT! Please see the [important announcement regarding the 2017 Fall Event ](https://github.com/mrmin123/kancolle-auto/issues/418) regarding ongoing support of kancolle-auto!
+## The king is dead, long live the king!
+
+**kancolle-auto** is officially retired as of 2017-12-09. Further automation development will continue only on [**kcauto-kai**](https://github.com/mrmin123/kcauto-kai), the successor and complete re-write of kancolle-auto featuring better performance, a robust combat engine, and a browser-based interface for setting your config. Join the [kcauto-kai Discord](https://discord.gg/smAhRKw) for kcauto-kai announcements, discussion, and help. Thank you for your past and on-going support!
+
+## Original Readme
 
 **kancolle-auto** is a robust Kantai Collection automation tool run from the command line. Please see the [kancolle-auto GUI APP (KAGA)](https://github.com/waicool20/KAGA), developed by waicool20, for a GUI for kancolle-auto (note: KAGA is not maintained by the developer of kancolle-auto).
 

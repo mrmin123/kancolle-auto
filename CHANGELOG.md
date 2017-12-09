@@ -1,3 +1,6 @@
+#### 2017-12-09 ([Release 10.4 Final](https://github.com/mrmin123/kancolle-auto/releases/tag/10.4))
+* kancolle-auto officially retired. Please refer to [kcauto-kai](https://github.com/mrmin123/kcauto-kai) for your up-to-date automation needs. Join the [kcauto-kai Discord](https://discord.gg/smAhRKw) for announcements, discussion, and help.
+
 #### 2017-10-25 ([Release 10.3](https://github.com/mrmin123/kancolle-auto/releases/tag/10.3))
 * Update assets for Kantai Collection UI update and other compatibility
 
